@@ -12,7 +12,7 @@ set(SOURCES
 SOURCE_GROUP("source" FILES ${SOURCES})
 
 # Add an executable with the above sources
-add_executable(SmartCFS ${SOURCES})
+#add_executable(SmartCFS ${SOURCES})
 
 include(ExternalProject)
 ExternalProject_Add(
@@ -32,6 +32,6 @@ set(GlmIncludeDir ${source_dir})
 #MESSAGE(STATUS ${CGAL_INCLUDE_DIR} " found")
 include_directories(${PROJECT_SOURCE_DIR} ${GlmIncludeDir})
 
-add_dependencies(${PROJECT_NAME} glm)
+#add_dependencies(${PROJECT_NAME} glm)
 
 
