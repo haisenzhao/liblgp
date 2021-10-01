@@ -783,36 +783,23 @@ namespace PGL {
 			return -1;
 		}
 
-
-
-
-
 		//existing bugs in this function
 		static Vector3d Vector3dBase(Vector3d v)
 		{
 			Vector3d n(1.0, 1.0, 1.0);
-			if (!IsAlmostZero(v[0]))
-			{
+			if (!IsAlmostZero(v[0])) {
 				n[0] = -(v[1] + v[2]) / v[0];
 				return n;
 			}
-			else
-			{
-				if (!IsAlmostZero(v[1]))
-				{
-					n[1] = -(v[0] + v[2]) / v[1];
-					return n;
-				}
-				else
-				{
-					if (!IsAlmostZero(v[2]))
-					{
-						n[2] = -(v[0] + v[1]) / v[2];
-						return n;
-					}
-					return n;
-				}
+			if (!IsAlmostZero(v[1])) {
+				n[1] = -(v[0] + v[2]) / v[1];
+				return n;
 			}
+			if (!IsAlmostZero(v[2])) {
+				n[2] = -(v[0] + v[1]) / v[2];
+				return n;
+			}
+			return n;
 		}
 
 		static Vector3d GetCenter(const Vector3d1& points)
