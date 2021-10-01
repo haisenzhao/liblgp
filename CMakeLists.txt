@@ -26,7 +26,7 @@ ExternalProject_Add(
     )
 ExternalProject_Get_Property(glm source_dir)
 
-set(GlmIncludeDir ${source_dir}/glm)
+set(GlmIncludeDir ${source_dir})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR} PRIVATE ${GlmIncludeDir})
 
