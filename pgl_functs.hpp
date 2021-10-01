@@ -8,6 +8,7 @@
 #include <ostream>
 #include <functional>
 #include <queue>
+#include <map>
 #include <sstream>
 #include <iostream>
 #include <math.h>
@@ -23,6 +24,7 @@
 #include <direct.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 
 template <typename datum>
 using Vector1 = std::vector<datum>;
@@ -1866,9 +1868,9 @@ namespace PGL {
 
 			for (auto& rotation : rotations)
 			{
-				rotation[0] = rotation[0] / 180.0 * Math::Math_PI;
-				rotation[1] = rotation[1] / 180.0 * Math::Math_PI;
-				rotation[2] = rotation[2] / 180.0 * Math::Math_PI;
+				rotation[0] = rotation[0] / 180.0 * Math_PI;
+				rotation[1] = rotation[1] / 180.0 * Math_PI;
+				rotation[2] = rotation[2] / 180.0 * Math_PI;
 			}
 			return rotations;
 		};
