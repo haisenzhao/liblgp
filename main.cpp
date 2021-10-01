@@ -9,7 +9,7 @@ using namespace PGL;
 
 int main(int argc, char* argv[])
 {
-	Functs::MAssert("dsdsd");
+	Functs::MAssert("Test pgl library...");
 	system("pause");
 	return 0;
 }

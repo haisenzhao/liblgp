@@ -12,9 +12,27 @@ set(SOURCES
 # Add an executable with the above sources
 add_executable(pgl ${SOURCES})
 
-set(GLM_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/glm)
 
-include_directories(${PROJECT_SOURCE_DIR} ${GLM_INCLUDE_DIR})
 
+include(ExternalProject)
+ExternalProject_Add(
+    glm
+    PREFIX ${CMAKE_BINARY_DIR}/glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    LOG_DOWNLOAD ON
+    )
+ExternalProject_Get_Property(glm source_dir)
+
+set(GlmIncludeDir ${source_dir}/glm)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR} PRIVATE ${GlmIncludeDir})
+
+
+include_directories(${PROJECT_SOURCE_DIR})
+
+add_dependencies(${PROJECT_NAME} glm)
 
 #set_target_properties(pgl PROPERTIES LINKER_LANGUAGE C)
