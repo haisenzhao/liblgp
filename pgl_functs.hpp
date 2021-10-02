@@ -88,6 +88,7 @@ namespace PGL {
 
 	static double DOUBLE_EPSILON = 1.0E-05;
 	static double Math_PI = 3.14159265358979323846;
+	static double SINGLE_EPSILON = 1.0E-05f;
 	static double MAXDOUBLE = 100000000000.0;
 	static std::random_device MATHRD;  //Will be used to obtain a seed for the random number engine
 	static std::mt19937 MATHGEN(0); //Standard mersenne_twister_engine seeded with rd()
