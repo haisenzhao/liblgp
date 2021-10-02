@@ -1640,6 +1640,45 @@ namespace PGL {
 				pses.emplace_back(PosApplyM(vecs, M));
 			return pses;
 		}
+		
+		static glm::dmat4 RotationMatrixXYZ(const Vector3d& xx, const Vector3d &yy, const Vector3d &zz)
+		{
+			auto x = xx;
+			auto y = yy;
+			auto z = zz;
+		
+			Math::ClearVector3d(x);
+			Math::ClearVector3d(y);
+			Math::ClearVector3d(z);
+			x = x / (float)Math::GetLength(x);
+			y = y / (float)Math::GetLength(y);
+			z = z / (float)Math::GetLength(z);
+		
+			glm::dmat4  rotationMatrix;
+		
+			rotationMatrix[0][0] = x[0];
+			rotationMatrix[0][1] = y[0];
+			rotationMatrix[0][2] = z[0];
+			rotationMatrix[0][3] = 0.0;
+		
+			rotationMatrix[1][0] = x[1];
+			rotationMatrix[1][1] = y[1];
+			rotationMatrix[1][2] = z[1];
+			rotationMatrix[1][3] = 0.0;
+		
+			rotationMatrix[2][0] = x[2];
+			rotationMatrix[2][1] = y[2];
+			rotationMatrix[2][2] = z[2];
+			rotationMatrix[2][3] = 0.0;
+		
+			rotationMatrix[3][0] = 0.0;
+			rotationMatrix[3][1] = 0.0;
+			rotationMatrix[3][2] = 0.0;
+			rotationMatrix[3][3] = 1.0;
+		
+			return rotationMatrix;
+		
+		}
 
 
 		static glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d &t, const Vector3d &n)
