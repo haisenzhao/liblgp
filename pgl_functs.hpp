@@ -96,6 +96,9 @@ namespace PGL {
 	{
 	public:
 
+
+#pragma region StatisticsCombinationSet
+
 		template <class Type>
 		static Type Variance(std::vector<Type> resultSet)
 		{
@@ -108,6 +111,247 @@ namespace PGL {
 			return stdev;
 		}
 
+		//nb>=1
+		static int Factorial(const int n)
+		{
+			if (n > 1)
+				return n * Factorial(n - 1);
+			else
+				return 1;
+		};
+
+		//arrangement and combination
+		static void Combination(const Vector1i3& combs, const int nb, const Vector1i2& sequence, const int max_nb, Vector1i3& output)
+		{
+			if (output.size() > max_nb)return;
+
+			if (nb == combs.size())
+			{
+				output.emplace_back(sequence);
+				return;
+			}
+
+			for (int i = 0; i < combs[nb].size(); i++)
+			{
+				Vector1i2 seq = sequence;
+				seq.emplace_back(combs[nb][i]);
+				Combination(combs, nb + 1, seq, max_nb, output);
+			}
+		}
+
+		//arrangement and combination
+		//goups={3,2,3}
+		//0,0,0 //0,0,1 //0,0,2 //0,1,0 //0,1,1 //0,1,2
+		//1,0,0 //1,0,1 //1,0,2 //1,1,0 //1,1,1 //1,1,2
+		//2,0,0 //2,0,1 //2,0,2 //2,1,0 //2,1,1 //2,1,2
+		static Vector1i2 Selection(const Vector1i1& groups)
+		{
+			int nb = 1;
+			for (auto& group : groups) nb = nb * group;
+
+			if (nb == 0)
+			{
+				Functs::MAssert("nb == 0 in Selection(const Vector1i1& groups)");
+			}
+
+			Vector1i1 nbs(1, nb);
+			for (auto& group : groups)
+			{
+				nbs.emplace_back(nbs.back() / group);
+			}
+			nbs.erase(nbs.begin());
+
+			Vector1i2 combs;
+			for (int i = 0; i < nb; i++)
+			{
+				int id = i;
+				combs.emplace_back(Vector1i1());
+				for (auto nbs_ : nbs)
+				{
+					int a = (id - id % nbs_) / nbs_;
+					combs.back().emplace_back(a);
+					id = id - a * nbs_;
+				}
+			}
+			return combs;
+		}
+
+		//arrangement and combination
+		//with repeat selection
+		//n=3,m=2
+		//1,2
+		//1,3
+		//2,3
+		static Vector1i2 CombNonRepeat(const int& n, const int& m)
+		{
+			std::vector<std::vector<int>> combs;
+			if (n > m)
+			{
+				vector<int> p, set;
+				p.insert(p.end(), m, 1);
+				p.insert(p.end(), n - m, 0);
+				for (int i = 0; i != p.size(); ++i)
+					set.push_back(i + 1);
+				vector<int> vec;
+				size_t cnt = 0;
+				do {
+					for (int i = 0; i != p.size(); ++i)
+						if (p[i])
+							vec.push_back(set[i]);
+					combs.emplace_back(vec);
+					cnt++;
+					vec.clear();
+				} while (prev_permutation(p.begin(), p.end()));
+			}
+			else
+			{
+				combs.emplace_back(std::vector<int>());
+				for (int i = 1; i <= n; i++)
+					combs.back().emplace_back(i);
+			}
+
+			return combs;
+		}
+
+		//arrangement and combination
+		//N=3,K=2
+		//0,0
+		//0,1
+		//0,2
+		//1,1
+		//1,2
+		//2,2
+		static std::vector<std::vector<int>> CombRepeat(const int& N, const int& K)
+		{
+			auto Combination = [](const int& N, const int& K) {
+				std::vector<std::vector<int>> temps;
+				std::string bitmask(K, 1); // K leading 1's
+				bitmask.resize(N, 0); // N-K trailing 0's
+				// print integers and permute bitmask
+				do {
+					std::vector<int> temp;
+					for (int i = 0; i < N; ++i) // [0..N-1] integers
+						if (bitmask[i]) temp.emplace_back(i);
+					if (!temp.empty()) temps.emplace_back(temp);
+				} while (std::prev_permutation(bitmask.begin(), bitmask.end()));
+				return temps;
+			};
+
+			std::vector<std::vector<int>> combs = Combination(N + K - 1, K);
+
+			std::vector<std::vector<int>> repeatCombs;
+			for (auto& comb : combs) {
+				std::vector<int> nbs(N + K - 1, 1);
+				for (auto& i : comb) nbs[i] = 0;
+				std::vector<int> temp;
+				int sum = 0;
+				for (auto& nb : nbs) {
+					if (nb == 0)temp.emplace_back(sum);
+					sum += nb;
+				}
+				if (!temp.empty()) repeatCombs.emplace_back(temp);
+			}
+			return repeatCombs;
+		}
+
+		//remove duplicated elements
+		//vec={3,2,1,2,3,4}
+		//output:{1,2,3,4}
+		static Vector1i1 UniqueSet(const Vector1i1& vec)
+		{
+			Vector1i1 s;
+			for (auto& v : vec)
+			{
+				if (std::find(s.begin(), s.end(), v) == s.end()) s.emplace_back(v);
+			}
+			std::sort(s.begin(), s.end());
+			return s;
+		};
+
+		static Vector1i1 SetUnion(const Vector1i1& first, const Vector1i1& second)
+		{
+			Vector1i1 v = first;
+			for (auto& s : second)
+				if (std::find(first.begin(), first.end(), s) == first.end())
+					v.emplace_back(s);
+			return v;
+		}
+		static Vector1i1 SetIntersection(const Vector1i1& first, const Vector1i1& second)
+		{
+			Vector1i1 v;
+			for (auto& s : second)
+				if (std::find(first.begin(), first.end(), s) != first.end())
+					v.emplace_back(s);
+			return v;
+		}
+		static Vector1i1 SetSubtraction(const Vector1i1& first, const Vector1i1& second)
+		{
+			Vector1i1 v;
+			for (auto& s : first)
+				if (std::find(second.begin(), second.end(), s) == second.end())
+					v.emplace_back(s);
+			return v;
+		}
+
+
+		static Vector1i1 FindSetCombination(Vector1i2& input_)
+		{
+			auto FSC = [](vector<set<int>>& input, set<int>& target, vector<int>& output)
+			{
+				set<int> full;
+				for (auto it : input) {
+					full.insert(it.begin(), it.end());
+				}
+
+				if (!includes(full.begin(), full.end(), target.begin(), target.end())) {
+					return;
+				}
+
+				for (int i = static_cast<int>(input.size()) - 1; i > 0; --i) {
+					vector<bool> vec(input.size(), false);
+					fill(vec.begin() + i, vec.end(), true);
+					set<int> comb;
+
+					do {
+						for (int j = 0; j < vec.size(); ++j) {
+							if (vec[j]) {
+								comb.insert(input[j].begin(), input[j].end());
+							}
+						}
+
+						if (includes(comb.begin(), comb.end(), target.begin(), target.end())) {
+							for (int j = 0; j < vec.size(); ++j) {
+								if (vec[j]) {
+									output.push_back(j);
+								}
+							}
+							return;
+						}
+						comb.clear();
+
+					} while (next_permutation(vec.begin(), vec.end()));
+				}
+			};
+
+
+			vector<set<int>> input;
+			set<int> target;
+			for (auto& a : input_)
+			{
+				for (int x : a) target.insert(x);
+				input.emplace_back(ConvertToSet(a));
+			}
+			Vector1i1 output;
+			FSC(input, target, output);
+			return output;
+		}
+
+
+
+#pragma endregion
+
+#pragma region DataStructureTransformation
+
 		template <class Type>
 		static std::string IntString(Type i)
 		{
@@ -117,7 +361,6 @@ namespace PGL {
 			ss >> str;
 			return str;
 		}
-
 
 		template <class Type>
 		static std::string IntString(const std::vector<Type>& vecs, bool order = false, std::string insert_str = "")
@@ -325,7 +568,7 @@ namespace PGL {
 
 		static std::string DoubleString(Vector1d1 ds, int p = 8, bool order = false, const std::string insert_str_0 = "")
 		{
-			if (order)std::sort(ds.begin(),ds.end());
+			if (order)std::sort(ds.begin(), ds.end());
 			std::string str;
 			for (int i = 0; i < ds.size(); i++)
 				str += DoubleString(ds[i], p) + (i == ds.size() - 1 ? "" : insert_str_0);
@@ -340,9 +583,106 @@ namespace PGL {
 			return num;
 		}
 
+
+		static vector<string> SplitStr(string str, char delimiter)
+		{
+			vector<string> internal_strs;
+			stringstream ss(str); // Turn the string into a stream.
+			string tok;
+			while (getline(ss, tok, delimiter))
+				internal_strs.emplace_back(tok.c_str());
+			return internal_strs;
+		}
+
+		static vector<string> SplitStr(string str, string delimiter)
+		{
+			vector<string> internal_strs;
+			std::string s = str;
+			size_t pos = 0;
+			std::string token;
+			while ((pos = s.find(delimiter)) != std::string::npos) {
+				token = s.substr(0, pos);
+				internal_strs.push_back(token);
+				s.erase(0, pos + delimiter.length());
+			}
+			internal_strs.push_back(s);
+			return internal_strs;
+		}
+		static vector<double> SplitD(string str, char delimiter)
+		{
+			vector<double> internal_d;
+			stringstream ss(str); // Turn the string into a stream.
+			string tok;
+			while (getline(ss, tok, delimiter))
+				internal_d.emplace_back(atof(tok.c_str()));
+			return internal_d;
+		};
+
+		static vector<int> SplitI(string str, char delimiter) {
+			vector<int> internal_d;
+			stringstream ss(str); // Turn the string into a stream.
+			string tok;
+			while (getline(ss, tok, delimiter))
+				internal_d.emplace_back(atoi(tok.c_str()));
+			return internal_d;
+		};
+
+		static Vector1i1 ShuffleVector(int size)
+		{
+			Vector1i1 shuffle_vec;
+			for (int i = 0; i < size; i++)
+				shuffle_vec.emplace_back(i);
+			std::random_shuffle(shuffle_vec.begin(), shuffle_vec.end());
+			return shuffle_vec;
+		};
+
+		static set<int> ConvertToSet(vector<int> v)
+		{
+			set<int> s;
+			for (int x : v) s.insert(x);
+			return s;
+		};
+
+		static vector<int> ConvertToVector(set<int> s)
+		{
+			vector<int> v;
+			for (auto x : s)v.emplace_back(x);
+			return v;
+		}
+
+		template <class T1, class T2>
+		static T2 MapFind(std::map<T1, T2>& mt, T1& t1)
+		{
+			if (mt.find(t1) == mt.end())
+				MAssert("if (mt.find(t1) == mt.end())");
+			return mt[t1];
+		}
+
+		static Vector1i1 RemoveDuplicate(const Vector1i1& vec_)
+		{
+			Vector1i1 vec = vec_;
+			sort(vec.begin(), vec.end());
+			vec.erase(unique(vec.begin(), vec.end()), vec.end());
+			return vec;
+		}
+
+#pragma endregion
+
+#pragma region BasicGeomFunctions
+
 		template <class Type>
 		static double GetLength(Type v) {
 			return glm::length(v);
+		}
+
+		template <class Type>
+		static double GetAngleBetween(Type v1, Type v2) {
+			double d = glm::dot(v1, v2) / (glm::length(v1) * glm::length(v2));
+			if (IsAlmostZero(d - 1.0))
+				return 0.0;
+			if (IsAlmostZero(d + 1.0))
+				return Math_PI;
+			return glm::acos(d);
 		}
 
 		static double Radian2Angle(double radian)
@@ -354,6 +694,829 @@ namespace PGL {
 		{
 			return angle / 180.0 * Math_PI;
 		}
+
+		static Vector3d SetVectorLength(Vector3d& v, double length)
+		{
+			double l = GetLength(v);
+
+			v[0] = v[0] / l * length;
+			v[1] = v[1] / l * length;
+			v[2] = v[2] / l * length;
+
+			return v;
+		}
+
+		static Vector2d SetVectorLength(Vector2d& v, double length)
+		{
+			double l = GetLength(v);
+			v[0] = v[0] / l * length;
+			v[1] = v[1] / l * length;
+			return v;
+		}
+
+		//existing bugs in this function
+		static Vector3d Vector3dBase(Vector3d v)
+		{
+			Vector3d n(1.0, 1.0, 1.0);
+			if (!IsAlmostZero(v[0])) {
+				n[0] = -(v[1] + v[2]) / v[0];
+				return n;
+			}
+			if (!IsAlmostZero(v[1])) {
+				n[1] = -(v[0] + v[2]) / v[1];
+				return n;
+			}
+			if (!IsAlmostZero(v[2])) {
+				n[2] = -(v[0] + v[1]) / v[2];
+				return n;
+			}
+			return n;
+		}
+
+		static Vector3d GetCenter(const Vector3d1& points)
+		{
+			Vector3d center(0.0, 0.0, 0.0);
+			for (int i = 0; i < points.size(); i++)
+				center += points[i];
+			center = center / (double)points.size();
+			return center;
+		}
+
+		static Vector3d GetCenter(const Vector3d2& points)
+		{
+			Vector3d center(0.0, 0.0, 0.0);
+			int nb = 0;
+			for (int i = 0; i < points.size(); i++)
+			{
+				for (int j = 0; j < points[i].size(); j++)
+					center += points[i][j];
+				nb += static_cast<int>(points[i].size());
+			}
+			center = center / (double)nb;
+			return center;
+		}
+
+		static Vector3d GetCenter(const Vector3d3& points)
+		{
+			Vector3d center(0.0, 0.0, 0.0);
+			int nb = 0;
+			for (int i = 0; i < points.size(); i++)
+			{
+				for (int j = 0; j < points[i].size(); j++)
+				{
+					for (int k = 0; k < points[i][j].size(); k++)
+					{
+						center += points[i][j][k];
+						nb++;
+					}
+				}
+			}
+			center = center / (double)nb;
+			return center;
+		}
+
+		static Vector2d GetCenter(const std::vector<Vector2d>& points)
+		{
+			Vector2d center(0.0, 0.0);
+			for (int i = 0; i < points.size(); i++)
+				center += points[i];
+			center = center / (double)points.size();
+			return center;
+		}
+
+		static Vector2d GetCenter(const std::vector<std::vector<Vector2d>>& points)
+		{
+			Vector2d center(0.0, 0.0);
+			int nb = 0;
+			for (int i = 0; i < points.size(); i++)
+			{
+				for (int j = 0; j < points[i].size(); j++)
+					center += points[i][j];
+				nb += static_cast<int>(points[i].size());
+			}
+			center = center / (double)nb;
+			return center;
+		}
+
+		static void GetBoundingBox(const Vector3d2& points, Vector3d& minimal_corner, Vector3d& maximal_corner)
+		{
+			minimal_corner = Vector3d(MAXDOUBLE, MAXDOUBLE, MAXDOUBLE);
+			maximal_corner = Vector3d(-MAXDOUBLE, -MAXDOUBLE, -MAXDOUBLE);
+			for (int i = 0; i < points.size(); i++)
+			{
+				for (int j = 0; j < points[i].size(); j++)
+				{
+					minimal_corner[0] = min(minimal_corner[0], points[i][j][0]);
+					minimal_corner[1] = min(minimal_corner[1], points[i][j][1]);
+					minimal_corner[2] = min(minimal_corner[2], points[i][j][2]);
+					maximal_corner[0] = max(maximal_corner[0], points[i][j][0]);
+					maximal_corner[1] = max(maximal_corner[1], points[i][j][1]);
+					maximal_corner[2] = max(maximal_corner[2], points[i][j][2]);
+				}
+			}
+		}
+
+		static void GetBoundingBox(const Vector3d1& points, Vector3d& minimal_corner, Vector3d& maximal_corner)
+		{
+			minimal_corner = Vector3d(MAXDOUBLE, MAXDOUBLE, MAXDOUBLE);
+			maximal_corner = Vector3d(-MAXDOUBLE, -MAXDOUBLE, -MAXDOUBLE);
+
+			for (int i = 0; i < points.size(); i++)
+			{
+				minimal_corner[0] = min(minimal_corner[0], points[i][0]);
+				minimal_corner[1] = min(minimal_corner[1], points[i][1]);
+				minimal_corner[2] = min(minimal_corner[2], points[i][2]);
+				maximal_corner[0] = max(maximal_corner[0], points[i][0]);
+				maximal_corner[1] = max(maximal_corner[1], points[i][1]);
+				maximal_corner[2] = max(maximal_corner[2], points[i][2]);
+			}
+		}
+
+		static void GetBoundingBox(const std::vector<Vector2d>& points, Vector2d& minimal_corner, Vector2d& maximal_corner)
+		{
+			minimal_corner = Vector2d(MAXDOUBLE, MAXDOUBLE);
+			maximal_corner = Vector2d(-MAXDOUBLE, -MAXDOUBLE);
+			for (int i = 0; i < points.size(); i++)
+			{
+				minimal_corner[0] = min(minimal_corner[0], points[i][0]);
+				minimal_corner[1] = min(minimal_corner[1], points[i][1]);
+				maximal_corner[0] = max(maximal_corner[0], points[i][0]);
+				maximal_corner[1] = max(maximal_corner[1], points[i][1]);
+			}
+		}
+
+		static void GetBoundingBox(const std::vector<std::vector<Vector2d>>& points, Vector2d& minimal_corner, Vector2d& maximal_corner)
+		{
+			minimal_corner = Vector2d(MAXDOUBLE, MAXDOUBLE);
+			maximal_corner = Vector2d(-MAXDOUBLE, -MAXDOUBLE);
+			for (int i = 0; i < points.size(); i++)
+			{
+				for (int j = 0; j < points[i].size(); j++)
+				{
+					minimal_corner[0] = min(minimal_corner[0], points[i][j][0]);
+					minimal_corner[1] = min(minimal_corner[1], points[i][j][1]);
+					maximal_corner[0] = max(maximal_corner[0], points[i][j][0]);
+					maximal_corner[1] = max(maximal_corner[1], points[i][j][1]);
+				}
+			}
+		}
+
+		static double CircumCircleRaidius(Vector2d v0, Vector2d v1, Vector2d v2)
+		{
+			double a = GetLength(v0 - v1);
+			double b = GetLength(v0 - v2);
+			double c = GetLength(v1 - v2);
+			double p = (a + b + c) / 2.0;
+			double area = (4.0 * pow(p * (p - a) * (p - b) * (p - c), 0.5));
+			double radius;
+
+			if (IsAlmostZero(area))
+			{
+				double max_l = a;
+				max_l = max(max_l, b);
+				max_l = max(max_l, c);
+				radius = 10 * max_l;
+			}
+			else
+				radius = a * b * c / area;
+			return radius;
+		}
+
+		template <class Type>
+		static double GetLength(const Type v0, const Type v1) {
+			return GetLength(v0 - v1);
+		}
+
+		template <class Type>
+		static double GetDistance(const Type v0, const Type v1) {
+			return GetLength(v0 - v1);
+		}
+
+		template <class Type>
+		static double GetDistance(const Type v, const std::vector<Type>& vs)
+		{
+			double min_d = MAXDOUBLE;
+			for (const auto& iter : vs)
+				min_d = min(min_d, GetDistance(v, iter));
+			return min_d;
+		}
+
+		template <class Type>
+		static double GetDistance(const Type v, const std::vector<std::vector<Type>>& vs)
+		{
+			double min_d = MAXDOUBLE;
+			for (const auto& iter : vs)
+				min_d = min(min_d, GetDistance(v, iter));
+			return min_d;
+		}
+
+		template <class Type>
+		static double GetDistance(const std::vector<std::vector<Type>>& vs1, const std::vector<std::vector<Type>>& vs2)
+		{
+			double total_d = 0.0;
+			int nb = 0;
+			for (auto& vec : vs1)
+			{
+				for (auto& v : vec)
+				{
+					total_d = total_d + GetDistance(v, vs2);
+					nb++;
+				}
+			}
+			if (nb != 0) total_d = total_d / (double)nb;
+			return total_d;
+		}
+
+		template <class Type>
+		static double GetDistanceNONE(
+			const std::vector<std::vector<Type>>& vs1,
+			const std::vector<std::vector<Type>>& vs2)
+		{
+			return (GetDistance(vs1, vs2) + GetDistance(vs2, vs1)) / 2.0;
+		}
+
+		template <class Type>
+		static int GetNearestPointIndex(const Type v, const std::vector<Type>& vs)
+		{
+			int index = -1;
+			double min_d = MAXDOUBLE;
+			for (int i = 0; i < vs.size(); i++)
+			{
+				double cur_d = GetDistance(v, vs[i]);
+				if (cur_d < min_d)
+				{
+					min_d = cur_d;
+					index = 0;
+				}
+			}
+			return index;
+		}
+
+		static double GetLength(const std::vector<Vector2d>& points)
+		{
+			double length = 0.0;
+
+			for (int i = 0; i < points.size(); i++)
+				length += GetLength(points[i], points[(i + 1) % points.size()]);
+
+			return length;
+		}
+
+		static double GetLength(const Vector3d1& points)
+		{
+			double length = 0.0;
+
+			for (int i = 0; i < points.size(); i++)
+				length += GetLength(points[i], points[(i + 1) % points.size()]);
+
+			return length;
+		}
+
+		static Vector3d PlaneProject(Vector3d planar_location, Vector3d planar_direction, Vector3d p)
+		{
+			if (IsAlmostZero(GetLength(planar_location, p)))
+				return planar_location;
+
+			double angle = GetAngleBetween(planar_direction, p - planar_location);
+			double length = GetLength(planar_location, p);
+
+			if (angle <= Math_PI / 2.0)
+				return p - SetVectorLength(planar_direction, length * sin(Math_PI / 2.0 - angle));
+			else
+				return p + SetVectorLength(planar_direction, length * sin(angle - Math_PI / 2.0));
+
+		}
+
+		static void Connecting_Segments(Vector3d2& segments, Vector3d2& lines)
+		{
+			//save connecting relations
+			std::vector<bool> used(segments.size(), false);
+			std::vector<int> relations;
+#pragma region get_relations
+			for (int i = 0; i < segments.size(); i++)
+			{
+				for (int j = i + 1; j < segments.size(); j++)
+				{
+					if (i != j && !used[i] && !used[j])
+					{
+						double l_0_0 = GetLength(segments[i][0], segments[j][0]);
+						double l_0_1 = GetLength(segments[i][0], segments[j][1]);
+						double l_1_0 = GetLength(segments[i][1], segments[j][0]);
+						double l_1_1 = GetLength(segments[i][1], segments[j][1]);
+
+						bool b_0_0 = IsAlmostZero_Double(l_0_0, DOUBLE_EPSILON);
+						bool b_0_1 = IsAlmostZero_Double(l_0_1, DOUBLE_EPSILON);
+						bool b_1_0 = IsAlmostZero_Double(l_1_0, DOUBLE_EPSILON);
+						bool b_1_1 = IsAlmostZero_Double(l_1_1, DOUBLE_EPSILON);
+
+						if ((b_0_0 && b_1_1) || (b_0_1 && b_1_0))
+						{
+							used[j] = true;
+							continue;
+						}
+
+						if (b_0_0)
+						{
+							relations.push_back(i);
+							relations.push_back(0);
+							relations.push_back(j);
+							relations.push_back(0);
+							continue;
+						}
+						if (b_0_1)
+						{
+							relations.push_back(i);
+							relations.push_back(0);
+							relations.push_back(j);
+							relations.push_back(1);
+							continue;
+						}
+						if (b_1_0)
+						{
+							relations.push_back(i);
+							relations.push_back(1);
+							relations.push_back(j);
+							relations.push_back(0);
+							continue;
+						}
+						if (b_1_1)
+						{
+							relations.push_back(i);
+							relations.push_back(1);
+							relations.push_back(j);
+							relations.push_back(1);
+							continue;
+						}
+					}
+				}
+			}
+#pragma endregion
+
+			std::vector<std::vector<int>> ones;
+
+
+			while (true)
+			{
+				int index = -1;
+				int end = -1;
+
+				for (int i = 0; i < segments.size(); i++)
+				{
+					if (!used[i]) {
+						index = i;
+						end = 0;
+						used[i] = true;
+						break;
+					}
+				}
+
+				if (index < 0)break;
+
+				Vector3d1 line(1, segments[index][end]);
+
+				std::vector<int> one(1, index);
+
+				while (true)
+				{
+					end = 1 - end;
+					bool search = false;
+					for (int i = 0; i < relations.size(); i = i + 4)
+					{
+						if (relations[i] == index && relations[i + 1] == end && !used[relations[i + 2]])
+						{
+							line.push_back(segments[relations[i + 2]][relations[i + 3]]);
+							one.push_back(relations[i + 2]);
+							index = relations[i + 2];
+							end = relations[i + 3];
+							used[index] = true;
+							search = true;
+							break;
+						}
+						if (relations[i + 2] == index && relations[i + 3] == end && !used[relations[i]])
+						{
+							line.push_back(segments[relations[i]][relations[i + 1]]);
+							one.push_back(relations[i]);
+							index = relations[i];
+							end = relations[i + 1];
+							used[index] = true;
+							search = true;
+							break;
+						}
+					}
+					if (!search) { break; }
+				}
+
+				ones.push_back(one);
+				lines.push_back(line);
+			}
+		}
+
+		static Vector3d IntersectPointPlane2Ray(Vector3d planar_location, Vector3d planar_direction, Vector3d ray_location, Vector3d ray_vector)
+		{
+			Vector3d project_point = PlaneProject(planar_location, planar_direction, ray_location);
+			double distance = GetDistance(ray_location, project_point);
+			if (IsAlmostZero(GetLength(project_point, ray_location)))
+				return ray_location;
+			double angle = GetAngleBetween(ray_vector, project_point - ray_location);
+			double length = distance / cos(angle);
+			return ray_location + SetVectorLength(ray_vector, length);
+		}
+		
+		static Vector3d ComputeNormalFromPolyline(const Vector3d1& points)
+		{
+			Vector3d planar_direction;
+			planar_direction = GetCrossproduct(points[0] - points[1], points[2] - points[1]);
+			SetVectorLength(planar_direction, 1.0);
+			return planar_direction;
+		}
+
+		static void  ComputePlanarFromPolyline(Vector3d& planar_location, Vector3d& planar_direction, const Vector3d1& points)
+		{
+			planar_location = points[0];
+			planar_direction = GetCrossproduct(points[0] - points[1], points[2] - points[1]);
+			SetVectorLength(planar_direction, 1.0);
+		}
+
+		//===============================================================
+		template <class Type>
+		static bool DetectColinear(Type v, Type s, Type e, double angle_match_error, double dis_match_error)
+		{
+			if (DetectCoincident(v, s, dis_match_error) || DetectCoincident(v, e, dis_match_error)) return true;
+			double angle = GetAngleBetween(v - s, e - s);
+			if (IsAlmostZero_Double(angle, angle_match_error))return true;
+			if (IsAlmostZero_Double(angle - Math_PI, angle_match_error))return true;
+			return false;
+		}
+
+		template <class Type>
+		static bool DetectVertical(Type direction_0, Type direction_1, double angle_match_error, double dis_match_error)
+		{
+			auto angle = GetAngleBetween(direction_0, direction_1);
+			return IsAlmostZero_Double(angle - Math_PI / 2.0, angle_match_error);
+		};
+
+		template <class Type>
+		static bool DetectVertical(Type seg_0_s, Type seg_0_e, Type seg_1_s, Type seg_1_e, double angle_match_error, double dis_match_error)
+		{
+			return DetectVertical(seg_0_e - seg_0_s, seg_0_e - seg_0_s, angle_match_error, dis_match_error);
+		};
+
+		template <class Type>
+		static bool DetectVertical(std::pair<Type, Type> seg_0, std::pair<Type, Type> seg_1, double angle_match_error, double dis_match_error)
+		{
+			return DetectVertical(seg_0.first, seg_0.second, seg_1.first, seg_1.second, angle_match_error, dis_match_error);
+		};
+
+		template <class Type>
+		static bool DetectCoincident(Type v0, Type v1, double EPSILON = DOUBLE_EPSILON)
+		{
+			return IsAlmostZero_Double(GetDistance(v0, v1), EPSILON);
+		}
+
+		static bool DetectCoplanar(Vector3d planar_location_0, Vector3d planar_direction_0, Vector3d planar_location_1, Vector3d planar_direction_1,
+			double angle_match_error, double dis_match_error)
+		{
+			auto angle = GetAngleBetween(planar_direction_0, planar_direction_1);
+			if (IsAlmostZero_Double(angle - Math_PI, angle_match_error) || IsAlmostZero_Double(angle, angle_match_error))
+			{
+				double dis = GetLength(PlaneProject(planar_location_0, planar_direction_0, planar_location_1), planar_location_1);
+				return IsAlmostZero_Double(dis, dis_match_error);
+			}
+			else
+				return false;
+		}
+
+		template <class Type>
+		static bool DetectParallel(Type direction_0, Type direction_1, double angle_match_error, double dis_match_error)
+		{
+			auto angle = GetAngleBetween(direction_0, direction_1);
+			return (IsAlmostZero_Double(angle - Math_PI, angle_match_error) || IsAlmostZero_Double(angle, angle_match_error));
+		};
+
+		template <class Type>
+		static bool DetectParallel(std::pair<Type, Type> seg_0, std::pair<Type, Type> seg_1, double angle_match_error, double dis_match_error)
+		{
+			return DetectParallel(seg_0.second - seg_0.first, seg_1.second - seg_1.first, angle_match_error, dis_match_error);
+		};
+		template <class Type>
+		static bool DetectCoDirection(Type direction_0, Type direction_1, double angle_match_error, double dis_match_error)
+		{
+			auto angle = GetAngleBetween(direction_0, direction_1);
+			return (IsAlmostZero_Double(angle, angle_match_error));
+		};
+
+		template <class Type>
+		static bool DetectColinear_Direction(Type location_0, Type direction_0, Type location_1, Type direction_1, double angle_match_error, double dis_match_error)
+		{
+			if (DetectParallel(direction_0, direction_1, angle_match_error, dis_match_error))
+			{
+				if (IsAlmostZero_Double(GetLength(location_0 - location_1), dis_match_error))
+					return true;
+				return DetectParallel(direction_0, location_1 - location_0, angle_match_error, dis_match_error);
+			}
+			else
+				return false;
+		};
+
+		static bool DetectAlign2D(Vector2d s_0, Vector2d e_0, Vector2d s_1, Vector2d e_1, double angle_match_error, double dis_match_error)
+		{
+			double d0 = GetDistance(s_0, s_1);
+			double d1 = GetDistance(s_0, e_1);
+			double d2 = GetDistance(e_0, s_1);
+			double d3 = GetDistance(e_0, e_1);
+			if (IsAlmostZero_Double(d0, dis_match_error) && IsAlmostZero_Double(d3, dis_match_error))
+				return true;
+			if (IsAlmostZero_Double(d1, dis_match_error) && IsAlmostZero_Double(d2, dis_match_error))
+				return true;
+			return false;
+		};
+
+		static bool DetectAlign3D(Vector3d s_0, Vector3d e_0, Vector3d s_1, Vector3d e_1, double angle_match_error, double dis_match_error)
+		{
+			double d0 = GetDistance(s_0, s_1);
+			double d1 = GetDistance(s_0, e_1);
+			double d2 = GetDistance(e_0, s_1);
+			double d3 = GetDistance(e_0, e_1);
+			if (IsAlmostZero_Double(d0, dis_match_error) && IsAlmostZero_Double(d3, dis_match_error))
+				return true;
+			if (IsAlmostZero_Double(d1, dis_match_error) && IsAlmostZero_Double(d2, dis_match_error))
+				return true;
+			return false;
+		};
+
+		//this function has bug ;
+		//Do not use it
+		template <class Type>
+		static bool DetectColinear_Segment(Type s_0, Type e_0, Type s_1, Type e_1, double angle_match_error, double dis_match_error)
+		{
+			return DetectColinear_Direction(s_0, e_0 - s_0, s_1, e_1 - s_1, angle_match_error, dis_match_error);
+		};
+
+		static std::vector<Vector2d> Polygon_Clear(const std::vector<Vector2d> vecs,
+			const double angle_match_error, const double dis_match_error)
+		{
+			//remove duplicate points
+			std::vector<Vector2d> vecs_0;
+			for (int i = 0; i < vecs.size(); i++)
+			{
+				if (i != vecs.size() - 1)
+				{
+					if (vecs_0.empty()) vecs_0.emplace_back(vecs[i]);
+					else
+					{
+						if (dis_match_error > 0)
+						{
+							if (!IsAlmostZero_Double(GetLength(vecs_0.back(), vecs[i]), dis_match_error))
+								vecs_0.emplace_back(vecs[i]);
+						}
+						else
+						{
+							if (!IsAlmostZero(GetLength(vecs_0.back(), vecs[i])))
+								vecs_0.emplace_back(vecs[i]);
+						}
+					}
+				}
+				else
+				{
+					if (vecs_0.empty())
+						vecs_0.emplace_back(vecs[i]);
+					else
+					{
+						if (dis_match_error > 0)
+						{
+							if (!IsAlmostZero_Double(GetLength(vecs_0.back(), vecs[i]), dis_match_error) &&
+								!IsAlmostZero_Double(GetLength(vecs_0.front(), vecs[i]), dis_match_error))
+								vecs_0.emplace_back(vecs[i]);
+						}
+						else
+						{
+							if (!IsAlmostZero(GetLength(vecs_0.back(), vecs[i])) &&
+								!IsAlmostZero(GetLength(vecs_0.front(), vecs[i])))
+								vecs_0.emplace_back(vecs[i]);
+						}
+
+					}
+				}
+			}
+			//remove collinear points
+			std::vector<Vector2d> vecs_1;
+			for (int i = 0; i < vecs_0.size(); i++)
+			{
+				auto pre_v = vecs_0[(i + vecs_0.size() - 1) % vecs_0.size()];
+				auto cur_v = vecs_0[i];
+				auto next_v = vecs_0[(i + 1) % vecs_0.size()];
+				double angle = GetAngleBetween(cur_v - pre_v, next_v - cur_v);
+				if (angle_match_error > 0.0)
+				{
+					if (!IsAlmostZero_Double(angle, angle_match_error))
+						vecs_1.emplace_back(cur_v);
+				}
+				else
+				{
+					if (!IsAlmostZero(angle))
+						vecs_1.emplace_back(cur_v);
+				}
+			}
+
+			return vecs_1;
+		};
+
+		static Vector3d1 EmumerateRotations()
+		{
+			Vector3d1 rotations;
+			rotations.emplace_back(Vector3d(90.0, 90.0, 180.0));
+			rotations.emplace_back(Vector3d(-90.0, 0.0, 90.0));
+			rotations.emplace_back(Vector3d(0.0, 180.0, 0.0));
+
+			rotations.emplace_back(Vector3d(90.0, 0.0, 180.0));
+			rotations.emplace_back(Vector3d(0.0, 0.0, 90.0));
+			rotations.emplace_back(Vector3d(0.0, -90.0, 0.0));
+
+			rotations.emplace_back(Vector3d(0.0, 0.0, 0.0));
+			rotations.emplace_back(Vector3d(90.0, 0.0, 90.0));
+			rotations.emplace_back(Vector3d(90.0, -90.0, 180.0));
+
+			rotations.emplace_back(Vector3d(0.0, 90.0, 0.0));
+			rotations.emplace_back(Vector3d(180.0, 0.0, 90.0));
+			rotations.emplace_back(Vector3d(90.0, -180.0, 180.0));
+
+			rotations.emplace_back(Vector3d(0.0, 180.0, 90.0));
+			rotations.emplace_back(Vector3d(-90.0, 90.0, 90.0));
+			rotations.emplace_back(Vector3d(90.0, 180.0, 0.0));
+
+			rotations.emplace_back(Vector3d(0.0, 0.0, 180.0));
+			rotations.emplace_back(Vector3d(0.0, -90.0, 90.0));
+			rotations.emplace_back(Vector3d(90.0, 0.0, -90.0));
+
+			rotations.emplace_back(Vector3d(-90.0, 0.0, -90.0));
+			rotations.emplace_back(Vector3d(180.0, 90.0, 90.0));
+			rotations.emplace_back(Vector3d(0.0, -180.0, 180.0));
+
+			rotations.emplace_back(Vector3d(90.0, 0.0, 0.0));
+			rotations.emplace_back(Vector3d(90.0, -90.0, 90.0));
+			rotations.emplace_back(Vector3d(0.0, 0.0, 270.0));
+
+			for (auto& rotation : rotations)
+			{
+				rotation[0] = rotation[0] / 180.0 * Math_PI;
+				rotation[1] = rotation[1] / 180.0 * Math_PI;
+				rotation[2] = rotation[2] / 180.0 * Math_PI;
+			}
+			return rotations;
+		};
+
+
+#pragma endregion
+
+#pragma region BasicMathFunctions
+
+		static double RandomD(double min_d = 0.0, double max_d = 1.0)
+		{
+			std::uniform_real_distribution<> dis(min_d, max_d);
+			return dis(MATHGEN);
+		}
+
+		//select a number among 0,1,2,...,s-1
+		//s should be positive int
+		static int RandomI(int s)
+		{
+			if (s == 1) return 0;
+			double x = 1.0 / s;
+			double d = RandomD();
+
+			for (int i = 0; i < s; i++)
+			{
+				double min_d = i * x;
+				double max_d = (i + 1) * x;
+				if (d >= min_d && d <= max_d)
+				{
+					return i;
+				}
+			}
+
+			return -1;
+		}
+
+		static double RandomDD(double min_d = 0.0, double max_d = 1.0)
+		{
+			std::uniform_real_distribution<> dis(min_d, max_d);
+			return dis(MATHGEN);
+		}
+
+		//select a number among 0,1,2,...,s-1
+		//s should be positive int
+		static int RandomII(int s)
+		{
+			if (s == 1) return 0;
+			double x = 1.0 / s;
+			double d = RandomDD();
+
+			for (int i = 0; i < s; i++)
+			{
+				double min_d = i * x;
+				double max_d = (i + 1) * x;
+				if (d >= min_d && d <= max_d)
+				{
+					return i;
+				}
+			}
+
+			return -1;
+		}
+
+		static Vector3d GetCrossproduct(const Vector3d& v1, const Vector3d& v2) {
+			return glm::cross(v1, v2);
+		}
+
+		static double GetDotproduct(const Vector2d& v1, const Vector2d& v2) {
+			return glm::dot(v1, v2);
+		}
+
+		static bool AreAlmostEqual(double value1, double value2) {
+			if (value1 == value2) {
+				return true;
+			}
+			double eps = (glm::abs(value1) + glm::abs(value2) + 10.0) * DOUBLE_EPSILON;
+			double delta = value1 - value2;
+			return (-eps < delta) && (eps > delta);
+		}
+
+		static bool AreAlmostEqual_Double(double value1, double value2, double EPSILON) {
+			return IsAlmostZero_Double(value1 - value2, EPSILON);
+		}
+
+		static bool IsAlmostZero(double value) {
+			return (value < DOUBLE_EPSILON) && (value > -DOUBLE_EPSILON);
+		}
+		static bool IsAlmostZero_Double(double value, double EPSILON) {
+			return (value < EPSILON) && (value > -EPSILON);
+		}
+
+		static void ZeroVector(Vector3d& v)
+		{
+			if (IsAlmostZero(v[0]))v[0] = 0.0;
+			if (IsAlmostZero(v[1]))v[1] = 0.0;
+			if (IsAlmostZero(v[2]))v[2] = 0.0;
+		}
+
+		template<class Type>
+		static bool VectorInsertNoDuplicate(std::vector<Type>& vecs, const Type& element)
+		{
+			if (CheckContain(vecs, element))
+				return false;
+
+			vecs.emplace_back(element);
+			return true;
+		}
+
+		template<class Type>
+		static void VectorInsertNoDuplicate(std::vector<Type>& vecs, const std::vector<Type>& elements)
+		{
+			for (auto& element : elements)
+				VectorInsertNoDuplicate(vecs, element);
+		}
+
+		template<class Type>
+		static std::vector<Type> VectorMerge(const std::vector<Type>& vecs_0, const std::vector<Type>& vecs_1)
+		{
+			std::vector<Type> result = vecs_0;
+			result.insert(result.end(), vecs_1.begin(), vecs_1.end());
+			return result;
+		}
+
+		template<class Type>
+		static bool CheckContain(const std::vector <Type>& vecs, const Type& element)
+		{
+			return std::find(vecs.begin(), vecs.end(), element) != vecs.end();
+		}
+
+		template <class Type>
+		static int VectorIndex(const std::vector <Type>& vecs, const Type& element)
+		{
+			for (int i = 0; i < vecs.size(); i++)
+			{
+				if (vecs[i] == element)
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		template <class Type>
+		static int VectorIndex(const std::vector <std::vector <Type>>& vecs, const Type& element)
+		{
+			for (int i = 0; i < vecs.size(); i++)
+			{
+				if (VectorIndex(vecs[i], element) >= 0)
+					return i;
+			}
+			return -1;
+		}
+#pragma endregion
+
+
+#pragma region Transformation
 
 		static Vector2d Vector3d2d(Vector3d v)
 		{
@@ -397,7 +1560,6 @@ namespace PGL {
 			return vecs_3d;
 		}
 
-
 		static Vector3d VecApplyM(const Vector3d& v, const  glm::dmat4& M)
 		{
 			return Vector3d(M * glm::vec4(v, 1.0)) - Vector3d(M * glm::vec4(Vector3d(0.0, 0.0, 0.0), 1.0));
@@ -436,7 +1598,6 @@ namespace PGL {
 		{
 			return std::pair<Vector3d, Vector3d>(PosApplyM(vecs.first, M), PosApplyM(vecs.second, M));
 		}
-
 
 		static Vector3d2 PosApplyM(const Vector3d2& veces, const glm::dmat4& M)
 		{
@@ -574,7 +1735,6 @@ namespace PGL {
 			return translationMatrix;
 		}
 
-
 		static glm::dmat4 ScaleMatrix(const Vector3d& v)
 		{
 			glm::dmat4  translationMatrix;
@@ -601,459 +1761,11 @@ namespace PGL {
 			return translationMatrix;
 		}
 
-
-		static void ColorMapping(double isolevel, double& output_c_0, double& output_c_1, double& output_c_2)
-		{
-
-
-			Vector3d v;
-			if (isolevel >= 0 && isolevel <= 0.25)
-			{
-				v[0] = 0;
-				v[1] = isolevel / 0.25;
-				v[2] = 1;
-			}
-
-			if (isolevel > 0.25 && isolevel <= 0.50)
-			{
-				v[0] = 0;
-				v[1] = 1;
-				v[2] = 1 - (isolevel - 0.25) / 0.25;
-			}
-
-			if (isolevel > 0.50 && isolevel <= 0.75)
-			{
-				v[0] = (isolevel - 0.50) / 0.25;
-				v[1] = 1;
-				v[2] = 0;
-			}
-
-			if (isolevel > 0.75 && isolevel <= 1.0)
-			{
-				v[0] = 1;
-				v[1] = 1 - (isolevel - 0.75) / 0.25;
-				v[2] = 0;
-			}
-
-			if (isolevel < 0.0)
-			{
-				v[0] = 0.0;
-				v[1] = 0.0;
-				v[2] = 0.0;
-			}
-
-			if (isolevel > 1.0)
-			{
-				v[0] = 0.5;
-				v[1] = 0.0;
-				v[2] = 0.0;
-			}
-			output_c_0 = v[0];
-			output_c_1 = v[1];
-			output_c_2 = v[2];
-		}
-
 		static Vector2d RotationAxis2d(Vector2d p, double angle, Vector2d center)
 		{
 			Vector3d r = RotationAxis(Vector3d(p[0] - center[0], 0.0, p[1] - center[1]),
 				angle, Vector3d(0.0, 1.0, 0.0)) + Vector3d(center[0], 0.0, center[1]);
 			return Vector2d(r[0], r[2]);
-		}
-
-		static Vector3d GetCrossproduct(const Vector3d& v1, const Vector3d& v2) {
-			return glm::cross(v1, v2);
-		}
-
-		static double GetDotproduct(const Vector2d& v1, const Vector2d& v2) {
-			return glm::dot(v1, v2);
-		}
-
-		static bool AreAlmostEqual(double value1, double value2) {
-			if (value1 == value2) {
-				return true;
-			}
-			double eps = (glm::abs(value1) + glm::abs(value2) + 10.0) * DOUBLE_EPSILON;
-			double delta = value1 - value2;
-			return (-eps < delta) && (eps > delta);
-		}
-
-		static bool AreAlmostEqual_Double(double value1, double value2, double EPSILON) {
-			return IsAlmostZero_Double(value1 - value2, EPSILON);
-		}
-
-		static Vector3d SetVectorLength(Vector3d& v, double length)
-		{
-			double l = GetLength(v);
-
-			v[0] = v[0] / l * length;
-			v[1] = v[1] / l * length;
-			v[2] = v[2] / l * length;
-
-			return v;
-		}
-		static Vector2d SetVectorLength(Vector2d& v, double length)
-		{
-			double l = GetLength(v);
-			v[0] = v[0] / l * length;
-			v[1] = v[1] / l * length;
-			return v;
-		}
-
-
-		static bool IsAlmostZero(double value) {
-			return (value < DOUBLE_EPSILON) && (value > -DOUBLE_EPSILON);
-		}
-		static bool IsAlmostZero_Double(double value, double EPSILON) {
-			return (value < EPSILON) && (value > -EPSILON);
-		}
-
-
-
-		static void ZeroVector(Vector3d& v)
-		{
-			if (IsAlmostZero(v[0]))v[0] = 0.0;
-			if (IsAlmostZero(v[1]))v[1] = 0.0;
-			if (IsAlmostZero(v[2]))v[2] = 0.0;
-		}
-
-		template <class Type>
-		static double GetAngleBetween(Type v1, Type v2) {
-			double d = glm::dot(v1, v2) / (glm::length(v1) * glm::length(v2));
-			if (IsAlmostZero(d - 1.0))
-				return 0.0;
-			if (IsAlmostZero(d + 1.0))
-				return Math_PI;
-			return glm::acos(d);
-		}
-
-		template<class Type>
-		static bool VectorInsertNoDuplicate(std::vector<Type>& vecs, const Type& element)
-		{
-			if (CheckContain(vecs, element))
-				return false;
-
-			vecs.emplace_back(element);
-			return true;
-		}
-
-		template<class Type>
-		static void VectorInsertNoDuplicate(std::vector<Type>& vecs, const std::vector<Type>& elements)
-		{
-			for (auto& element : elements)
-				VectorInsertNoDuplicate(vecs, element);
-		}
-
-		template<class Type>
-		static std::vector<Type> VectorMerge(const std::vector<Type>& vecs_0, const std::vector<Type>& vecs_1)
-		{
-			std::vector<Type> result = vecs_0;
-			result.insert(result.end(), vecs_1.begin(), vecs_1.end());
-			return result;
-		}
-
-		template<class Type>
-		static bool CheckContain(const std::vector <Type>& vecs, const Type& element)
-		{
-			return std::find(vecs.begin(), vecs.end(), element) != vecs.end();
-		}
-
-
-		template <class Type>
-		static int VectorIndex(const std::vector <Type>& vecs, const Type& element)
-		{
-			for (int i = 0; i < vecs.size(); i++)
-			{
-				if (vecs[i] == element)
-				{
-					return i;
-				}
-			}
-			return -1;
-		}
-
-		template <class Type>
-		static int VectorIndex(const std::vector <std::vector <Type>>& vecs, const Type& element)
-		{
-			for (int i = 0; i < vecs.size(); i++)
-			{
-				if (VectorIndex(vecs[i], element) >= 0)
-					return i;
-			}
-			return -1;
-		}
-
-		//existing bugs in this function
-		static Vector3d Vector3dBase(Vector3d v)
-		{
-			Vector3d n(1.0, 1.0, 1.0);
-			if (!IsAlmostZero(v[0])) {
-				n[0] = -(v[1] + v[2]) / v[0];
-				return n;
-			}
-			if (!IsAlmostZero(v[1])) {
-				n[1] = -(v[0] + v[2]) / v[1];
-				return n;
-			}
-			if (!IsAlmostZero(v[2])) {
-				n[2] = -(v[0] + v[1]) / v[2];
-				return n;
-			}
-			return n;
-		}
-
-		static Vector3d GetCenter(const Vector3d1& points)
-		{
-			Vector3d center(0.0, 0.0, 0.0);
-			for (int i = 0; i < points.size(); i++)
-				center += points[i];
-			center = center / (double)points.size();
-			return center;
-		}
-
-		static Vector3d GetCenter(const Vector3d2& points)
-		{
-			Vector3d center(0.0, 0.0, 0.0);
-			int nb = 0;
-			for (int i = 0; i < points.size(); i++)
-			{
-				for (int j = 0; j < points[i].size(); j++)
-					center += points[i][j];
-				nb += static_cast<int>(points[i].size());
-			}
-			center = center / (double)nb;
-			return center;
-		}
-
-		static Vector3d GetCenter(const Vector3d3& points)
-		{
-			Vector3d center(0.0, 0.0, 0.0);
-			int nb = 0;
-			for (int i = 0; i < points.size(); i++)
-			{
-				for (int j = 0; j < points[i].size(); j++)
-				{
-					for (int k = 0; k < points[i][j].size(); k++)
-					{
-						center += points[i][j][k];
-						nb++;
-					}
-				}
-			}
-			center = center / (double)nb;
-			return center;
-		}
-
-
-		static Vector2d GetCenter(const std::vector<Vector2d>& points)
-		{
-			Vector2d center(0.0, 0.0);
-			for (int i = 0; i < points.size(); i++)
-				center += points[i];
-			center = center / (double)points.size();
-			return center;
-		}
-
-		static Vector2d GetCenter(const std::vector<std::vector<Vector2d>>& points)
-		{
-			Vector2d center(0.0, 0.0);
-			int nb = 0;
-			for (int i = 0; i < points.size(); i++)
-			{
-				for (int j = 0; j < points[i].size(); j++)
-					center += points[i][j];
-				nb += static_cast<int>(points[i].size());
-			}
-			center = center / (double)nb;
-			return center;
-		}
-
-		static void GetBoundingBox(const Vector3d2& points, Vector3d& minimal_corner, Vector3d& maximal_corner)
-		{
-			minimal_corner = Vector3d(MAXDOUBLE, MAXDOUBLE, MAXDOUBLE);
-			maximal_corner = Vector3d(-MAXDOUBLE, -MAXDOUBLE, -MAXDOUBLE);
-			for (int i = 0; i < points.size(); i++)
-			{
-				for (int j = 0; j < points[i].size(); j++)
-				{
-					minimal_corner[0] = min(minimal_corner[0], points[i][j][0]);
-					minimal_corner[1] = min(minimal_corner[1], points[i][j][1]);
-					minimal_corner[2] = min(minimal_corner[2], points[i][j][2]);
-					maximal_corner[0] = max(maximal_corner[0], points[i][j][0]);
-					maximal_corner[1] = max(maximal_corner[1], points[i][j][1]);
-					maximal_corner[2] = max(maximal_corner[2], points[i][j][2]);
-				}
-			}
-		}
-
-		static void GetBoundingBox(const Vector3d1& points, Vector3d& minimal_corner, Vector3d& maximal_corner)
-		{
-			minimal_corner = Vector3d(MAXDOUBLE, MAXDOUBLE, MAXDOUBLE);
-			maximal_corner = Vector3d(-MAXDOUBLE, -MAXDOUBLE, -MAXDOUBLE);
-
-			for (int i = 0; i < points.size(); i++)
-			{
-				minimal_corner[0] = min(minimal_corner[0], points[i][0]);
-				minimal_corner[1] = min(minimal_corner[1], points[i][1]);
-				minimal_corner[2] = min(minimal_corner[2], points[i][2]);
-				maximal_corner[0] = max(maximal_corner[0], points[i][0]);
-				maximal_corner[1] = max(maximal_corner[1], points[i][1]);
-				maximal_corner[2] = max(maximal_corner[2], points[i][2]);
-			}
-		}
-		static void GetBoundingBox(const std::vector<Vector2d>& points, Vector2d& minimal_corner, Vector2d& maximal_corner)
-		{
-			minimal_corner = Vector2d(MAXDOUBLE, MAXDOUBLE);
-			maximal_corner = Vector2d(-MAXDOUBLE, -MAXDOUBLE);
-			for (int i = 0; i < points.size(); i++)
-			{
-				minimal_corner[0] = min(minimal_corner[0], points[i][0]);
-				minimal_corner[1] = min(minimal_corner[1], points[i][1]);
-				maximal_corner[0] = max(maximal_corner[0], points[i][0]);
-				maximal_corner[1] = max(maximal_corner[1], points[i][1]);
-			}
-		}
-
-		static void GetBoundingBox(const std::vector<std::vector<Vector2d>>& points, Vector2d& minimal_corner, Vector2d& maximal_corner)
-		{
-			minimal_corner = Vector2d(MAXDOUBLE, MAXDOUBLE);
-			maximal_corner = Vector2d(-MAXDOUBLE, -MAXDOUBLE);
-			for (int i = 0; i < points.size(); i++)
-			{
-				for (int j = 0; j < points[i].size(); j++)
-				{
-					minimal_corner[0] = min(minimal_corner[0], points[i][j][0]);
-					minimal_corner[1] = min(minimal_corner[1], points[i][j][1]);
-					maximal_corner[0] = max(maximal_corner[0], points[i][j][0]);
-					maximal_corner[1] = max(maximal_corner[1], points[i][j][1]);
-				}
-			}
-		}
-
-		static double CircumCircleRaidius(Vector2d v0, Vector2d v1, Vector2d v2)
-		{
-			double a = GetLength(v0 - v1);
-			double b = GetLength(v0 - v2);
-			double c = GetLength(v1 - v2);
-			double p = (a + b + c) / 2.0;
-			double area = (4.0 * pow(p * (p - a) * (p - b) * (p - c), 0.5));
-			double radius;
-
-			if (IsAlmostZero(area))
-			{
-				double max_l = a;
-				max_l = max(max_l, b);
-				max_l = max(max_l, c);
-				radius = 10 * max_l;
-			}
-			else
-				radius = a * b * c / area;
-			return radius;
-		}
-
-		template <class Type>
-		static double GetLength(const Type v0, const Type v1) {
-			return GetLength(v0 - v1);
-		}
-
-		template <class Type>
-		static double GetDistance(const Type v0, const Type v1) {
-			return GetLength(v0 - v1);
-		}
-
-		template <class Type>
-		static double GetDistance(const Type v, const std::vector<Type>& vs)
-		{
-			double min_d = MAXDOUBLE;
-			for (const auto& iter : vs)
-				min_d = min(min_d, GetDistance(v, iter));
-			return min_d;
-		}
-
-		template <class Type>
-		static double GetDistance(const Type v, const std::vector<std::vector<Type>>& vs)
-		{
-			double min_d = MAXDOUBLE;
-			for (const auto& iter : vs)
-				min_d = min(min_d, GetDistance(v, iter));
-			return min_d;
-		}
-
-		template <class Type>
-		static double GetDistance(const std::vector<std::vector<Type>>& vs1, const std::vector<std::vector<Type>>& vs2)
-		{
-			double total_d = 0.0;
-			int nb = 0;
-			for (auto& vec : vs1)
-			{
-				for (auto& v : vec)
-				{
-					total_d = total_d + GetDistance(v, vs2);
-					nb++;
-				}
-			}
-			if (nb != 0) total_d = total_d / (double)nb;
-			return total_d;
-		}
-
-
-		template <class Type>
-		static double GetDistanceNONE(
-			const std::vector<std::vector<Type>>& vs1,
-			const std::vector<std::vector<Type>>& vs2)
-		{
-			return (GetDistance(vs1, vs2) + GetDistance(vs2, vs1)) / 2.0;
-		}
-
-		template <class Type>
-		static int GetNearestPointIndex(const Type v, const std::vector<Type>& vs)
-		{
-			int index = -1;
-			double min_d = MAXDOUBLE;
-			for (int i = 0; i < vs.size(); i++)
-			{
-				double cur_d = GetDistance(v, vs[i]);
-				if (cur_d < min_d)
-				{
-					min_d = cur_d;
-					index = 0;
-				}
-			}
-			return index;
-		}
-
-		static double GetLength(const std::vector<Vector2d>& points)
-		{
-			double length = 0.0;
-
-			for (int i = 0; i < points.size(); i++)
-				length += GetLength(points[i], points[(i + 1) % points.size()]);
-
-			return length;
-		}
-
-		static double GetLength(const Vector3d1& points)
-		{
-			double length = 0.0;
-
-			for (int i = 0; i < points.size(); i++)
-				length += GetLength(points[i], points[(i + 1) % points.size()]);
-
-			return length;
-		}
-
-		static Vector3d PlaneProject(Vector3d planar_location, Vector3d planar_direction, Vector3d p)
-		{
-			if (IsAlmostZero(GetLength(planar_location, p)))
-				return planar_location;
-
-			double angle = GetAngleBetween(planar_direction, p - planar_location);
-			double length = GetLength(planar_location, p);
-
-			if (angle <= Math_PI / 2.0)
-				return p - SetVectorLength(planar_direction, length * sin(Math_PI / 2.0 - angle));
-			else
-				return p + SetVectorLength(planar_direction, length * sin(angle - Math_PI / 2.0));
-
 		}
 
 		static Vector3d RotationAxis(Vector3d p, double angle, Vector3d ray_point, Vector3d ray_vector)
@@ -1083,130 +1795,6 @@ namespace PGL {
 			return p + v;
 		}
 
-		static void Connecting_Segments(Vector3d2& segments, Vector3d2& lines)
-		{
-			//save connecting relations
-			std::vector<bool> used(segments.size(), false);
-			std::vector<int> relations;
-#pragma region get_relations
-			for (int i = 0; i < segments.size(); i++)
-			{
-				for (int j = i + 1; j < segments.size(); j++)
-				{
-					if (i != j && !used[i] && !used[j])
-					{
-						double l_0_0 = GetLength(segments[i][0], segments[j][0]);
-						double l_0_1 = GetLength(segments[i][0], segments[j][1]);
-						double l_1_0 = GetLength(segments[i][1], segments[j][0]);
-						double l_1_1 = GetLength(segments[i][1], segments[j][1]);
-
-						bool b_0_0 = IsAlmostZero_Double(l_0_0, DOUBLE_EPSILON);
-						bool b_0_1 = IsAlmostZero_Double(l_0_1, DOUBLE_EPSILON);
-						bool b_1_0 = IsAlmostZero_Double(l_1_0, DOUBLE_EPSILON);
-						bool b_1_1 = IsAlmostZero_Double(l_1_1, DOUBLE_EPSILON);
-
-						if ((b_0_0 && b_1_1) || (b_0_1 && b_1_0))
-						{
-							used[j] = true;
-							continue;
-						}
-
-						if (b_0_0)
-						{
-							relations.push_back(i);
-							relations.push_back(0);
-							relations.push_back(j);
-							relations.push_back(0);
-							continue;
-						}
-						if (b_0_1)
-						{
-							relations.push_back(i);
-							relations.push_back(0);
-							relations.push_back(j);
-							relations.push_back(1);
-							continue;
-						}
-						if (b_1_0)
-						{
-							relations.push_back(i);
-							relations.push_back(1);
-							relations.push_back(j);
-							relations.push_back(0);
-							continue;
-						}
-						if (b_1_1)
-						{
-							relations.push_back(i);
-							relations.push_back(1);
-							relations.push_back(j);
-							relations.push_back(1);
-							continue;
-						}
-					}
-				}
-			}
-#pragma endregion
-
-			std::vector<std::vector<int>> ones;
-
-
-			while (true)
-			{
-				int index = -1;
-				int end = -1;
-
-				for (int i = 0; i < segments.size(); i++)
-				{
-					if (!used[i]) {
-						index = i;
-						end = 0;
-						used[i] = true;
-						break;
-					}
-				}
-
-				if (index < 0)break;
-
-				Vector3d1 line(1, segments[index][end]);
-
-				std::vector<int> one(1, index);
-
-				while (true)
-				{
-					end = 1 - end;
-					bool search = false;
-					for (int i = 0; i < relations.size(); i = i + 4)
-					{
-						if (relations[i] == index && relations[i + 1] == end && !used[relations[i + 2]])
-						{
-							line.push_back(segments[relations[i + 2]][relations[i + 3]]);
-							one.push_back(relations[i + 2]);
-							index = relations[i + 2];
-							end = relations[i + 3];
-							used[index] = true;
-							search = true;
-							break;
-						}
-						if (relations[i + 2] == index && relations[i + 3] == end && !used[relations[i]])
-						{
-							line.push_back(segments[relations[i]][relations[i + 1]]);
-							one.push_back(relations[i]);
-							index = relations[i];
-							end = relations[i + 1];
-							used[index] = true;
-							search = true;
-							break;
-						}
-					}
-					if (!search) { break; }
-				}
-
-				ones.push_back(one);
-				lines.push_back(line);
-			}
-		}
-
 		static void Translate(Vector3d1& points, Vector3d v)
 		{
 			for (int i = 0; i < points.size(); i++)
@@ -1218,31 +1806,24 @@ namespace PGL {
 			for (int i = 0; i < points.size(); i++)
 				Translate(points[i], v);
 		}
+#pragma endregion
 
-		static Vector3d IntersectPointPlane2Ray(Vector3d planar_location, Vector3d planar_direction, Vector3d ray_location, Vector3d ray_vector)
-		{
-			Vector3d project_point = PlaneProject(planar_location, planar_direction, ray_location);
-			double distance = GetDistance(ray_location, project_point);
-			if (IsAlmostZero(GetLength(project_point, ray_location)))
-				return ray_location;
-			double angle = GetAngleBetween(ray_vector, project_point - ray_location);
-			double length = distance / cos(angle);
-			return ray_location + SetVectorLength(ray_vector, length);
-		}
-		static Vector3d ComputeNormalFromPolyline(const Vector3d1& points)
-		{
-			Vector3d planar_direction;
-			planar_direction = GetCrossproduct(points[0] - points[1], points[2] - points[1]);
-			SetVectorLength(planar_direction, 1.0);
-			return planar_direction;
-		}
 
-		static void  ComputePlanarFromPolyline(Vector3d& planar_location, Vector3d& planar_direction, const Vector3d1& points)
+#pragma region IOFunctions
+
+		static HMODULE LoadHMODULE(const string& dll_path)
 		{
-			planar_location = points[0];
-			planar_direction = GetCrossproduct(points[0] - points[1], points[2] - points[1]);
-			SetVectorLength(planar_direction, 1.0);
-		}
+			HMODULE hModule = LoadLibrary(_T(dll_path.c_str()));
+			if (!hModule)
+			{
+				DWORD dw = GetLastError(); // returns 0xc1 (193)
+				MAssert("LoadLibrary failed with error code " + std::to_string(dw));
+			}
+			else
+				std::cerr << "LoadLibrary success\n";
+
+			return hModule;
+		};
 
 		static void OutputRectangle2d(std::string path, const std::vector<Vector2d>& points)
 		{
@@ -1288,7 +1869,6 @@ namespace PGL {
 			file.clear();
 			file.close();
 		};
-
 
 		static void OutputObj3d(std::string path, const Vector3d2& points, int output_index = 1, string str = "")
 		{
@@ -1444,7 +2024,6 @@ namespace PGL {
 			file.close();
 		};
 
-
 		static void Output_tree(const int nodes_nb, const std::vector<int>& edges,
 			const std::string& path, std::vector<string> labels = std::vector<string>())
 		{
@@ -1486,381 +2065,38 @@ namespace PGL {
 			file.close();
 		}
 
-		//nb>=1
-		static int Factorial(const int n)
+		static bool DetectExisting(const std::string& path)
 		{
-			if (n > 1)
-				return n * Factorial(n - 1);
-			else
-				return 1;
-		};
-
-		//arrangement and combination
-		static void Combination(const Vector1i3& combs, const int nb, const Vector1i2& sequence, const int max_nb, Vector1i3& output)
-		{
-			if (output.size() > max_nb)return;
-
-			if (nb == combs.size())
-			{
-				output.emplace_back(sequence);
-				return;
-			}
-
-			for (int i = 0; i < combs[nb].size(); i++)
-			{
-				Vector1i2 seq = sequence;
-				seq.emplace_back(combs[nb][i]);
-				Combination(combs, nb + 1, seq, max_nb, output);
-			}
+			return (_access(path.c_str(), 0) != -1);
 		}
 
-		//arrangement and combination
-		//goups={3,2,3}
-		//0,0,0 //0,0,1 //0,0,2 //0,1,0 //0,1,1 //0,1,2
-		//1,0,0 //1,0,1 //1,0,2 //1,1,0 //1,1,1 //1,1,2
-		//2,0,0 //2,0,1 //2,0,2 //2,1,0 //2,1,1 //2,1,2
-		static Vector1i2 Selection(const Vector1i1& groups)
+		static void ClearFolder(const std::string& path)
 		{
-			int nb = 1;
-			for (auto& group : groups) nb = nb * group;
-
-			if (nb == 0)
+			if (_access(path.c_str(), 0) == -1)
 			{
-				Functs::MAssert("nb == 0 in Selection(const Vector1i1& groups)");
-			}
-
-			Vector1i1 nbs(1, nb);
-			for (auto& group : groups)
-			{
-				nbs.emplace_back(nbs.back() / group);
-			}
-			nbs.erase(nbs.begin());
-
-			Vector1i2 combs;
-			for (int i = 0; i < nb; i++)
-			{
-				int id = i;
-				combs.emplace_back(Vector1i1());
-				for (auto nbs_ : nbs)
-				{
-					int a = (id - id % nbs_) / nbs_;
-					combs.back().emplace_back(a);
-					id = id - a * nbs_;
-				}
-			}
-			return combs;
-		}
-
-
-		//arrangement and combination
-		//with repeat selection
-		//n=3,m=2
-		//1,2
-		//1,3
-		//2,3
-		static Vector1i2 CombNonRepeat(const int& n, const int& m)
-		{
-			std::vector<std::vector<int>> combs;
-			if (n > m)
-			{
-				vector<int> p, set;
-				p.insert(p.end(), m, 1);
-				p.insert(p.end(), n - m, 0);
-				for (int i = 0; i != p.size(); ++i)
-					set.push_back(i + 1);
-				vector<int> vec;
-				size_t cnt = 0;
-				do {
-					for (int i = 0; i != p.size(); ++i)
-						if (p[i])
-							vec.push_back(set[i]);
-					combs.emplace_back(vec);
-					cnt++;
-					vec.clear();
-				} while (prev_permutation(p.begin(), p.end()));
+				_mkdir(path.c_str());
 			}
 			else
 			{
-				combs.emplace_back(std::vector<int>());
-				for (int i = 1; i <= n; i++)
-					combs.back().emplace_back(i);
-			}
+				std::string del_cmd = "del /f/s/q " + path + " > nul";
+				system(del_cmd.c_str());
+				std::string rmdir_cmd = "rmdir /s/q " + path;
+				system(rmdir_cmd.c_str());
 
-			return combs;
+				_mkdir(path.c_str());
+			}
 		}
 
-		//arrangement and combination
-		//N=3,K=2
-		//0,0
-		//0,1
-		//0,2
-		//1,1
-		//1,2
-		//2,2
-		static std::vector<std::vector<int>> CombRepeat(const int& N, const int& K)
+		static std::string EXP(const std::string py_path)
 		{
-			auto Combination = [](const int& N, const int& K) {
-				std::vector<std::vector<int>> temps;
-				std::string bitmask(K, 1); // K leading 1's
-				bitmask.resize(N, 0); // N-K trailing 0's
-				// print integers and permute bitmask
-				do {
-					std::vector<int> temp;
-					for (int i = 0; i < N; ++i) // [0..N-1] integers
-						if (bitmask[i]) temp.emplace_back(i);
-					if (!temp.empty()) temps.emplace_back(temp);
-				} while (std::prev_permutation(bitmask.begin(), bitmask.end()));
-				return temps;
-			};
-
-			std::vector<std::vector<int>> combs = Combination(N + K - 1, K);
-
-			std::vector<std::vector<int>> repeatCombs;
-			for (auto& comb : combs) {
-				std::vector<int> nbs(N + K - 1, 1);
-				for (auto& i : comb) nbs[i] = 0;
-				std::vector<int> temp;
-				int sum = 0;
-				for (auto& nb : nbs) {
-					if (nb == 0)temp.emplace_back(sum);
-					sum += nb;
-				}
-				if (!temp.empty()) repeatCombs.emplace_back(temp);
-			}
-			return repeatCombs;
+			std::string path = std::string(_pgmptr).substr(0, std::string(_pgmptr).find_last_of('\\')) + py_path;
+			if (!Functs::DetectExisting(path))
+				Functs::MAssert("std::string EXP(const std::string py_path="")");
+			return path;
 		}
+#pragma endregion
 
-		//===============================================================
-		//===============================================================
-		template <class Type>
-		static bool DetectColinear(Type v, Type s, Type e, double angle_match_error, double dis_match_error)
-		{
-			if (DetectCoincident(v, s, dis_match_error) || DetectCoincident(v, e, dis_match_error)) return true;
-			double angle = GetAngleBetween(v - s, e - s);
-			if (IsAlmostZero_Double(angle, angle_match_error))return true;
-			if (IsAlmostZero_Double(angle - Math_PI, angle_match_error))return true;
-			return false;
-		}
-
-		template <class Type>
-		static bool DetectVertical(Type direction_0, Type direction_1, double angle_match_error, double dis_match_error)
-		{
-			auto angle = GetAngleBetween(direction_0, direction_1);
-			return IsAlmostZero_Double(angle - Math_PI / 2.0, angle_match_error);
-		};
-
-		template <class Type>
-		static bool DetectVertical(Type seg_0_s, Type seg_0_e, Type seg_1_s, Type seg_1_e, double angle_match_error, double dis_match_error)
-		{
-			return DetectVertical(seg_0_e - seg_0_s, seg_0_e - seg_0_s, angle_match_error, dis_match_error);
-		};
-
-		template <class Type>
-		static bool DetectVertical(std::pair<Type, Type> seg_0, std::pair<Type, Type> seg_1, double angle_match_error, double dis_match_error)
-		{
-			return DetectVertical(seg_0.first, seg_0.second, seg_1.first, seg_1.second, angle_match_error, dis_match_error);
-		};
-
-		template <class Type>
-		static bool DetectCoincident(Type v0, Type v1, double EPSILON = DOUBLE_EPSILON)
-		{
-			return IsAlmostZero_Double(GetDistance(v0, v1), EPSILON);
-		}
-
-		static bool DetectCoplanar(Vector3d planar_location_0, Vector3d planar_direction_0, Vector3d planar_location_1, Vector3d planar_direction_1,
-			double angle_match_error, double dis_match_error)
-		{
-			auto angle = GetAngleBetween(planar_direction_0, planar_direction_1);
-			if (IsAlmostZero_Double(angle - Math_PI, angle_match_error) || IsAlmostZero_Double(angle, angle_match_error))
-			{
-				double dis = GetLength(PlaneProject(planar_location_0, planar_direction_0, planar_location_1), planar_location_1);
-				return IsAlmostZero_Double(dis, dis_match_error);
-			}
-			else
-				return false;
-		}
-
-		template <class Type>
-		static bool DetectParallel(Type direction_0, Type direction_1, double angle_match_error, double dis_match_error)
-		{
-			auto angle = GetAngleBetween(direction_0, direction_1);
-			return (IsAlmostZero_Double(angle - Math_PI, angle_match_error) || IsAlmostZero_Double(angle, angle_match_error));
-		};
-
-		template <class Type>
-		static bool DetectParallel(std::pair<Type, Type> seg_0, std::pair<Type, Type> seg_1, double angle_match_error, double dis_match_error)
-		{
-			return DetectParallel(seg_0.second - seg_0.first, seg_1.second - seg_1.first, angle_match_error, dis_match_error);
-		};
-		template <class Type>
-		static bool DetectCoDirection(Type direction_0, Type direction_1, double angle_match_error, double dis_match_error)
-		{
-			auto angle = GetAngleBetween(direction_0, direction_1);
-			return (IsAlmostZero_Double(angle, angle_match_error));
-		};
-
-		template <class Type>
-		static bool DetectColinear_Direction(Type location_0, Type direction_0, Type location_1, Type direction_1, double angle_match_error, double dis_match_error)
-		{
-			if (DetectParallel(direction_0, direction_1, angle_match_error, dis_match_error))
-			{
-				if (IsAlmostZero_Double(GetLength(location_0 - location_1), dis_match_error))
-					return true;
-				return DetectParallel(direction_0, location_1 - location_0, angle_match_error, dis_match_error);
-			}
-			else
-				return false;
-		};
-
-		static bool DetectAlign2D(Vector2d s_0, Vector2d e_0, Vector2d s_1, Vector2d e_1, double angle_match_error, double dis_match_error)
-		{
-			double d0 = GetDistance(s_0, s_1);
-			double d1 = GetDistance(s_0, e_1);
-			double d2 = GetDistance(e_0, s_1);
-			double d3 = GetDistance(e_0, e_1);
-			if (IsAlmostZero_Double(d0, dis_match_error) && IsAlmostZero_Double(d3, dis_match_error))
-				return true;
-			if (IsAlmostZero_Double(d1, dis_match_error) && IsAlmostZero_Double(d2, dis_match_error))
-				return true;
-			return false;
-		};
-
-		static bool DetectAlign3D(Vector3d s_0, Vector3d e_0, Vector3d s_1, Vector3d e_1, double angle_match_error, double dis_match_error)
-		{
-			double d0 = GetDistance(s_0, s_1);
-			double d1 = GetDistance(s_0, e_1);
-			double d2 = GetDistance(e_0, s_1);
-			double d3 = GetDistance(e_0, e_1);
-			if (IsAlmostZero_Double(d0, dis_match_error) && IsAlmostZero_Double(d3, dis_match_error))
-				return true;
-			if (IsAlmostZero_Double(d1, dis_match_error) && IsAlmostZero_Double(d2, dis_match_error))
-				return true;
-			return false;
-		};
-
-
-		//this function has bug ;
-		//Do not use it
-		template <class Type>
-		static bool DetectColinear_Segment(Type s_0, Type e_0, Type s_1, Type e_1, double angle_match_error, double dis_match_error)
-		{
-			return DetectColinear_Direction(s_0, e_0 - s_0, s_1, e_1 - s_1, angle_match_error, dis_match_error);
-		};
-
-		static std::vector<Vector2d> Polygon_Clear(const std::vector<Vector2d> vecs,
-			const double angle_match_error, const double dis_match_error)
-		{
-			//remove duplicate points
-			std::vector<Vector2d> vecs_0;
-			for (int i = 0; i < vecs.size(); i++)
-			{
-				if (i != vecs.size() - 1)
-				{
-					if (vecs_0.empty()) vecs_0.emplace_back(vecs[i]);
-					else
-					{
-						if (dis_match_error > 0)
-						{
-							if (!IsAlmostZero_Double(GetLength(vecs_0.back(), vecs[i]), dis_match_error))
-								vecs_0.emplace_back(vecs[i]);
-						}
-						else
-						{
-							if (!IsAlmostZero(GetLength(vecs_0.back(), vecs[i])))
-								vecs_0.emplace_back(vecs[i]);
-						}
-					}
-				}
-				else
-				{
-					if (vecs_0.empty())
-						vecs_0.emplace_back(vecs[i]);
-					else
-					{
-						if (dis_match_error > 0)
-						{
-							if (!IsAlmostZero_Double(GetLength(vecs_0.back(), vecs[i]), dis_match_error) &&
-								!IsAlmostZero_Double(GetLength(vecs_0.front(), vecs[i]), dis_match_error))
-								vecs_0.emplace_back(vecs[i]);
-						}
-						else
-						{
-							if (!IsAlmostZero(GetLength(vecs_0.back(), vecs[i])) &&
-								!IsAlmostZero(GetLength(vecs_0.front(), vecs[i])))
-								vecs_0.emplace_back(vecs[i]);
-						}
-
-					}
-				}
-			}
-			//remove collinear points
-			std::vector<Vector2d> vecs_1;
-			for (int i = 0; i < vecs_0.size(); i++)
-			{
-				auto pre_v = vecs_0[(i + vecs_0.size() - 1) % vecs_0.size()];
-				auto cur_v = vecs_0[i];
-				auto next_v = vecs_0[(i + 1) % vecs_0.size()];
-				double angle = GetAngleBetween(cur_v - pre_v, next_v - cur_v);
-				if (angle_match_error > 0.0)
-				{
-					if (!IsAlmostZero_Double(angle, angle_match_error))
-						vecs_1.emplace_back(cur_v);
-				}
-				else
-				{
-					if (!IsAlmostZero(angle))
-						vecs_1.emplace_back(cur_v);
-				}
-			}
-
-			return vecs_1;
-		};
-
-
-		static Vector3d1 EmumerateRotations()
-		{
-			Vector3d1 rotations;
-			rotations.emplace_back(Vector3d(90.0, 90.0, 180.0));
-			rotations.emplace_back(Vector3d(-90.0, 0.0, 90.0));
-			rotations.emplace_back(Vector3d(0.0, 180.0, 0.0));
-
-			rotations.emplace_back(Vector3d(90.0, 0.0, 180.0));
-			rotations.emplace_back(Vector3d(0.0, 0.0, 90.0));
-			rotations.emplace_back(Vector3d(0.0, -90.0, 0.0));
-
-			rotations.emplace_back(Vector3d(0.0, 0.0, 0.0));
-			rotations.emplace_back(Vector3d(90.0, 0.0, 90.0));
-			rotations.emplace_back(Vector3d(90.0, -90.0, 180.0));
-
-			rotations.emplace_back(Vector3d(0.0, 90.0, 0.0));
-			rotations.emplace_back(Vector3d(180.0, 0.0, 90.0));
-			rotations.emplace_back(Vector3d(90.0, -180.0, 180.0));
-
-			rotations.emplace_back(Vector3d(0.0, 180.0, 90.0));
-			rotations.emplace_back(Vector3d(-90.0, 90.0, 90.0));
-			rotations.emplace_back(Vector3d(90.0, 180.0, 0.0));
-
-			rotations.emplace_back(Vector3d(0.0, 0.0, 180.0));
-			rotations.emplace_back(Vector3d(0.0, -90.0, 90.0));
-			rotations.emplace_back(Vector3d(90.0, 0.0, -90.0));
-
-			rotations.emplace_back(Vector3d(-90.0, 0.0, -90.0));
-			rotations.emplace_back(Vector3d(180.0, 90.0, 90.0));
-			rotations.emplace_back(Vector3d(0.0, -180.0, 180.0));
-
-			rotations.emplace_back(Vector3d(90.0, 0.0, 0.0));
-			rotations.emplace_back(Vector3d(90.0, -90.0, 90.0));
-			rotations.emplace_back(Vector3d(0.0, 0.0, 270.0));
-
-			for (auto& rotation : rotations)
-			{
-				rotation[0] = rotation[0] / 180.0 * Math_PI;
-				rotation[1] = rotation[1] / 180.0 * Math_PI;
-				rotation[2] = rotation[2] / 180.0 * Math_PI;
-			}
-			return rotations;
-		};
-
+#pragma region Graph
 
 		static std::vector<int> MinimalSpanningTreeGeneral(
 			const std::vector<int>& edges,
@@ -2088,257 +2324,10 @@ namespace PGL {
 			return components;
 		};
 
-		static Vector1i1 UniqueSet(const Vector1i1& vec)
-		{
-			Vector1i1 s;
-			for (auto& v : vec)
-			{
-				if (std::find(s.begin(), s.end(), v) == s.end()) s.emplace_back(v);
-			}
-			std::sort(s.begin(), s.end());
-			return s;
-		};
-
-		static bool DetectExisting(const std::string& path)
-		{
-			return (_access(path.c_str(), 0) != -1);
-		}
-
-		static void ClearFolder(const std::string& path)
-		{
-			if (_access(path.c_str(), 0) == -1)
-			{
-				_mkdir(path.c_str());
-			}
-			else
-			{
-				std::string del_cmd = "del /f/s/q " + path + " > nul";
-				system(del_cmd.c_str());
-				std::string rmdir_cmd = "rmdir /s/q " + path;
-				system(rmdir_cmd.c_str());
-
-				_mkdir(path.c_str());
-			}
-		}
-
-		static Vector1i1 SetUnion(const Vector1i1& first, const Vector1i1& second)
-		{
-			Vector1i1 v = first;
-			for (auto& s : second)
-				if (std::find(first.begin(), first.end(), s) == first.end())
-					v.emplace_back(s);
-			return v;
-		}
-		static Vector1i1 SetIntersection(const Vector1i1& first, const Vector1i1& second)
-		{
-			Vector1i1 v;
-			for (auto& s : second)
-				if (std::find(first.begin(), first.end(), s) != first.end())
-					v.emplace_back(s);
-			return v;
-		}
-		static Vector1i1 SetSubtraction(const Vector1i1& first, const Vector1i1& second)
-		{
-			Vector1i1 v;
-			for (auto& s : first)
-				if (std::find(second.begin(), second.end(), s) == second.end())
-					v.emplace_back(s);
-			return v;
-		}
-
-		static Vector1i1 RemoveDuplicate(const Vector1i1& vec_)
-		{
-			Vector1i1 vec = vec_;
-			sort(vec.begin(), vec.end());
-			vec.erase(unique(vec.begin(), vec.end()), vec.end());
-			return vec;
-		}
-
-		static vector<string> SplitStr(string str, char delimiter)
-		{
-			vector<string> internal_strs;
-			stringstream ss(str); // Turn the string into a stream.
-			string tok;
-			while (getline(ss, tok, delimiter))
-				internal_strs.emplace_back(tok.c_str());
-			return internal_strs;
-		}
-
-		static vector<string> SplitStr(string str, string delimiter)
-		{
-			vector<string> internal_strs;
-			std::string s =str;
-			size_t pos = 0;
-			std::string token;
-			while ((pos = s.find(delimiter)) != std::string::npos) {
-				token = s.substr(0, pos);
-				internal_strs.push_back(token);
-				s.erase(0, pos + delimiter.length());
-			}
-			internal_strs.push_back(s);
-			return internal_strs;
-		}
-		static vector<double> SplitD(string str, char delimiter)
-		{
-			vector<double> internal_d;
-			stringstream ss(str); // Turn the string into a stream.
-			string tok;
-			while (getline(ss, tok, delimiter))
-				internal_d.emplace_back(atof(tok.c_str()));
-			return internal_d;
-		};
-
-		static vector<int> SplitI(string str, char delimiter) {
-			vector<int> internal_d;
-			stringstream ss(str); // Turn the string into a stream.
-			string tok;
-			while (getline(ss, tok, delimiter))
-				internal_d.emplace_back(atoi(tok.c_str()));
-			return internal_d;
-		};
-
-		static Vector1i1 ShuffleVector(int size)
-		{
-			Vector1i1 shuffle_vec;
-			for (int i = 0; i < size; i++)
-				shuffle_vec.emplace_back(i);
-			std::random_shuffle(shuffle_vec.begin(), shuffle_vec.end());
-			return shuffle_vec;
-		};
-
-		static set<int> ConvertToSet(vector<int> v)
-		{
-			set<int> s;
-			for (int x : v) s.insert(x);
-			return s;
-		};
-
-		static vector<int> ConvertToVector(set<int> s)
-		{
-			vector<int> v;
-			for (auto x : s)v.emplace_back(x);
-			return v;
-		}
-
-		static Vector1i1 FindSetCombination(Vector1i2& input_)
-		{
-			auto FSC = [](vector<set<int>>& input, set<int>& target, vector<int>& output)
-			{
-				set<int> full;
-				for (auto it : input) {
-					full.insert(it.begin(), it.end());
-				}
-
-				if (!includes(full.begin(), full.end(), target.begin(), target.end())) {
-					return;
-				}
-
-				for (int i = static_cast<int>(input.size()) - 1; i > 0; --i) {
-					vector<bool> vec(input.size(), false);
-					fill(vec.begin() + i, vec.end(), true);
-					set<int> comb;
-
-					do {
-						for (int j = 0; j < vec.size(); ++j) {
-							if (vec[j]) {
-								comb.insert(input[j].begin(), input[j].end());
-							}
-						}
-
-						if (includes(comb.begin(), comb.end(), target.begin(), target.end())) {
-							for (int j = 0; j < vec.size(); ++j) {
-								if (vec[j]) {
-									output.push_back(j);
-								}
-							}
-							return;
-						}
-						comb.clear();
-
-					} while (next_permutation(vec.begin(), vec.end()));
-				}
-			};
+#pragma endregion
 
 
-			vector<set<int>> input;
-			set<int> target;
-			for (auto& a : input_)
-			{
-				for (int x : a) target.insert(x);
-				input.emplace_back(ConvertToSet(a));
-			}
-			Vector1i1 output;
-			FSC(input, target, output);
-			return output;
-		}
-
-		static HMODULE LoadHMODULE(const string& dll_path)
-		{
-			HMODULE hModule = LoadLibrary(_T(dll_path.c_str()));
-			if (!hModule) 
-			{
-				DWORD dw = GetLastError(); // returns 0xc1 (193)
-				MAssert("LoadLibrary failed with error code " + std::to_string(dw));
-			}
-			else
-				std::cerr << "LoadLibrary success\n";
-
-			return hModule;
-		};
-
-		static double RandomD(double min_d = 0.0, double max_d = 1.0)
-		{
-			std::uniform_real_distribution<> dis(min_d, max_d);
-			return dis(MATHGEN);
-		}
-
-		//select a number among 0,1,2,...,s-1
-		//s should be positive int
-		static int RandomI(int s)
-		{
-			if (s == 1) return 0;
-			double x = 1.0 / s;
-			double d = RandomD();
-
-			for (int i = 0; i < s; i++)
-			{
-				double min_d = i * x;
-				double max_d = (i + 1) * x;
-				if (d >= min_d && d <= max_d)
-				{
-					return i;
-				}
-			}
-
-			return -1;
-		}
-
-		static double RandomDD(double min_d = 0.0, double max_d = 1.0)
-		{
-			std::uniform_real_distribution<> dis(min_d, max_d);
-			return dis(MATHGEN);
-		}
-
-		//select a number among 0,1,2,...,s-1
-		//s should be positive int
-		static int RandomII(int s)
-		{
-			if (s == 1) return 0;
-			double x = 1.0 / s;
-			double d = RandomDD();
-
-			for (int i = 0; i < s; i++)
-			{
-				double min_d = i * x;
-				double max_d = (i + 1) * x;
-				if (d >= min_d && d <= max_d)
-				{
-					return i;
-				}
-			}
-
-			return -1;
-		}
+#pragma region DevelopmentRelated
 
 		static void MAssert(std::string& str)
 		{
@@ -2352,26 +2341,62 @@ namespace PGL {
 			system("pause");
 		}
 
-		template <class T1, class T2>
-		static T2 MapFind(std::map<T1, T2>& mt, T1& t1)
-		{
-			if (mt.find(t1) == mt.end())
-				MAssert("if (mt.find(t1) == mt.end())");
-			return mt[t1];
-		}
-
-		static std::string EXP(const std::string py_path)
-		{
-			std::string path = std::string(_pgmptr).substr(0, std::string(_pgmptr).find_last_of('\\')) + py_path;
-			if (!Functs::DetectExisting(path))
-				Functs::MAssert("std::string EXP(const std::string py_path="")");
-			return path;
-		}
-
 		static void RunPY(const std::string& py_path, const std::string& paras)
 		{
 			std::string cmd = "python " + Functs::EXP(py_path) + " " + paras;
 			system(cmd.c_str());
+		}
+#pragma endregion
+
+		static void ColorMapping(double isolevel, double& output_c_0, double& output_c_1, double& output_c_2)
+		{
+
+
+			Vector3d v;
+			if (isolevel >= 0 && isolevel <= 0.25)
+			{
+				v[0] = 0;
+				v[1] = isolevel / 0.25;
+				v[2] = 1;
+			}
+
+			if (isolevel > 0.25 && isolevel <= 0.50)
+			{
+				v[0] = 0;
+				v[1] = 1;
+				v[2] = 1 - (isolevel - 0.25) / 0.25;
+			}
+
+			if (isolevel > 0.50 && isolevel <= 0.75)
+			{
+				v[0] = (isolevel - 0.50) / 0.25;
+				v[1] = 1;
+				v[2] = 0;
+			}
+
+			if (isolevel > 0.75 && isolevel <= 1.0)
+			{
+				v[0] = 1;
+				v[1] = 1 - (isolevel - 0.75) / 0.25;
+				v[2] = 0;
+			}
+
+			if (isolevel < 0.0)
+			{
+				v[0] = 0.0;
+				v[1] = 0.0;
+				v[2] = 0.0;
+			}
+
+			if (isolevel > 1.0)
+			{
+				v[0] = 0.5;
+				v[1] = 0.0;
+				v[2] = 0.0;
+			}
+			output_c_0 = v[0];
+			output_c_1 = v[1];
+			output_c_2 = v[2];
 		}
 	};
 
