@@ -1647,9 +1647,9 @@ namespace PGL {
 			auto y = yy;
 			auto z = zz;
 		
-			Math::ClearVector3d(x);
-			Math::ClearVector3d(y);
-			Math::ClearVector3d(z);
+			ClearVector3d(x);
+			ClearVector3d(y);
+			ClearVector3d(z);
 			x = x / (float)Math::GetLength(x);
 			y = y / (float)Math::GetLength(y);
 			z = z / (float)Math::GetLength(z);
