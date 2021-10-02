@@ -1624,6 +1624,82 @@ namespace PGL {
 			return pses;
 		}
 
+
+		inline glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d &t, const Vector3d &n)
+		{
+			double angle = GetAngleBetween(o, t);
+	
+			if (IsAlmostZero(angle))
+			{
+				glm::dmat4  rotationMatrix;
+	
+				rotationMatrix[0][0] = 1.0;
+				rotationMatrix[0][1] = 0.0;
+				rotationMatrix[0][2] = 0.0;
+				rotationMatrix[0][3] = 0.0;
+				rotationMatrix[1][0] = 0.0;
+				rotationMatrix[1][1] = 1.0;
+				rotationMatrix[1][2] = 0.0;
+				rotationMatrix[1][3] = 0.0;
+				rotationMatrix[2][0] = 0.0;
+				rotationMatrix[2][1] = 0.0;
+				rotationMatrix[2][2] = 1.0;
+				rotationMatrix[2][3] = 0.0;
+				rotationMatrix[3][0] = 0.0;
+				rotationMatrix[3][1] = 0.0;
+				rotationMatrix[3][2] = 0.0;
+				rotationMatrix[3][3] = 1.0;
+	
+				return rotationMatrix;
+			}
+			else
+			{
+				return RotationMatrix(n, angle);
+			}
+		}
+	
+	
+		inline glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d &t)
+		{
+			Vector3d n = GetCrossproduct(o, t);
+			double angle = GetAngleBetween(o, t);
+	
+			if (IsAlmostZero(angle - MM_PI))
+			{
+				AAA(o,n);
+			}
+	
+			if (IsAlmostZero(angle))
+			{
+				glm::dmat4  rotationMatrix;
+	
+				rotationMatrix[0][0] = 1.0;
+				rotationMatrix[0][1] = 0.0;
+				rotationMatrix[0][2] = 0.0;
+				rotationMatrix[0][3] = 0.0;
+				rotationMatrix[1][0] = 0.0;
+				rotationMatrix[1][1] = 1.0;
+				rotationMatrix[1][2] = 0.0;
+				rotationMatrix[1][3] = 0.0;
+				rotationMatrix[2][0] = 0.0;
+				rotationMatrix[2][1] = 0.0;
+				rotationMatrix[2][2] = 1.0;
+				rotationMatrix[2][3] = 0.0;
+				rotationMatrix[3][0] = 0.0;
+				rotationMatrix[3][1] = 0.0;
+				rotationMatrix[3][2] = 0.0;
+				rotationMatrix[3][3] = 1.0;
+	
+				return rotationMatrix;
+			}
+			else
+			{
+				return RotationMatrix(n, angle);
+			}
+		}
+
+
+
 		static glm::dmat4 RotationMatrix(const Vector3d& n, double angle)
 		{
 			//return glm::rotate(angle, n);
