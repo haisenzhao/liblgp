@@ -695,7 +695,7 @@ namespace PGL {
 		
 		static double RadiantoAngle(double r)
 		{
-			return r / MM_PI*180.0;
+			return r / Math_PI*180.0;
 		}
 		
 		static double Radian2Angle(double radian)
