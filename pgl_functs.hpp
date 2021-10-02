@@ -575,7 +575,7 @@ namespace PGL {
 			return str;
 		}
 
-		double StringToDouble(string str)
+		static double StringToDouble(string str)
 		{
 			istringstream iss(str);
 			double num;
@@ -584,7 +584,7 @@ namespace PGL {
 		}
 		
 		template <class Type>
-		Type StringToNum(const string& str)
+		static Type StringToNum(const string& str)
 		{
 			istringstream iss(str);
 			Type num;
