@@ -1647,12 +1647,12 @@ namespace PGL {
 			auto y = yy;
 			auto z = zz;
 		
-			ClearVector3d(x);
-			ClearVector3d(y);
-			ClearVector3d(z);
-			x = x / (float)Math::GetLength(x);
-			y = y / (float)Math::GetLength(y);
-			z = z / (float)Math::GetLength(z);
+			ZeroVector(x);
+			ZeroVector(y);
+			ZeroVector(z);
+			x = x / (double)GetLength(x);
+			y = y / (double)GetLength(y);
+			z = z / (double)GetLength(z);
 		
 			glm::dmat4  rotationMatrix;
 		
