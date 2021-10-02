@@ -1654,7 +1654,7 @@ namespace PGL {
 		}
 
 
-		inline glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d &t, const Vector3d &n)
+		static glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d &t, const Vector3d &n)
 		{
 			double angle = GetAngleBetween(o, t);
 	
@@ -1687,7 +1687,7 @@ namespace PGL {
 			}
 		}
 	
-		inline void AAA(const Vector3d& v,Vector3d &n)
+		static void AAA(const Vector3d& v,Vector3d &n)
 		{
 			auto a = v[0];
 			auto b = v[1];
@@ -1751,7 +1751,7 @@ namespace PGL {
 		
 		}
 
-		inline glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d &t)
+		static glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d &t)
 		{
 			Vector3d n = GetCrossproduct(o, t);
 			double angle = GetAngleBetween(o, t);
