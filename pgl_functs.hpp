@@ -1658,13 +1658,76 @@ namespace PGL {
 			}
 		}
 	
-	
+		inline void AAA(const Vector3d& v,Vector3d &n)
+		{
+			auto a = v[0];
+			auto b = v[1];
+			auto c = v[2];
+			bool bx = IsAlmostZero(a);
+			bool by = IsAlmostZero(b);
+			bool bz = IsAlmostZero(c);
+		
+			if (bx&&by&&bz)
+			{
+				std::cerr << "if (bx&&by&&bz)" << std::endl;
+				system("pause");
+			}
+		
+			if (bx&&by&&!bz)
+			{
+				n[0] = 1.0;
+				n[1] = 1.0;
+				n[2] = 0.0;
+			}
+			if (bx&&!by&&bz)
+			{
+				n[0] = 1.0;
+				n[1] = 0.0;
+				n[2] = 1.0;
+			}
+		
+			if (bx&&!by&&!bz)
+			{
+				n[0] = 1.0;
+				n[1] = 1.0;
+				n[2] = -b/c;
+			}
+		
+			if (!bx&&by&&bz)
+			{
+				n[0] = 0.0;
+				n[1] = 1.0;
+				n[2] = 1.0;
+			}
+		
+			if (!bx&&by&&!bz)
+			{
+				n[0] = 1.0;
+				n[1] = 1.0;
+				n[2] = -a / c;
+			}
+			if (!bx&&!by&&bz)
+			{
+				n[0] = 1.0;
+				n[1] = -a/b;
+				n[2] = 1.0;
+			}
+		
+			if (!bx&&!by&&!bz)
+			{
+				n[0] = 1.0;
+				n[1] = 1.0;
+				n[2] = -(a+b) / c;
+			}
+		
+		}
+
 		inline glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d &t)
 		{
 			Vector3d n = GetCrossproduct(o, t);
 			double angle = GetAngleBetween(o, t);
 	
-			if (IsAlmostZero(angle - MM_PI))
+			if (IsAlmostZero(angle - Math_PI))
 			{
 				AAA(o,n);
 			}
