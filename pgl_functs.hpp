@@ -582,7 +582,16 @@ namespace PGL {
 			iss >> num;
 			return num;
 		}
-
+		
+		template <class Type>
+		Type StringToNum(const string& str)
+		{
+			istringstream iss(str);
+			Type num;
+			iss >> num;
+			return num;
+		}
+	
 
 		static vector<string> SplitStr(string str, char delimiter)
 		{
