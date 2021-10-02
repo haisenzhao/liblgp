@@ -95,8 +95,6 @@ namespace PGL {
 	class Functs
 	{
 	public:
-
-
 	
 #pragma region StatisticsCombinationSet
 
