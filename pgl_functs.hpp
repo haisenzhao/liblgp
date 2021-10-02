@@ -575,7 +575,7 @@ namespace PGL {
 			return str;
 		}
 
-		double StringToDouble(const string& str)
+		double StringToDouble(string str)
 		{
 			istringstream iss(str);
 			double num;
