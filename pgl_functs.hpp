@@ -97,6 +97,7 @@ namespace PGL {
 	public:
 
 
+	
 #pragma region StatisticsCombinationSet
 
 		template <class Type>
@@ -693,7 +694,12 @@ namespace PGL {
 				return Math_PI;
 			return glm::acos(d);
 		}
-
+		
+		static double RadiantoAngle(double r)
+		{
+			return r / MM_PI*180.0;
+		}
+		
 		static double Radian2Angle(double radian)
 		{
 			return radian / Math_PI * 180.0;
