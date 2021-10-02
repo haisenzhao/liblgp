@@ -2355,6 +2355,13 @@ namespace PGL {
 			std::string cmd = "python " + Functs::EXP(py_path) + " " + paras;
 			system(cmd.c_str());
 		}
+		
+		static std::string MyGetUserName()
+		{
+			return "nodebug";
+		}
+
+
 #pragma endregion
 
 		static void ColorMapping(double isolevel, double& output_c_0, double& output_c_1, double& output_c_2)
