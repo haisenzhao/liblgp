@@ -12,19 +12,20 @@
 #include <sstream>
 #include <iostream>
 #include <math.h>
-#include <glm/glm.hpp>
 #include <random>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/norm.hpp>
-#include <glm/gtx/transform.hpp>
 #include <fstream>
 #include <io.h>
 #include <direct.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <windows.h>
+#include <tchar.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/norm.hpp>
+#include <glm/gtx/transform.hpp>
 
 template <typename datum>
 using Vector1 = std::vector<datum>;
@@ -2272,6 +2273,20 @@ namespace PGL {
 			FSC(input, target, output);
 			return output;
 		}
+
+		static HMODULE LoadHMODULE(const string& dll_path)
+		{
+			HMODULE hModule = LoadLibrary(_T(dll_path.c_str()));
+			if (!hModule) 
+			{
+				DWORD dw = GetLastError(); // returns 0xc1 (193)
+				MAssert("LoadLibrary failed with error code " + std::to_string(dw));
+			}
+			else
+				std::cerr << "LoadLibrary success\n";
+
+			return hModule;
+		};
 
 		static double RandomD(double min_d = 0.0, double max_d = 1.0)
 		{
