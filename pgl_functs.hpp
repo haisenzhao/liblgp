@@ -2663,6 +2663,71 @@ namespace PGL {
 			output_c_1 = v[1];
 			output_c_2 = v[2];
 		}
+		
+		
+		static bool VectorContain(std::vector<int> vecs, int element)
+		{
+			for (int i = 0; i < vecs.size(); i++)
+			{
+				if (vecs[i] == element)
+					return true;
+			}
+	
+			return false;
+		}
+	
+		static int VectorContainReturnIndex(std::vector<int> vecs, int element)
+		{
+			for (int i = 0; i < vecs.size(); i++)
+			{
+				if (vecs[i] == element)
+					return i;
+			}
+	
+			return -1;
+		}
+	
+		static bool VectorContainForSpecialCase(std::vector<std::vector<int>> vecs, std::vector<int> element)
+		{
+			for (int i = 0; i < vecs.size(); i++)
+			{
+				if (vecs[i][0] == element[0] && vecs[i][1] == element[1])
+					return true;
+			}
+	
+			return false;
+		}
+		static bool VectorContainForSpecialCase1(std::vector<std::vector<int>> vecs, std::vector<int> element)
+		{
+			for (int i = 0; i < vecs.size(); i++)
+			{
+				if (vecs[i][0] == element[0] && vecs[i][1] == element[1]) return true;
+				if (vecs[i][0] == element[1] && vecs[i][1] == element[0]) return true;
+			}
+	
+			return false;
+		}
+	
+		static int VectorContainForSpecialCase2(std::vector<std::vector<int>> vecs,int element_0, int element_1)
+		{
+			for (int i = 0; i < vecs.size(); i++)
+			{
+				if (vecs[i][0] == element_0 && vecs[i][1] == element_1) return i;
+				if (vecs[i][0] == element_1 && vecs[i][1] == element_0) return i;
+			}
+			return -1;
+		}
+	
+		static int VectorContainForSpecialCase3(std::vector<std::vector<int>> vecs, int element_0, int element_1)
+		{
+			for (int i = 0; i < vecs.size(); i++)
+			{
+				if (vecs[i][0] == element_0 && vecs[i][1] == element_1) return i;
+			}
+			return -1;
+		}
+
+
 	};
 
 
