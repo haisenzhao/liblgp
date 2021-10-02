@@ -1988,6 +1988,87 @@ namespace PGL {
 
 #pragma region IOFunctions
 
+
+		static bool LoadVectors(std::string path, Vector3d3 &vec_3)
+		{
+			//zigzag_final_path
+			int nb_0,nb_1,nb_2;
+			std::ifstream file(path, std::ios::in);
+		
+			if (!file) return false;
+			
+			file >> nb_0;
+			for (int i = 0; i < nb_0; i++)
+			{
+				file >> nb_1;
+				Vector3d2 vec_2;
+				for (int j = 0; j < nb_1; j++)
+				{
+					file >> nb_2;
+					Vector3d1 vec_1(nb_2,Vector3d(0.0,0.0,0.0));
+					for (int k = 0; k < nb_2; k++)
+						file >> vec_1[k][0] >> vec_1[k][1] >> vec_1[k][2];
+					vec_2.emplace_back(vec_1);
+				}
+				vec_3.emplace_back(vec_2);
+			}
+			file.clear();
+			file.close();
+		
+			return true;
+		}
+		
+		
+		static bool LoadVectors(std::string path, Vector3d1 &vec_3)
+		{
+			//zigzag_final_path
+			std::ifstream file(path, std::ios::in);
+		
+			if (!file) return false;
+		
+			int nb;
+			file >> nb;
+			for (int i = 0; i < nb; i++)
+			{
+				vec_3.emplace_back(Vector3d());
+				file >> vec_3.back()[0] >> vec_3.back()[1] >> vec_3.back()[2];
+			}
+			file.clear();
+			file.close();
+		
+			return true;
+		}
+
+		static void OutputVectors(std::string out_path, const Vector3d3 &vecs)
+		{
+			std::ofstream file(out_path);
+			file << vecs.size() << std::endl;
+		
+			for (int i = 0; i < vecs.size(); i++){
+				file << vecs[i].size() << std::endl;
+				for (int j = 0; j < vecs[i].size(); j++){
+					file << vecs[i][j].size() << std::endl;
+					for (int k = 0; k < vecs[i][j].size(); k++)
+						file<< vecs[i][j][k][0] << " " << vecs[i][j][k][1] << " " << vecs[i][j][k][2] << " ";
+					file << "" << std::endl;
+				}
+			}
+		
+			file.clear();
+			file.close();
+		}
+		
+		static void OutputVectors(std::string out_path, const Vector3d1 &vecs)
+		{
+			std::ofstream file(out_path);
+			file << vecs.size() << std::endl;
+			for (int i = 0; i < vecs.size(); i++)
+				file << vecs[i][0] << " " << vecs[i][1] << " " << vecs[i][2] <<std::endl;
+			file.clear();
+			file.close();
+		}
+
+
 		static HMODULE LoadHMODULE(const string& dll_path)
 		{
 			HMODULE hModule = LoadLibrary(_T(dll_path.c_str()));
