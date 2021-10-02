@@ -1460,6 +1460,35 @@ namespace PGL {
 		static bool IsAlmostZero_Double(double value, double EPSILON) {
 			return (value < EPSILON) && (value > -EPSILON);
 		}
+		
+		
+		/// Returns true if two given floating point numbers are epsilon-equal.
+		/// Method automatically adjust the epsilon to the absolute size of given numbers.
+		static bool AreAlmostEqual(double value1, double value2) 
+		{
+			// in case they are Infinities (then epsilon check does not work)
+			if (value1 == value2) {
+				return true;
+			}
+			// computes (|value1-value2| / (|value1| + |value2| + 10.0)) < DOUBLE_EPSILON
+			double eps = (glm::abs(value1) + glm::abs(value2) + 10.0) * DOUBLE_EPSILON;
+			double delta = value1 - value2;
+			return (-eps < delta) && (eps > delta);
+		
+		}
+		
+		/// Returns true if two given floating point numbers are epsilon-equal.
+		/// Method automatically adjust the epsilon to the absolute size of given numbers.
+		static bool AreAlmostEqual(float value1, float value2) {
+			// in case they are Infinities (then epsilon check does not work)
+			if (value1 == value2) {
+				return true;
+			}
+			// computes (|value1-value2| / (|value1| + |value2| + 10.0)) < SINGLE_EPSILON
+			double eps = (glm::abs(value1) + glm::abs(value2) + 10.0) * SINGLE_EPSILON;
+			double delta = value1 - value2;
+			return (-eps < delta) && (eps > delta);
+		}
 
 		static void ZeroVector(Vector3d& v)
 		{
