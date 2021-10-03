@@ -354,7 +354,14 @@ namespace PGL {
 
 #pragma endregion
 
-#pragma region DataStructureTransformation
+
+
+#pragma region StringDataStructure
+
+		static bool StringContain(const string str, const string sub)
+		{
+			return str.find(sub) != std::string::npos;
+		}
 
 		template <class Type>
 		static std::string IntString(Type i)
