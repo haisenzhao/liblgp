@@ -2707,7 +2707,7 @@ namespace PGL {
 		static std::string WinGetUserName()
 		{
 			char* user = getenv("username");
-			return "string(user)";
+			return std::string(user);
 		}
 
 		static std::string WinGetCurDirectory()
