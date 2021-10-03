@@ -78,6 +78,10 @@ typedef Vector1<std::pair<int, int>> VectorPI1;
 typedef Vector2<std::pair<int, int>> VectorPI2;
 typedef Vector3<std::pair<int, int>> VectorPI3;
 
+typedef Vector1<std::pair<bool, bool>> VectorPB1;
+typedef Vector2<std::pair<bool, bool>> VectorPB2;
+typedef Vector3<std::pair<bool, bool>> VectorPB3;
+
 typedef std::tuple<int, int, int> TI3;
 typedef Vector1<std::tuple<int, int, int>> VectorTI3;
 
