@@ -2451,6 +2451,7 @@ namespace PGL {
 		static std::string EXP(const std::string py_path)
 		{
 			std::string path = std::string(_pgmptr).substr(0, std::string(_pgmptr).find_last_of('\\')) + py_path;
+			//std::string path = std::string(_pgmptr).substr(0, std::string(_pgmptr).find_last_of('\\')) + py_path;
 			if (!Functs::DetectExisting(path))
 				Functs::MAssert("std::string EXP(const std::string py_path="")");
 			return path;
