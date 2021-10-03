@@ -2704,11 +2704,16 @@ namespace PGL {
 			system(cmd.c_str());
 		}
 		
-		static std::string MyGetUserName()
+		static std::string GetUserName()
 		{
 			return "nodebug";
 		}
 
+		static std::string GetCurDirectory()
+		{
+			char tmp[256];
+			getcwd(tmp, 256);
+			return std::string(tmp);
 
 #pragma endregion
 
