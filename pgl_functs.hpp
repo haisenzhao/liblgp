@@ -1608,6 +1608,15 @@ namespace PGL {
 			return -1;
 		}
 
+		template <class Type>
+		static std::vector <Type> VectorAdd(const std::vector <Type>& vecs, const Type& element)
+		{
+			std::vector <Type> result = vecs;
+			for (auto& r : result)
+				r += element;
+			return result;
+		}
+
 		static bool VectorContain(std::vector<int> vecs, int element)
 		{
 			for (int i = 0; i < vecs.size(); i++)
