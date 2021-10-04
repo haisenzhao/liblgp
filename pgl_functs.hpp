@@ -20,6 +20,9 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <tchar.h>
+#include <locale>
+#include <codecvt>
+#include <filesystem>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
@@ -2493,6 +2496,30 @@ namespace PGL {
 				Functs::MAssert("std::string EXP(const std::string py_path="")");
 			return path;
 		}
+
+		static VectorStr1 GetFilesInDirectory(std::string path)
+		{
+			vector<string> names;
+			string search_path = path + "/*.*";
+			WIN32_FIND_DATA fd;
+			HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd);
+			if (hFind != INVALID_HANDLE_VALUE) {
+				do {
+					// read all (real) files in current folder
+					// , delete '!' read other 2 default folder . and ..
+					if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+						names.push_back(fd.cFileName);
+					}
+				} while (::FindNextFile(hFind, &fd));
+				::FindClose(hFind);
+			}
+			return names;
+		}
+
+
+
+
+
 #pragma endregion
 
 #pragma region Graph
