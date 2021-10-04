@@ -1392,6 +1392,56 @@ namespace PGL {
 			return vecs_1;
 		};
 
+
+		static void GetUnitCube(Vector3d1& cube_vecs,
+			Vector1i1& cube_face_id_0, Vector1i1& cube_face_id_1, Vector1i1& cube_face_id_2,
+			const double& scale = 1.0)
+		{
+			cube_vecs.clear();
+			cube_face_id_0.clear();
+			cube_face_id_1.clear();
+			cube_face_id_2.clear();
+
+			cube_vecs.push_back(Vector3d(0.5, 0.5, 0.5));
+			cube_vecs.push_back(Vector3d(-0.5, 0.5, 0.5));
+			cube_vecs.push_back(Vector3d(-0.5, 0.5, -0.5));
+			cube_vecs.push_back(Vector3d(0.5, 0.5, -0.5));
+
+			cube_vecs.push_back(Vector3d(0.5, -0.5, 0.5));
+			cube_vecs.push_back(Vector3d(-0.5, -0.5, 0.5));
+			cube_vecs.push_back(Vector3d(-0.5, -0.5, -0.5));
+			cube_vecs.push_back(Vector3d(0.5, -0.5, -0.5));
+
+			auto sm = Functs::ScaleMatrix(Vector3d(scale, scale, scale));
+			cube_vecs = Functs::PosApplyM(cube_vecs, sm);
+
+			int face_index_0[4] = { 0, 1, 2, 3 };
+			int face_index_1[4] = { 5, 1, 0, 4 };
+			int face_index_2[4] = { 4, 0, 3, 7 };
+			int face_index_3[4] = { 5, 4, 7, 6 };
+			int face_index_4[4] = { 7, 3, 2, 6 };
+			int face_index_5[4] = { 6, 2, 1, 5 };
+
+			Vector1i2 quad_faces;
+			quad_faces.push_back(Vector1i1(face_index_0, face_index_0 + 4));
+			quad_faces.push_back(Vector1i1(face_index_1, face_index_1 + 4));
+			quad_faces.push_back(Vector1i1(face_index_2, face_index_2 + 4));
+			quad_faces.push_back(Vector1i1(face_index_3, face_index_3 + 4));
+			quad_faces.push_back(Vector1i1(face_index_4, face_index_4 + 4));
+			quad_faces.push_back(Vector1i1(face_index_5, face_index_5 + 4));
+
+			for (auto qf : quad_faces)
+			{
+				cube_face_id_0.push_back(qf[2]);
+				cube_face_id_1.push_back(qf[1]);
+				cube_face_id_2.push_back(qf[0]);
+				cube_face_id_0.push_back(qf[0]);
+				cube_face_id_1.push_back(qf[3]);
+				cube_face_id_2.push_back(qf[2]);
+			}
+		};
+
+
 		static Vector3d1 EmumerateRotations()
 		{
 			Vector3d1 rotations;
