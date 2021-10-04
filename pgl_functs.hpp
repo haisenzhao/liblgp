@@ -2699,14 +2699,13 @@ namespace PGL {
 		//tn: total number of iterations
 		//cn: current iteration
 		//fn: output frequency number
-		static void OutputIterInfo(const int tn, const int cn, const int fn)
+		static void OutputIterInfo(const string title, const int tn, const int cn, const int fn)
 		{
 			if (cn % (tn / fn) == 0)
 			{
+				if (cn == 0) std::cerr << title << ": ";
 				std::cerr << Functs::DoubleString((double)cn / (double)tn, 3) << "% ";
-
-				if (cn + tn / fn >= tn)
-					std::cerr << std::endl;
+				if (cn + tn / fn >= tn) std::cerr << std::endl;
 			}
 		}
 
