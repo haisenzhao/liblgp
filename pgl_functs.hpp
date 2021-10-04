@@ -2821,6 +2821,18 @@ namespace PGL {
 			return std::string(tmp);
 		}
 
+		static bool WinCopy(const std::string& source_file, const std::string target_folder)
+		{
+			if (!Functs::DetectExisting(source_file)|| !Functs::DetectExisting(target_folder))
+			{
+				MAssert("File does not exist: " + source_file);
+				return false;
+			}
+
+			std::string str = "copy " + source_file + " " + target_folder;
+			system(str.c_str());
+			return true;
+		}
 
 #pragma endregion
 
