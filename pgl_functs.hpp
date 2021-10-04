@@ -1011,6 +1011,37 @@ namespace PGL {
 
 		}
 
+		//random sample a set of directions on the Gaussian Sphere
+		static Vector3d1 GetRandomDirections(const int& dns, const int dis_iters =100)
+		{
+			double gaussion_sphere_radius = 1.0;
+			double idea_distance = 4 * gaussion_sphere_radius / sqrt(dns);
+
+			Vector3d1 directions;
+			for (int i = 0; i < dns; i++)
+			{
+				OutputIterInfo("Random Directions", dns, i, 10);
+
+				for (int j = 0; j < dis_iters; j++)
+				{
+					double alpha_angle = rand() / double(RAND_MAX) * 2.0 * PGL::Math_PI;
+					double alpha_beta = rand() / double(RAND_MAX) * 2.0 * PGL::Math_PI;
+					auto direction_0 = PGL::Functs::RotationAxis(Vector3d(gaussion_sphere_radius, 0.0, 0.0), alpha_angle, Vector3d(0.0, 1.0, 0.0));
+					auto direction_axis = PGL::Functs::GetCrossproduct(direction_0, Vector3d(0.0, 1.0, 0.0));
+					auto direction_1 = PGL::Functs::RotationAxis(direction_0, alpha_beta, direction_axis);
+
+					auto dis = Functs::GetDistance(direction_1, directions);
+					if (dis > idea_distance)
+					{
+						directions.push_back(direction_1);
+						break;
+					}
+				}
+
+			}
+			return directions;
+		}
+
 		static void Connecting_Segments(Vector3d2& segments, Vector3d2& lines)
 		{
 			//save connecting relations
