@@ -419,7 +419,7 @@ namespace PGL {
 		}
 
 		template <class Type>
-		static std::string Vector3dString(const Type& v, const string insert_str="", int p = 3)
+		static std::string VectorString(const Type& v, const string insert_str="", int p = 3)
 		{
 			std::string str;
 			for (int i = 0; i < v.length(); i++)
