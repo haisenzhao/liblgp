@@ -355,7 +355,6 @@ namespace PGL {
 #pragma endregion
 
 
-
 #pragma region StringDataStructure
 
 		static bool StringContain(const string str, const string sub)
@@ -2695,8 +2694,19 @@ namespace PGL {
 
 #pragma endregion
 
-
 #pragma region DevelopmentRelated
+
+		//tn: total number of iterations
+		//cn: current iteration
+		//fn: output frequency number
+		static void OutputIterInfo(const int tn, const int cn, const int fn)
+		{
+			if (cn % (tn / fn) == 0)
+				std::cerr << Functs::DoubleString((double)cn / (double)tn, 3) << "% ";
+
+			if (cn + tn / fn >= tn)
+				std::cerr << std::endl;
+		}
 
 		static void MAssert(std::string& str)
 		{
