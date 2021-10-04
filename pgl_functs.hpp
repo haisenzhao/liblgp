@@ -1552,6 +1552,7 @@ namespace PGL {
 			return maxd;
 		}
 
+
 		template<class Type>
 		static bool VectorInsertNoDuplicate(std::vector<Type>& vecs, const Type& element)
 		{
