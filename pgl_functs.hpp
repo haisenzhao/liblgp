@@ -1544,6 +1544,15 @@ namespace PGL {
 		}
 
 		template<class Type>
+		static double GetMax(Type vec)
+		{
+			double maxd = vec[0];
+			for (int i = 0; i < vec.length(); i++)
+				maxd = max(maxd,vec[i]);
+			return maxd;
+		}
+
+		template<class Type>
 		static bool VectorInsertNoDuplicate(std::vector<Type>& vecs, const Type& element)
 		{
 			if (CheckContain(vecs, element))
