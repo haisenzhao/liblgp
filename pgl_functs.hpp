@@ -1015,7 +1015,7 @@ namespace PGL {
 		static Vector3d1 GetRandomDirections(const int& dns, const int dis_iters =100)
 		{
 			double gaussion_sphere_radius = 1.0;
-			double idea_distance = 4 * gaussion_sphere_radius / sqrt(dns);
+			double idea_distance = 2 * gaussion_sphere_radius / sqrt(dns);
 
 			Vector3d1 directions;
 			for (int i = 0; i < dns; i++)
