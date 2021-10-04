@@ -2881,6 +2881,12 @@ namespace PGL {
 
 	};
 
+		//To debug a release build
+		//Open the Property Pages dialog box for the project.
+		//Click the C / C++ node. Set Debug Information Format to C7 compatible(/ Z7) or Program Database(/ Zi).
+		//Expand Linker and click the General node.Set Enable Incremental Linking to No(/ INCREMENTAL:NO).
+		//Select the Debugging node.Set Generate Debug Info to Yes(/ DEBUG).
+		//Select the Optimization node.Set References to / OPT:REF and Enable COMDAT Folding to / OPT : ICF.
 
 }
 #endif 
