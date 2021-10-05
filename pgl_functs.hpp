@@ -32,6 +32,9 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/random.hpp>
 
+#include <Eigen/Core>
+#include <Eigen/Dense>
+
 
 //glm modules
 //http://glm.g-truc.net/0.9.8/api/modules.html
@@ -722,6 +725,19 @@ namespace PGL {
 			vec.erase(unique(vec.begin(), vec.end()), vec.end());
 			return vec;
 		}
+
+		static Vector3d EigenVector(const Eigen::Vector3d& vec)
+		{
+			return Vector3d(vec[0],vec[1],vec[2]);
+		};
+
+		static Vector3d1 EigenVector(const std::vector<Eigen::Vector3d>& vecs)
+		{
+			Vector3d1 vs;
+			for (auto& vec : vecs)
+				vs.push_back(EigenVector(vec));
+			return vs;
+		};
 
 #pragma endregion
 
