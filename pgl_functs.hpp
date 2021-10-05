@@ -1062,17 +1062,42 @@ namespace PGL {
 
 		//https://medium.com/@all2one/generating-uniformly-distributed-points-on-sphere-1f7125978c4c
 
-		//method: NormalDeviate; TrigDeviate; CoordinateApproach;MinimalDistance;
+		//method: NormalDeviate; TrigDeviate; CoordinateApproach;MinimalDistance;RegularDistribution;
 		static Vector3d1 GetRandomDirections(const int& count, const string method)
 		{
 			if (method == "NormalDeviate") return GetRandomDirections_Normal_Deviate(count);
 			if (method == "TrigDeviate") return GetRandomDirections_Trig_method(count);
 			if (method == "CoordinateApproach") return GetRandomDirections_Coordinate_Approach(count);
 			if (method == "MinimalDistance") return GetRandomDirections_Minimal_Distance(count);
+			if (method == "RegularDistribution") return GetRandomDirections_Regular_Distribution(count);
 
 			MAssert("Input method does not be implemented: "+ method);
 			return Vector3d1();
 		}
+
+		static Vector3d1 GetRandomDirections_Regular_Distribution(const int& count)
+		{
+			Vector3d1 directions;
+			float a = 4.0 * Math_PI * 1.0 / static_cast<float>(count);
+			float d = sqrt(a);
+			size_t num_phi = round(Math_PI / d);
+			float d_phi = Math_PI / static_cast<float>(num_phi);
+			float d_theta = a / d_phi;
+			for (int m = 0; m < num_phi; ++m) {
+				float phi = Math_PI * (m + 0.5) / num_phi;
+				size_t num_theta = round(2 * Math_PI * sin(phi) / d_theta);
+				for (int n = 0; n < num_theta; ++n) {
+					float theta = 2 * Math_PI * n / static_cast<float>(num_theta);
+					Vector3d p;
+					p.x = sin(phi) * cos(theta);
+					p.y = sin(phi) * sin(theta);
+					p.z = cos(phi);
+					directions.push_back(p);
+				}
+			}
+			return directions;
+		}
+
 
 		static Vector3d1 GetRandomDirections_Normal_Deviate(const int& count)
 		{
