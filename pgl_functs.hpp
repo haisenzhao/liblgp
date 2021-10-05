@@ -1062,7 +1062,7 @@ namespace PGL {
 
 		//https://medium.com/@all2one/generating-uniformly-distributed-points-on-sphere-1f7125978c4c
 
-		//method: NormalDeviate
+		//method: NormalDeviate; TrigDeviate; CoordinateApproach;MinimalDistance;
 		static Vector3d1 GetRandomDirections(const int& count, const string method)
 		{
 			if (method == "NormalDeviate") return GetRandomDirections_Normal_Deviate(count);
