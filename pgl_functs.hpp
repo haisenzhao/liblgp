@@ -1134,7 +1134,7 @@ namespace PGL {
 
 		
 		//random sample a set of directions on the Gaussian Sphere
-		static Vector3d1 GetRandomDirections(const int& dns, const int dis_iters =100)
+		static Vector3d1 GetRandomDirections_Minimal_Distance(const int& dns, const int dis_iters =100)
 		{
 			double gaussion_sphere_radius = 1.0;
 			double idea_distance = 2 * gaussion_sphere_radius / sqrt(dns);
