@@ -1171,7 +1171,6 @@ namespace PGL {
 			return directions;
 		}
 
-		
 		//random sample a set of directions on the Gaussian Sphere
 		static Vector3d1 GetRandomDirections_Minimal_Distance(const int& dns, const int dis_iters =100)
 		{

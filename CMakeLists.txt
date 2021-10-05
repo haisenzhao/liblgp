@@ -6,6 +6,10 @@ project (pgl)
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
     pgl_functs.hpp
+    RI.hpp
+    RI.cpp
+    tinyxml2.hpp
+    tinyxml2.cpp
 	main.cpp
 )
 
