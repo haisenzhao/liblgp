@@ -1049,11 +1049,93 @@ namespace PGL {
 
 		}
 
+		static Vector3d GetRandomDirection(const double& direction_length = 1.0)
+		{
+			double alpha_angle = rand() / double(RAND_MAX) * 2.0 * PGL::Math_PI;
+			double alpha_beta = rand() / double(RAND_MAX) * 2.0 * PGL::Math_PI;
+			auto direction_0 = PGL::Functs::RotationAxis(Vector3d(direction_length, 0.0, 0.0), alpha_angle, Vector3d(0.0, 1.0, 0.0));
+			auto direction_axis = PGL::Functs::GetCrossproduct(direction_0, Vector3d(0.0, 1.0, 0.0));
+			return PGL::Functs::RotationAxis(direction_0, alpha_beta, direction_axis);
+		}
+
+		//https://medium.com/@all2one/generating-uniformly-distributed-points-on-sphere-1f7125978c4c
+		static Vector3d1 GetRandomDirections_Normal_Deviate(const int& count)
+		{
+			std::mt19937 rnd;
+			std::normal_distribution<double> dist(0.0, 1.0);
+
+			Vector3d1 directions;
+			for (int i = 0; i < count; ++i)
+			{
+				bool bad_luck = false;
+				do
+				{
+					double x = dist(rnd);
+					double y = dist(rnd);
+					double z = dist(rnd);
+					double r2 = x * x + y * y + z * z;
+					if (r2 == 0)
+						bad_luck = true;
+					else
+					{
+						bad_luck = false;
+						double r = sqrt(r2);
+						directions.push_back(Vector3d(x / r, y / r, z / r));
+					}
+				} while (bad_luck);
+			}
+
+			return directions;
+		}
+
+		static Vector3d1 GetRandomDirections_Trig_method(const int& count)
+		{
+			std::mt19937 rnd;
+			std::uniform_real_distribution<double> dist(0.0, 1.0);
+
+			Vector3d1 directions;
+			for (int i = 0; i < count; ++i)
+			{
+				double z = 2.0 * dist(rnd) - 1.0;
+				double t = 2.0 * Math_PI * dist(rnd);
+				double r = sqrt(1.0 - z * z);
+				directions.push_back(Vector3d(r * cos(t), r * sin(t), z));
+			}
+			return directions;
+		};
+
+		static Vector3d1 GetRandomDirections_Coordinate_Approach(const int& count)
+		{
+			std::mt19937 rnd;
+			std::uniform_real_distribution<double> dist(-1.0, 1.0);
+
+			Vector3d1 directions;
+			for (int i = 0; i < count; ++i)
+			{
+				bool rejected = false;
+				do
+				{
+					double u = dist(rnd);
+					double v = dist(rnd);
+					double s = u * u + v * v;
+					if (s > 1.0)
+						rejected = true;
+					else
+					{
+						rejected = false;
+						double a = 2.0 * sqrt(1.0 - s);
+						directions.push_back(Vector3d(a * u, a * v, 2.0 * s - 1.0));
+					}
+				} while (rejected);
+			}
+			return directions;
+		}
+
+
+		
 		//random sample a set of directions on the Gaussian Sphere
 		static Vector3d1 GetRandomDirections(const int& dns, const int dis_iters =100)
 		{
-
-
 			double gaussion_sphere_radius = 1.0;
 			double idea_distance = 2 * gaussion_sphere_radius / sqrt(dns);
 
@@ -1066,14 +1148,8 @@ namespace PGL {
 				{
 					Vector3d center(0.0, 0.0, 0.0);
 
-					Vector3d random_direction = glm::ballRand(gaussion_sphere_radius);
-
-
-				/*	double alpha_angle = rand() / double(RAND_MAX) * 2.0 * PGL::Math_PI;
-					double alpha_beta = rand() / double(RAND_MAX) * 2.0 * PGL::Math_PI;
-					auto direction_0 = PGL::Functs::RotationAxis(Vector3d(gaussion_sphere_radius, 0.0, 0.0), alpha_angle, Vector3d(0.0, 1.0, 0.0));
-					auto direction_axis = PGL::Functs::GetCrossproduct(direction_0, Vector3d(0.0, 1.0, 0.0));
-					auto direction_1 = PGL::Functs::RotationAxis(direction_0, alpha_beta, direction_axis);*/
+					//glm::ballRand(gaussion_sphere_radius) is slower than my solution
+					Vector3d random_direction = GetRandomDirection(gaussion_sphere_radius);
 
 					auto dis = Functs::GetDistance(random_direction, directions);
 					if (dis > idea_distance)
