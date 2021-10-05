@@ -106,6 +106,22 @@ namespace PGL {
 	static std::random_device MATHRD;  //Will be used to obtain a seed for the random number engine
 	static std::mt19937 MATHGEN(0); //Standard mersenne_twister_engine seeded with rd()
 
+
+	struct TimeClock
+	{
+	public:
+		TimeClock():start(0), end(0), duration(0){ start = clock(); };
+		void StartClock(){ start = clock();};
+		double EndClock()
+		{
+			end = clock();
+			duration = static_cast<double>(clock() - start) / CLOCKS_PER_SEC;
+			return duration;
+		};
+		double start, end, duration;
+	};
+
+
 	class Functs
 	{
 	public:
