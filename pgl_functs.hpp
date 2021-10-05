@@ -23,12 +23,18 @@
 #include <locale>
 #include <codecvt>
 #include <filesystem>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtc/random.hpp>
+
+
+//glm modules
+//http://glm.g-truc.net/0.9.8/api/modules.html
 
 template <typename datum>
 using Vector1 = std::vector<datum>;
@@ -1030,6 +1036,8 @@ namespace PGL {
 		//random sample a set of directions on the Gaussian Sphere
 		static Vector3d1 GetRandomDirections(const int& dns, const int dis_iters =100)
 		{
+
+
 			double gaussion_sphere_radius = 1.0;
 			double idea_distance = 2 * gaussion_sphere_radius / sqrt(dns);
 
@@ -1040,16 +1048,21 @@ namespace PGL {
 
 				for (int j = 0; j < dis_iters; j++)
 				{
-					double alpha_angle = rand() / double(RAND_MAX) * 2.0 * PGL::Math_PI;
+					Vector3d center(0.0, 0.0, 0.0);
+
+					Vector3d random_direction = glm::ballRand(gaussion_sphere_radius);
+
+
+				/*	double alpha_angle = rand() / double(RAND_MAX) * 2.0 * PGL::Math_PI;
 					double alpha_beta = rand() / double(RAND_MAX) * 2.0 * PGL::Math_PI;
 					auto direction_0 = PGL::Functs::RotationAxis(Vector3d(gaussion_sphere_radius, 0.0, 0.0), alpha_angle, Vector3d(0.0, 1.0, 0.0));
 					auto direction_axis = PGL::Functs::GetCrossproduct(direction_0, Vector3d(0.0, 1.0, 0.0));
-					auto direction_1 = PGL::Functs::RotationAxis(direction_0, alpha_beta, direction_axis);
+					auto direction_1 = PGL::Functs::RotationAxis(direction_0, alpha_beta, direction_axis);*/
 
-					auto dis = Functs::GetDistance(direction_1, directions);
+					auto dis = Functs::GetDistance(random_direction, directions);
 					if (dis > idea_distance)
 					{
-						directions.push_back(direction_1);
+						directions.push_back(random_direction);
 						break;
 					}
 				}
