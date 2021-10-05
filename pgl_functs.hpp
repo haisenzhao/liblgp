@@ -1058,7 +1058,22 @@ namespace PGL {
 			return PGL::Functs::RotationAxis(direction_0, alpha_beta, direction_axis);
 		}
 
+
+
 		//https://medium.com/@all2one/generating-uniformly-distributed-points-on-sphere-1f7125978c4c
+
+		//method: NormalDeviate
+		static Vector3d1 GetRandomDirections(const int& count, const string method)
+		{
+			if (method == "NormalDeviate") return GetRandomDirections_Normal_Deviate(count);
+			if (method == "TrigDeviate") return GetRandomDirections_Trig_method(count);
+			if (method == "CoordinateApproach") return GetRandomDirections_Coordinate_Approach(count);
+			if (method == "MinimalDistance") return GetRandomDirections_Minimal_Distance(count);
+
+			MAssert("Input method does not be implemented: "+ method);
+			return Vector3d1();
+		}
+
 		static Vector3d1 GetRandomDirections_Normal_Deviate(const int& count)
 		{
 			std::mt19937 rnd;
@@ -1130,7 +1145,6 @@ namespace PGL {
 			}
 			return directions;
 		}
-
 
 		
 		//random sample a set of directions on the Gaussian Sphere
