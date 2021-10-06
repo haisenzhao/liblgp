@@ -998,7 +998,7 @@ void RI::Out(const string& name,
 		ofile << name << " " << t.size() << " ";
 		for (auto& t_ : t)
 		{
-			std::get<0>(t_);
+			//std::get<0>(t_);
 			ofile << fixed << setprecision(8)
 				<< std::get<0>(t_)[0] << " "
 				<< std::get<0>(t_)[1] << " "

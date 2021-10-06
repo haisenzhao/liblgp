@@ -221,7 +221,7 @@ namespace PGL {
 			{
 				vector<int> p, set;
 				p.insert(p.end(), m, 1);
-				p.insert(p.end(), n - m, 0);
+				p.insert(p.end(), static_cast<int64_t>(n) - m, 0);
 				for (int i = 0; i != p.size(); ++i)
 					set.push_back(i + 1);
 				vector<int> vec;
@@ -273,7 +273,7 @@ namespace PGL {
 
 			std::vector<std::vector<int>> repeatCombs;
 			for (auto& comb : combs) {
-				std::vector<int> nbs(N + K - 1, 1);
+				std::vector<int> nbs((int)(static_cast<int64_t>(N) + static_cast<int64_t>(K) - 1), 1);
 				for (auto& i : comb) nbs[i] = 0;
 				std::vector<int> temp;
 				int sum = 0;
@@ -1041,7 +1041,7 @@ namespace PGL {
 			double length = 0.0;
 
 			for (int i = 0; i < points.size(); i++)
-				length += GetLength(points[i], points[(i + 1) % points.size()]);
+				length += GetLength(points[i], points[(static_cast<int64_t>(i) + 1) % points.size()]);
 
 			return length;
 		}
@@ -1051,7 +1051,7 @@ namespace PGL {
 			double length = 0.0;
 
 			for (int i = 0; i < points.size(); i++)
-				length += GetLength(points[i], points[(i + 1) % points.size()]);
+				length += GetLength(points[i], points[(static_cast<int64_t>(i) + 1) % points.size()]);
 
 			return length;
 		}
@@ -1100,16 +1100,16 @@ namespace PGL {
 		static Vector3d1 GetRandomDirections_Regular_Distribution(const int& count)
 		{
 			Vector3d1 directions;
-			float a = 4.0 * Math_PI * 1.0 / static_cast<float>(count);
-			float d = sqrt(a);
-			size_t num_phi = round(Math_PI / d);
-			float d_phi = Math_PI / static_cast<float>(num_phi);
-			float d_theta = a / d_phi;
+			double a = 4.0 * Math_PI * 1.0 / static_cast<double>(count);
+			double d = sqrt(a);
+			size_t num_phi = (size_t)round(Math_PI / d);
+			double d_phi = Math_PI / static_cast<double>(num_phi);
+			double d_theta = a / d_phi;
 			for (int m = 0; m < num_phi; ++m) {
-				float phi = Math_PI * (m + 0.5) / num_phi;
-				size_t num_theta = round(2 * Math_PI * sin(phi) / d_theta);
+				double phi = Math_PI * (m + 0.5) / num_phi;
+				size_t num_theta = (size_t)round(2 * Math_PI * sin(phi) / d_theta);
 				for (int n = 0; n < num_theta; ++n) {
-					float theta = 2 * Math_PI * n / static_cast<float>(num_theta);
+					double theta = 2 * Math_PI * n / static_cast<double>(num_theta);
 					Vector3d p;
 					p.x = sin(phi) * cos(theta);
 					p.y = sin(phi) * sin(theta);
@@ -1318,22 +1318,22 @@ namespace PGL {
 					bool search = false;
 					for (int i = 0; i < relations.size(); i = i + 4)
 					{
-						if (relations[i] == index && relations[i + 1] == end && !used[relations[i + 2]])
+						if (relations[i] == index && relations[static_cast<int64_t>(i) + 1] == end && !used[relations[static_cast<int64_t>(i) + 2]])
 						{
-							line.push_back(segments[relations[i + 2]][relations[i + 3]]);
-							one.push_back(relations[i + 2]);
-							index = relations[i + 2];
-							end = relations[i + 3];
+							line.push_back(segments[relations[static_cast<int64_t>(i) + 2]][relations[static_cast<int64_t>(i) + 3]]);
+							one.push_back(relations[static_cast<int64_t>(i) + 2]);
+							index = relations[static_cast<int64_t>(i) + 2];
+							end = relations[static_cast<int64_t>(i) + 3];
 							used[index] = true;
 							search = true;
 							break;
 						}
-						if (relations[i + 2] == index && relations[i + 3] == end && !used[relations[i]])
+						if (relations[static_cast<int64_t>(i) + 2] == index && relations[static_cast<int64_t>(i) + 3] == end && !used[relations[i]])
 						{
-							line.push_back(segments[relations[i]][relations[i + 1]]);
+							line.push_back(segments[relations[i]][relations[static_cast<int64_t>(i) + 1]]);
 							one.push_back(relations[i]);
 							index = relations[i];
-							end = relations[i + 1];
+							end = relations[static_cast<int64_t>(i) + 1];
 							used[index] = true;
 							search = true;
 							break;
@@ -1540,7 +1540,7 @@ namespace PGL {
 			{
 				auto pre_v = vecs_0[(i + vecs_0.size() - 1) % vecs_0.size()];
 				auto cur_v = vecs_0[i];
-				auto next_v = vecs_0[(i + 1) % vecs_0.size()];
+				auto next_v = vecs_0[(static_cast<int64_t>(i) + 1) % vecs_0.size()];
 				double angle = GetAngleBetween(cur_v - pre_v, next_v - cur_v);
 				if (angle_match_error > 0.0)
 				{
@@ -1673,7 +1673,7 @@ namespace PGL {
 			for (int i = 0; i < s; i++)
 			{
 				double min_d = i * x;
-				double max_d = (i + 1) * x;
+				double max_d = (static_cast<int64_t>(i) + 1) * x;
 				if (d >= min_d && d <= max_d)
 				{
 					return i;
@@ -1700,7 +1700,7 @@ namespace PGL {
 			for (int i = 0; i < s; i++)
 			{
 				double min_d = i * x;
-				double max_d = (i + 1) * x;
+				double max_d = (static_cast<int64_t>(i) + 1) * x;
 				if (d >= min_d && d <= max_d)
 				{
 					return i;
@@ -1746,8 +1746,8 @@ namespace PGL {
 				return true;
 			}
 			// computes (|value1-value2| / (|value1| + |value2| + 10.0)) < SINGLE_EPSILON
-			double eps = (glm::abs(value1) + glm::abs(value2) + 10.0) * SINGLE_EPSILON;
-			double delta = value1 - value2;
+			float eps = (float)((glm::abs(value1) + glm::abs(value2) + 10.0) * SINGLE_EPSILON);
+			float delta = value1 - value2;
 			return (-eps < delta) && (eps > delta);
 		}
 
@@ -1906,7 +1906,7 @@ namespace PGL {
 		static Vector2d1 Vector3d2d(Vector3d1 vecs_3d)
 		{
 			Vector2d1 vecs_2d;
-			for (auto v : vecs_3d)
+			for (auto& v : vecs_3d)
 				vecs_2d.emplace_back(Vector3d2d(v));
 			return vecs_2d;
 		}
@@ -1948,7 +1948,7 @@ namespace PGL {
 		static Vector3d1 VecApplyM(const Vector3d1& vecs, const glm::dmat4& M)
 		{
 			Vector3d1 ps;
-			for (auto p : vecs)
+			for (auto &p : vecs)
 				ps.emplace_back(VecApplyM(p, M));
 			return ps;
 		}
@@ -1969,7 +1969,7 @@ namespace PGL {
 		static Vector3d1 PosApplyM(const Vector3d1& vecs, const glm::dmat4& M)
 		{
 			Vector3d1 ps;
-			for (auto p : vecs)
+			for (auto &p : vecs)
 				ps.emplace_back(PosApplyM(p, M));
 			return ps;
 		}
@@ -2702,7 +2702,7 @@ namespace PGL {
 				file << "[" << std::endl;
 
 				file << "source " << edges[i] << std::endl;
-				file << "target " << edges[i + 1] << std::endl;
+				file << "target " << edges[static_cast<int64_t>(i) + 1] << std::endl;
 
 				file << "]" << std::endl;
 			}
@@ -2722,7 +2722,7 @@ namespace PGL {
 		{
 			if (_access(path.c_str(), 0) == -1)
 			{
-				_mkdir(path.c_str());
+				if (_mkdir(path.c_str())) {};
 			}
 			else
 			{
@@ -2731,7 +2731,7 @@ namespace PGL {
 				std::string rmdir_cmd = "rmdir /s/q " + path;
 				system(rmdir_cmd.c_str());
 
-				_mkdir(path.c_str());
+				if (_mkdir(path.c_str())) {};
 			}
 		}
 
@@ -2844,9 +2844,10 @@ namespace PGL {
 					break;
 
 				//check valid
-				int node_index_0 = edges[2 * minimal_cost_edge_index];
-				int node_index_1 = edges[2 * minimal_cost_edge_index + 1];
-
+				int edge_index_0 = static_cast<int>(2) * minimal_cost_edge_index;
+				int edge_index_1 = static_cast<int>(2) * minimal_cost_edge_index + 1;
+				int node_index_0 = edges[edge_index_0];
+				int node_index_1 = edges[edge_index_1];
 
 				if (node_index_0 == 16 && node_index_1 == 18)
 				{
@@ -2954,25 +2955,26 @@ namespace PGL {
 			int nb = 0;
 			for (int i = 0; i < tree.size(); i = i + 2)
 			{
-				if (index[tree[i]] == -1 && index[tree[i + 1]] == -1)
+				int ii = i + 1;
+				if (index[tree[i]] == -1 && index[tree[ii]] == -1)
 				{
 					index[tree[i]] = nb;
-					index[tree[i + 1]] = nb;
+					index[tree[ii]] = nb;
 					nb++;
 				}
-				if (index[tree[i]] == -1 && index[tree[i + 1]] != -1)
+				if (index[tree[i]] == -1 && index[tree[ii]] != -1)
 				{
-					index[tree[i]] = index[tree[i + 1]];
+					index[tree[i]] = index[tree[ii]];
 				}
-				if (index[tree[i]] != -1 && index[tree[i + 1]] == -1)
+				if (index[tree[i]] != -1 && index[tree[ii]] == -1)
 				{
-					index[tree[i + 1]] = index[tree[i]];
+					index[tree[ii]] = index[tree[i]];
 				}
 
-				if (index[tree[i]] != -1 && index[tree[i + 1]] != -1)
+				if (index[tree[i]] != -1 && index[tree[ii]] != -1)
 				{
-					int min_index = std::min(index[tree[i]], index[tree[i + 1]]);
-					int max_index = std::max(index[tree[i]], index[tree[i + 1]]);
+					int min_index = std::min(index[tree[i]], index[tree[ii]]);
+					int max_index = std::max(index[tree[i]], index[tree[ii]]);
 					for (auto& index_ : index)
 					{
 						if (index_ == max_index)index_ = min_index;
@@ -3046,7 +3048,7 @@ namespace PGL {
 		static std::string WinGetCurDirectory()
 		{
 			char tmp[256];
-			getcwd(tmp, 256);
+			if (_getcwd(tmp, 256)) {};
 			return std::string(tmp);
 		}
 
