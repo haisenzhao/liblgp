@@ -384,6 +384,16 @@ namespace PGL {
 
 #pragma region StringDataStructure
 
+		static int INe(const int& i)
+		{
+			return i + 1;
+		}
+
+		static int IPr(const int& i)
+		{
+			return i - 1;
+		}
+
 		static bool StringContain(const string str, const string sub)
 		{
 			return str.find(sub) != std::string::npos;
