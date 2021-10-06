@@ -22,7 +22,6 @@
 #include <tchar.h>
 #include <locale>
 #include <codecvt>
-#include <filesystem>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
