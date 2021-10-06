@@ -130,7 +130,7 @@ namespace PGL {
 #pragma region StatisticsCombinationSet
 
 		template <class Type>
-		static Type Variance(std::vector<Type> resultSet)
+		static Type Variance(const std::vector<Type>& resultSet)
 		{
 			Type sum = std::accumulate(std::begin(resultSet), std::end(resultSet), 0.0);
 			Type mean = sum / resultSet.size(); //均值
@@ -142,7 +142,7 @@ namespace PGL {
 		}
 
 		//nb>=1
-		static int Factorial(const int n)
+		static int Factorial(const int& n)
 		{
 			if (n > 1)
 				return n * Factorial(n - 1);
@@ -151,7 +151,7 @@ namespace PGL {
 		};
 
 		//arrangement and combination
-		static void Combination(const Vector1i3& combs, const int nb, const Vector1i2& sequence, const int max_nb, Vector1i3& output)
+		static void Combination(const Vector1i3& combs, const int& nb, const Vector1i2& sequence, const int& max_nb, Vector1i3& output)
 		{
 			if (output.size() > max_nb)return;
 
@@ -393,13 +393,13 @@ namespace PGL {
 			return i - 1;
 		}
 
-		static bool StringContain(const string str, const string sub)
+		static bool StringContain(const string& str, const string& sub)
 		{
 			return str.find(sub) != std::string::npos;
 		}
 
 		template <class Type>
-		static std::string IntString(Type i)
+		static std::string IntString(Type& i)
 		{
 			std::stringstream ss;
 			std::string str;
@@ -548,7 +548,7 @@ namespace PGL {
 			}
 		}
 
-		static std::string DoubleString(double d, int p = 8)
+		static std::string DoubleString(const double& d, int p = 8)
 		{
 			//double d_ = abs(d);
 			//double d0 = (int)d_;
@@ -625,7 +625,7 @@ namespace PGL {
 				return "-" + str;
 		}
 
-		static std::string DoubleString(Vector1d1 ds, int p = 8, bool order = false, const std::string insert_str_0 = "")
+		static std::string DoubleString(const Vector1d1& ds, int p = 8, bool order = false, const std::string insert_str_0 = "")
 		{
 			if (order)std::sort(ds.begin(), ds.end());
 			std::string str;
@@ -634,7 +634,7 @@ namespace PGL {
 			return str;
 		}
 
-		static double StringToDouble(string str)
+		static double StringToDouble(const string& str)
 		{
 			istringstream iss(str);
 			double num;
@@ -652,7 +652,7 @@ namespace PGL {
 		}
 	
 
-		static vector<string> SplitStr(string str, char delimiter)
+		static vector<string> SplitStr(const string& str, const char& delimiter)
 		{
 			vector<string> internal_strs;
 			stringstream ss(str); // Turn the string into a stream.
@@ -662,7 +662,7 @@ namespace PGL {
 			return internal_strs;
 		}
 
-		static vector<string> SplitStr(string str, string delimiter)
+		static vector<string> SplitStr(const string& str, const string& delimiter)
 		{
 			vector<string> internal_strs;
 			std::string s = str;
@@ -676,7 +676,7 @@ namespace PGL {
 			internal_strs.push_back(s);
 			return internal_strs;
 		}
-		static vector<double> SplitD(string str, char delimiter)
+		static vector<double> SplitD(const string& str, const char& delimiter)
 		{
 			vector<double> internal_d;
 			stringstream ss(str); // Turn the string into a stream.
@@ -686,7 +686,7 @@ namespace PGL {
 			return internal_d;
 		};
 
-		static vector<int> SplitI(string str, char delimiter) {
+		static vector<int> SplitI(const string& str, const char& delimiter) {
 			vector<int> internal_d;
 			stringstream ss(str); // Turn the string into a stream.
 			string tok;
@@ -695,7 +695,7 @@ namespace PGL {
 			return internal_d;
 		};
 
-		static Vector1i1 ShuffleVector(int size)
+		static Vector1i1 ShuffleVector(const int& size)
 		{
 			Vector1i1 shuffle_vec;
 			for (int i = 0; i < size; i++)
@@ -704,14 +704,14 @@ namespace PGL {
 			return shuffle_vec;
 		};
 
-		static set<int> ConvertToSet(vector<int> v)
+		static set<int> ConvertToSet(const vector<int>& v)
 		{
 			set<int> s;
 			for (int x : v) s.insert(x);
 			return s;
 		};
 
-		static vector<int> ConvertToVector(set<int> s)
+		static vector<int> ConvertToVector(const set<int>& s)
 		{
 			vector<int> v;
 			for (auto x : s)v.emplace_back(x);
@@ -719,7 +719,7 @@ namespace PGL {
 		}
 
 		template <class T1, class T2>
-		static T2 MapFind(std::map<T1, T2>& mt, T1& t1)
+		static T2 MapFind(const std::map<T1, T2>& mt, const T1& t1)
 		{
 			if (mt.find(t1) == mt.end())
 				MAssert("if (mt.find(t1) == mt.end())");
@@ -727,7 +727,7 @@ namespace PGL {
 		}
 
 		template <class T1, class T2>
-		static bool MapContain(std::map<T1, T2>& mt, T1& t1)
+		static bool MapContain(const std::map<T1, T2>& mt, const T1& t1)
 		{
 			return mt.find(t1) != mt.end();
 		}
@@ -758,12 +758,12 @@ namespace PGL {
 #pragma region BasicGeomFunctions
 
 		template <class Type>
-		static double GetLength(Type v) {
+		static double GetLength(const Type& v) {
 			return glm::length(v);
 		}
 
 		template <class Type>
-		static double GetAngleBetween(Type v1, Type v2) {
+		static double GetAngleBetween(const Type& v1, const Type& v2) {
 			double d = glm::dot(v1, v2) / (glm::length(v1) * glm::length(v2));
 			if (IsAlmostZero(d - 1.0))
 				return 0.0;
@@ -772,22 +772,22 @@ namespace PGL {
 			return glm::acos(d);
 		}
 		
-		static double RadiantoAngle(double r)
+		static double RadiantoAngle(const double& r)
 		{
 			return r / Math_PI*180.0;
 		}
 		
-		static double Radian2Angle(double radian)
+		static double Radian2Angle(const double& radian)
 		{
 			return radian / Math_PI * 180.0;
 		}
 
-		static double Angle2Radian(double angle)
+		static double Angle2Radian(const double& angle)
 		{
 			return angle / 180.0 * Math_PI;
 		}
 
-		static Vector3d SetVectorLength(Vector3d& v, double length)
+		static Vector3d SetVectorLength(Vector3d& v, const double& length)
 		{
 			double l = GetLength(v);
 
@@ -798,7 +798,7 @@ namespace PGL {
 			return v;
 		}
 
-		static Vector2d SetVectorLength(Vector2d& v, double length)
+		static Vector2d SetVectorLength(Vector2d& v, const double& length)
 		{
 			double l = GetLength(v);
 			v[0] = v[0] / l * length;
@@ -807,7 +807,7 @@ namespace PGL {
 		}
 
 		//existing bugs in this function
-		static Vector3d Vector3dBase(Vector3d v)
+		static Vector3d Vector3dBase(const Vector3d& v)
 		{
 			Vector3d n(1.0, 1.0, 1.0);
 			if (!IsAlmostZero(v[0])) {
@@ -953,7 +953,7 @@ namespace PGL {
 			}
 		}
 
-		static double CircumCircleRaidius(Vector2d v0, Vector2d v1, Vector2d v2)
+		static double CircumCircleRaidius(const Vector2d& v0, const Vector2d& v1, const Vector2d& v2)
 		{
 			double a = GetLength(v0 - v1);
 			double b = GetLength(v0 - v2);
@@ -975,17 +975,17 @@ namespace PGL {
 		}
 
 		template <class Type>
-		static double GetLength(const Type v0, const Type v1) {
+		static double GetLength(const Type& v0, const Type& v1) {
 			return GetLength(v0 - v1);
 		}
 
 		template <class Type>
-		static double GetDistance(const Type v0, const Type v1) {
+		static double GetDistance(const Type& v0, const Type& v1) {
 			return GetLength(v0 - v1);
 		}
 
 		template <class Type>
-		static double GetDistance(const Type v, const std::vector<Type>& vs)
+		static double GetDistance(const Type& v, const std::vector<Type>& vs)
 		{
 			double min_d = MAXDOUBLE;
 			for (const auto& iter : vs)
@@ -994,7 +994,7 @@ namespace PGL {
 		}
 
 		template <class Type>
-		static double GetDistance(const Type v, const std::vector<std::vector<Type>>& vs)
+		static double GetDistance(const Type& v, const std::vector<std::vector<Type>>& vs)
 		{
 			double min_d = MAXDOUBLE;
 			for (const auto& iter : vs)
@@ -1028,7 +1028,7 @@ namespace PGL {
 		}
 
 		template <class Type>
-		static int GetNearestPointIndex(const Type v, const std::vector<Type>& vs)
+		static int GetNearestPointIndex(const Type& v, const std::vector<Type>& vs)
 		{
 			int index = -1;
 			double min_d = MAXDOUBLE;
@@ -1064,7 +1064,7 @@ namespace PGL {
 			return length;
 		}
 
-		static Vector3d PlaneProject(Vector3d planar_location, Vector3d planar_direction, Vector3d p)
+		static Vector3d PlaneProject(const Vector3d& planar_location, Vector3d& planar_direction, const Vector3d& p)
 		{
 			if (IsAlmostZero(GetLength(planar_location, p)))
 				return planar_location;
@@ -1093,7 +1093,7 @@ namespace PGL {
 		//https://medium.com/@all2one/generating-uniformly-distributed-points-on-sphere-1f7125978c4c
 
 		//method: NormalDeviate; TrigDeviate; CoordinateApproach;MinimalDistance;RegularDistribution;
-		static Vector3d1 GetRandomDirections(const int& count, const string method)
+		static Vector3d1 GetRandomDirections(const int& count, const string& method)
 		{
 			if (method == "NormalDeviate") return GetRandomDirections_Normal_Deviate(count);
 			if (method == "TrigDeviate") return GetRandomDirections_Trig_method(count);
@@ -1231,7 +1231,7 @@ namespace PGL {
 			return directions;
 		}
 
-		static void Connecting_Segments(Vector3d2& segments, Vector3d2& lines)
+		static void Connecting_Segments(const Vector3d2& segments, Vector3d2& lines)
 		{
 			//save connecting relations
 			std::vector<bool> used(segments.size(), false);
@@ -1355,7 +1355,8 @@ namespace PGL {
 			}
 		}
 
-		static Vector3d IntersectPointPlane2Ray(Vector3d planar_location, Vector3d planar_direction, Vector3d ray_location, Vector3d ray_vector)
+		static Vector3d IntersectPointPlane2Ray(const Vector3d& planar_location, Vector3d& planar_direction, 
+			const Vector3d& ray_location, Vector3d& ray_vector)
 		{
 			Vector3d project_point = PlaneProject(planar_location, planar_direction, ray_location);
 			double distance = GetDistance(ray_location, project_point);
@@ -1383,7 +1384,7 @@ namespace PGL {
 
 		//===============================================================
 		template <class Type>
-		static bool DetectColinear(Type v, Type s, Type e, double angle_match_error, double dis_match_error)
+		static bool DetectColinear(const Type& v, const Type& s, const Type& e, const double& angle_match_error, const double& dis_match_error)
 		{
 			if (DetectCoincident(v, s, dis_match_error) || DetectCoincident(v, e, dis_match_error)) return true;
 			double angle = GetAngleBetween(v - s, e - s);
@@ -1393,32 +1394,34 @@ namespace PGL {
 		}
 
 		template <class Type>
-		static bool DetectVertical(Type direction_0, Type direction_1, double angle_match_error, double dis_match_error)
+		static bool DetectVertical(const Type& direction_0, const Type& direction_1, const double& angle_match_error, const double& dis_match_error)
 		{
 			auto angle = GetAngleBetween(direction_0, direction_1);
 			return IsAlmostZero_Double(angle - Math_PI / 2.0, angle_match_error);
 		};
 
 		template <class Type>
-		static bool DetectVertical(Type seg_0_s, Type seg_0_e, Type seg_1_s, Type seg_1_e, double angle_match_error, double dis_match_error)
+		static bool DetectVertical(const Type& seg_0_s, const Type& seg_0_e, const Type& seg_1_s, const Type& seg_1_e, const double& angle_match_error, const double& dis_match_error)
 		{
 			return DetectVertical(seg_0_e - seg_0_s, seg_0_e - seg_0_s, angle_match_error, dis_match_error);
 		};
 
 		template <class Type>
-		static bool DetectVertical(std::pair<Type, Type> seg_0, std::pair<Type, Type> seg_1, double angle_match_error, double dis_match_error)
+		static bool DetectVertical(const std::pair<Type, Type>& seg_0, const std::pair<Type, Type>& seg_1, 
+			const double& angle_match_error, const double& dis_match_error)
 		{
 			return DetectVertical(seg_0.first, seg_0.second, seg_1.first, seg_1.second, angle_match_error, dis_match_error);
 		};
 
 		template <class Type>
-		static bool DetectCoincident(Type v0, Type v1, double EPSILON = DOUBLE_EPSILON)
+		static bool DetectCoincident(const Type& v0, const Type& v1, const double& EPSILON = DOUBLE_EPSILON)
 		{
 			return IsAlmostZero_Double(GetDistance(v0, v1), EPSILON);
 		}
 
-		static bool DetectCoplanar(Vector3d planar_location_0, Vector3d planar_direction_0, Vector3d planar_location_1, Vector3d planar_direction_1,
-			double angle_match_error, double dis_match_error)
+		static bool DetectCoplanar(const Vector3d& planar_location_0, Vector3d& planar_direction_0,
+			const Vector3d& planar_location_1, const Vector3d& planar_direction_1,
+			const double& angle_match_error, const double& dis_match_error)
 		{
 			auto angle = GetAngleBetween(planar_direction_0, planar_direction_1);
 			if (IsAlmostZero_Double(angle - Math_PI, angle_match_error) || IsAlmostZero_Double(angle, angle_match_error))
@@ -1431,26 +1434,27 @@ namespace PGL {
 		}
 
 		template <class Type>
-		static bool DetectParallel(Type direction_0, Type direction_1, double angle_match_error, double dis_match_error)
+		static bool DetectParallel(const Type& direction_0, const Type& direction_1, const double& angle_match_error, const double& dis_match_error)
 		{
 			auto angle = GetAngleBetween(direction_0, direction_1);
 			return (IsAlmostZero_Double(angle - Math_PI, angle_match_error) || IsAlmostZero_Double(angle, angle_match_error));
 		};
 
 		template <class Type>
-		static bool DetectParallel(std::pair<Type, Type> seg_0, std::pair<Type, Type> seg_1, double angle_match_error, double dis_match_error)
+		static bool DetectParallel(const std::pair<Type, Type>& seg_0, const std::pair<Type, Type>& seg_1, 
+			const double& angle_match_error, const double& dis_match_error)
 		{
 			return DetectParallel(seg_0.second - seg_0.first, seg_1.second - seg_1.first, angle_match_error, dis_match_error);
 		};
 		template <class Type>
-		static bool DetectCoDirection(Type direction_0, Type direction_1, double angle_match_error, double dis_match_error)
+		static bool DetectCoDirection(const Type& direction_0, const Type& direction_1, const double& angle_match_error, const double& dis_match_error)
 		{
 			auto angle = GetAngleBetween(direction_0, direction_1);
 			return (IsAlmostZero_Double(angle, angle_match_error));
 		};
 
 		template <class Type>
-		static bool DetectColinear_Direction(Type location_0, Type direction_0, Type location_1, Type direction_1, double angle_match_error, double dis_match_error)
+		static bool DetectColinear_Direction(const Type& location_0, const Type& direction_0, const Type& location_1, const Type& direction_1, const double& angle_match_error, const double& dis_match_error)
 		{
 			if (DetectParallel(direction_0, direction_1, angle_match_error, dis_match_error))
 			{
@@ -1462,7 +1466,7 @@ namespace PGL {
 				return false;
 		};
 
-		static bool DetectAlign2D(Vector2d s_0, Vector2d e_0, Vector2d s_1, Vector2d e_1, double angle_match_error, double dis_match_error)
+		static bool DetectAlign2D(const Vector2d& s_0, const Vector2d& e_0, const Vector2d& s_1, const Vector2d& e_1, const double& angle_match_error, const double& dis_match_error)
 		{
 			double d0 = GetDistance(s_0, s_1);
 			double d1 = GetDistance(s_0, e_1);
@@ -1475,7 +1479,7 @@ namespace PGL {
 			return false;
 		};
 
-		static bool DetectAlign3D(Vector3d s_0, Vector3d e_0, Vector3d s_1, Vector3d e_1, double angle_match_error, double dis_match_error)
+		static bool DetectAlign3D(const Vector3d& s_0, const Vector3d& e_0, const Vector3d& s_1, const Vector3d& e_1, const double& angle_match_error, const double& dis_match_error)
 		{
 			double d0 = GetDistance(s_0, s_1);
 			double d1 = GetDistance(s_0, e_1);
@@ -1491,13 +1495,13 @@ namespace PGL {
 		//this function has bug ;
 		//Do not use it
 		template <class Type>
-		static bool DetectColinear_Segment(Type s_0, Type e_0, Type s_1, Type e_1, double angle_match_error, double dis_match_error)
+		static bool DetectColinear_Segment(const Type& s_0, const Type& e_0, const Type& s_1, const Type& e_1, const double& angle_match_error, const double& dis_match_error)
 		{
 			return DetectColinear_Direction(s_0, e_0 - s_0, s_1, e_1 - s_1, angle_match_error, dis_match_error);
 		};
 
-		static std::vector<Vector2d> Polygon_Clear(const std::vector<Vector2d> vecs,
-			const double angle_match_error, const double dis_match_error)
+		static std::vector<Vector2d> Polygon_Clear(const std::vector<Vector2d>& vecs,
+			const double& angle_match_error, const double& dis_match_error)
 		{
 			//remove duplicate points
 			std::vector<Vector2d> vecs_0;
@@ -1664,7 +1668,7 @@ namespace PGL {
 
 #pragma region BasicMathFunctions
 
-		static double RandomD(double min_d = 0.0, double max_d = 1.0)
+		static double RandomD(const double& min_d = 0.0, const double& max_d = 1.0)
 		{
 			std::uniform_real_distribution<> dis(min_d, max_d);
 			return dis(MATHGEN);
@@ -1672,7 +1676,7 @@ namespace PGL {
 
 		//select a number among 0,1,2,...,s-1
 		//s should be positive int
-		static int RandomI(int s)
+		static int RandomI(const int& s)
 		{
 			if (s == 1) return 0;
 			double x = 1.0 / s;
@@ -1691,7 +1695,7 @@ namespace PGL {
 			return -1;
 		}
 
-		static double RandomDD(double min_d = 0.0, double max_d = 1.0)
+		static double RandomDD(const double& min_d = 0.0, const double& max_d = 1.0)
 		{
 			std::uniform_real_distribution<> dis(min_d, max_d);
 			return dis(MATHGEN);
@@ -1726,7 +1730,7 @@ namespace PGL {
 			return glm::dot(v1, v2);
 		}
 
-		static bool AreAlmostEqual(double value1, double value2) {
+		static bool AreAlmostEqual(const double& value1, const double& value2) {
 			if (value1 == value2) {
 				return true;
 			}
@@ -1735,20 +1739,20 @@ namespace PGL {
 			return (-eps < delta) && (eps > delta);
 		}
 
-		static bool AreAlmostEqual_Double(double value1, double value2, double EPSILON) {
+		static bool AreAlmostEqual_Double(const double& value1, const double& value2, const double& EPSILON) {
 			return IsAlmostZero_Double(value1 - value2, EPSILON);
 		}
 
-		static bool IsAlmostZero(double value) {
+		static bool IsAlmostZero(const double& value) {
 			return (value < DOUBLE_EPSILON) && (value > -DOUBLE_EPSILON);
 		}
-		static bool IsAlmostZero_Double(double value, double EPSILON) {
+		static bool IsAlmostZero_Double(const double& value, const double& EPSILON) {
 			return (value < EPSILON) && (value > -EPSILON);
 		}
 		
 		/// Returns true if two given floating point numbers are epsilon-equal.
 		/// Method automatically adjust the epsilon to the absolute size of given numbers.
-		static bool AreAlmostEqual(float value1, float value2) {
+		static bool AreAlmostEqual(const float& value1, const float& value2) {
 			// in case they are Infinities (then epsilon check does not work)
 			if (value1 == value2) {
 				return true;
@@ -1767,7 +1771,7 @@ namespace PGL {
 		}
 
 		template<class Type>
-		static double GetMax(Type vec)
+		static double GetMax(const Type& vec)
 		{
 			double maxd = vec[0];
 			for (int i = 0; i < vec.length(); i++)
@@ -1840,7 +1844,7 @@ namespace PGL {
 			return result;
 		}
 
-		static bool VectorContain(std::vector<int> vecs, int element)
+		static bool VectorContain(const std::vector<int>& vecs, const int& element)
 		{
 			for (int i = 0; i < vecs.size(); i++)
 			{
@@ -1851,7 +1855,7 @@ namespace PGL {
 			return false;
 		}
 
-		static int VectorContainReturnIndex(std::vector<int> vecs, int element)
+		static int VectorContainReturnIndex(const std::vector<int>& vecs, const int& element)
 		{
 			for (int i = 0; i < vecs.size(); i++)
 			{
@@ -1862,7 +1866,7 @@ namespace PGL {
 			return -1;
 		}
 
-		static bool VectorContainForSpecialCase(std::vector<std::vector<int>> vecs, std::vector<int> element)
+		static bool VectorContainForSpecialCase(const std::vector<std::vector<int>>& vecs, const std::vector<int>& element)
 		{
 			for (int i = 0; i < vecs.size(); i++)
 			{
@@ -1872,7 +1876,7 @@ namespace PGL {
 
 			return false;
 		}
-		static bool VectorContainForSpecialCase1(std::vector<std::vector<int>> vecs, std::vector<int> element)
+		static bool VectorContainForSpecialCase1(const std::vector<std::vector<int>>& vecs, const std::vector<int>& element)
 		{
 			for (int i = 0; i < vecs.size(); i++)
 			{
@@ -1883,7 +1887,7 @@ namespace PGL {
 			return false;
 		}
 
-		static int VectorContainForSpecialCase2(std::vector<std::vector<int>> vecs, int element_0, int element_1)
+		static int VectorContainForSpecialCase2(const std::vector<std::vector<int>>& vecs, const int& element_0, const int& element_1)
 		{
 			for (int i = 0; i < vecs.size(); i++)
 			{
@@ -1893,7 +1897,7 @@ namespace PGL {
 			return -1;
 		}
 
-		static int VectorContainForSpecialCase3(std::vector<std::vector<int>> vecs, int element_0, int element_1)
+		static int VectorContainForSpecialCase3(const std::vector<std::vector<int>>& vecs, const int& element_0, const int& element_1)
 		{
 			for (int i = 0; i < vecs.size(); i++)
 			{
@@ -1906,12 +1910,12 @@ namespace PGL {
 
 #pragma region Transformation
 
-		static Vector2d Vector3d2d(Vector3d v)
+		static Vector2d Vector3d2d(const Vector3d& v)
 		{
 			return Vector2d(v[0], v[1]);
 		}
 
-		static Vector2d1 Vector3d2d(Vector3d1 vecs_3d)
+		static Vector2d1 Vector3d2d(const Vector3d1& vecs_3d)
 		{
 			Vector2d1 vecs_2d;
 			for (auto& v : vecs_3d)
@@ -1919,7 +1923,7 @@ namespace PGL {
 			return vecs_2d;
 		}
 
-		static Vector2d2 Vector3d2d(Vector3d2 vecs_3d)
+		static Vector2d2 Vector3d2d(const Vector3d2& vecs_3d)
 		{
 			Vector2d2 vecs_2d;
 			for (auto v : vecs_3d)
@@ -1927,12 +1931,12 @@ namespace PGL {
 			return vecs_2d;
 		}
 
-		static Vector3d Vector2d3d(Vector2d v, double z = 0.0)
+		static Vector3d Vector2d3d(const Vector2d& v, const double& z = 0.0)
 		{
 			return Vector3d(v[0], v[1], z);
 		}
 
-		static Vector3d1 Vector2d3d(Vector2d1 vecs_2d, double z = 0.0)
+		static Vector3d1 Vector2d3d(const Vector2d1& vecs_2d, double z = 0.0)
 		{
 			Vector3d1 vecs_3d;
 			for (auto v : vecs_2d)
@@ -1940,7 +1944,7 @@ namespace PGL {
 			return vecs_3d;
 		}
 
-		static Vector3d2 Vector2d3d(Vector2d2 vecs_2d, double z = 0.0)
+		static Vector3d2 Vector2d3d(const Vector2d2& vecs_2d, double z = 0.0)
 		{
 			Vector3d2 vecs_3d;
 			for (auto v : vecs_2d)
@@ -2181,7 +2185,7 @@ namespace PGL {
 
 
 
-		static glm::dmat4 RotationMatrix(const Vector3d& n, double angle)
+		static glm::dmat4 RotationMatrix(const Vector3d& n, const double& angle)
 		{
 			//return glm::rotate(angle, n);
 			double u = n[0];
@@ -2220,7 +2224,7 @@ namespace PGL {
 			return rotationMatrix;
 		}
 
-		static Vector3d RotationAxis(Vector3d p, double angle, Vector3d n)
+		static Vector3d RotationAxis(const Vector3d& p, const double& angle, const Vector3d& n)
 		{
 			// auto rtv = glm::rotate(angle, n)* glm::dvec4(p, 1.0);
 			// return Vector3d(rtv[0], rtv[1], rtv[2]);
@@ -2327,47 +2331,47 @@ namespace PGL {
 			return translationMatrix;
 		}
 
-		static Vector2d RotationAxis2d(Vector2d p, double angle, Vector2d center)
+		static Vector2d RotationAxis2d(const Vector2d& p, const double& angle, const Vector2d& center)
 		{
 			Vector3d r = RotationAxis(Vector3d(p[0] - center[0], 0.0, p[1] - center[1]),
 				angle, Vector3d(0.0, 1.0, 0.0)) + Vector3d(center[0], 0.0, center[1]);
 			return Vector2d(r[0], r[2]);
 		}
 
-		static Vector3d RotationAxis(Vector3d p, double angle, Vector3d ray_point, Vector3d ray_vector)
+		static Vector3d RotationAxis(const Vector3d& p, const double& angle, const Vector3d& ray_point, const Vector3d& ray_vector)
 		{
 			return RotationAxis(p - ray_point, angle, ray_vector) + ray_point;
 		}
 
-		static void RotationAxis(Vector3d1& points, double angle, Vector3d ray_point, Vector3d ray_vector)
+		static void RotationAxis(Vector3d1& points, const double& angle, const Vector3d& ray_point, const Vector3d& ray_vector)
 		{
 			for (int i = 0; i < points.size(); i++)
 				points[i] = RotationAxis(points[i], angle, ray_point, ray_vector);
 		}
 
-		static void RotationAxis(Vector3d2& points, double angle, Vector3d ray_point, Vector3d ray_vector)
+		static void RotationAxis(Vector3d2& points, const double& angle, const Vector3d& ray_point, const Vector3d& ray_vector)
 		{
 			for (int i = 0; i < points.size(); i++)
 				RotationAxis(points[i], angle, ray_point, ray_vector);
 		}
-		static void RotationAxis(Vector3d3& pointses, double angle, Vector3d ray_point, Vector3d ray_vector)
+		static void RotationAxis(Vector3d3& pointses, const double& angle, const Vector3d& ray_point, const Vector3d& ray_vector)
 		{
 			for (int i = 0; i < pointses.size(); i++)
 				RotationAxis(pointses[i], angle, ray_point, ray_vector);
 		}
 
-		static Vector3d Translate(Vector3d p, Vector3d v)
+		static Vector3d Translate(const Vector3d& p, const Vector3d& v)
 		{
 			return p + v;
 		}
 
-		static void Translate(Vector3d1& points, Vector3d v)
+		static void Translate(Vector3d1& points, const Vector3d& v)
 		{
 			for (int i = 0; i < points.size(); i++)
 				points[i] = Translate(points[i], v);
 		}
 
-		static void Translate(Vector3d2& points, Vector3d v)
+		static void Translate(Vector3d2& points, const Vector3d& v)
 		{
 			for (int i = 0; i < points.size(); i++)
 				Translate(points[i], v);
@@ -2377,14 +2381,14 @@ namespace PGL {
 
 #pragma region IOFunctions
 
-		static bool LoadExisting(std::string path)
+		static bool LoadExisting(const std::string& path)
 		{	
 			std::ifstream file(path, std::ios::in);
 			if (!file) return false;
 			return true;
 		}
 	
-		static bool LoadVectors(std::string path, Vector3d3 &vec_3)
+		static bool LoadVectors(const std::string& path, Vector3d3 &vec_3)
 		{
 			//zigzag_final_path
 			int nb_0,nb_1,nb_2;
@@ -2414,7 +2418,7 @@ namespace PGL {
 		}
 		
 		
-		static bool LoadVectors(std::string path, Vector3d1 &vec_3)
+		static bool LoadVectors(const std::string& path, Vector3d1 &vec_3)
 		{
 			//zigzag_final_path
 			std::ifstream file(path, std::ios::in);
@@ -2434,7 +2438,7 @@ namespace PGL {
 			return true;
 		}
 
-		static void OutputVectors(std::string out_path, const Vector3d3 &vecs)
+		static void OutputVectors(const std::string& out_path, const Vector3d3 &vecs)
 		{
 			std::ofstream file(out_path);
 			file << vecs.size() << std::endl;
@@ -2453,7 +2457,7 @@ namespace PGL {
 			file.close();
 		}
 		
-		static void OutputVectors(std::string out_path, const Vector3d1 &vecs)
+		static void OutputVectors(const std::string& out_path, const Vector3d1 &vecs)
 		{
 			std::ofstream file(out_path);
 			file << vecs.size() << std::endl;
@@ -2481,7 +2485,7 @@ namespace PGL {
 			return hModule;
 		};
 
-		static void OutputRectangle2d(std::string path, const std::vector<Vector2d>& points)
+		static void OutputRectangle2d(const std::string& path, const std::vector<Vector2d>& points)
 		{
 			std::ofstream file(path);
 
@@ -2504,7 +2508,7 @@ namespace PGL {
 			file.close();
 		}
 
-		static void OutputObj3d(std::string path, const Vector3d1& points)
+		static void OutputObj3d(const std::string& path, const Vector3d1& points)
 		{
 			std::ofstream file(path);
 
@@ -2526,7 +2530,7 @@ namespace PGL {
 			file.close();
 		};
 
-		static void OutputObj3d(std::string path, const Vector3d2& points, int output_index = 1, string str = "")
+		static void OutputObj3d(const std::string& path, const Vector3d2& points, const int output_index = 1, const string str = "")
 		{
 			std::ofstream file(path);
 
@@ -2559,7 +2563,7 @@ namespace PGL {
 			file.close();
 		};
 
-		static void OutputObj3d(std::string path, const Vector3d3& points, int output_index = 1)
+		static void OutputObj3d(const std::string& path, const Vector3d3& points, const int output_index = 1)
 		{
 			std::ofstream file(path);
 
@@ -2598,7 +2602,7 @@ namespace PGL {
 			file.close();
 		};
 
-		static void OutputObj3d(std::string path, const Vector3d3& points, const Vector3d1& colors, int output_index = 1)
+		static void OutputObj3d(const std::string& path, const Vector3d3& points, const Vector3d1& colors, const int& output_index = 1)
 		{
 			std::ofstream file(path);
 
@@ -2639,7 +2643,7 @@ namespace PGL {
 			file.close();
 		};
 
-		static void OutputObj3d(std::string path, const Vector3d3& points, const Vector3d2& colors, int output_index = 1)
+		static void OutputObj3d(const std::string& path, const Vector3d3& points, const Vector3d2& colors, int output_index = 1)
 		{
 			std::ofstream file(path);
 
@@ -2680,8 +2684,8 @@ namespace PGL {
 			file.close();
 		};
 
-		static void Output_tree(const int nodes_nb, const std::vector<int>& edges,
-			const std::string& path, std::vector<string> labels = std::vector<string>())
+		static void Output_tree(const int& nodes_nb, const std::vector<int>& edges,
+			const std::string& path, const std::vector<string> labels = std::vector<string>())
 		{
 			std::ofstream file(path);
 
@@ -2743,7 +2747,7 @@ namespace PGL {
 			}
 		}
 
-		static std::string EXP(const std::string py_path)
+		static std::string EXP(const std::string& py_path)
 		{
 			std::string path = std::string(_pgmptr).substr(0, std::string(_pgmptr).find_last_of('\\')) + py_path;
 			//std::string path = std::string(_pgmptr).substr(0, std::string(_pgmptr).find_last_of('\\')) + py_path;
@@ -2752,7 +2756,7 @@ namespace PGL {
 			return path;
 		}
 
-		static VectorStr1 GetFilesInDirectory(std::string path)
+		static VectorStr1 GetFilesInDirectory(std::string& path)
 		{
 			vector<string> names;
 			string search_path = path + "/*.*";
@@ -2807,8 +2811,7 @@ namespace PGL {
 		}
 
 		static std::vector<int> MinimalSpanningTree(
-			const int& node_nb, const std::vector<int>& edges,
-			const std::vector<double>& costs)
+			const int& node_nb, const std::vector<int>& edges, const std::vector<double>& costs)
 		{
 			std::vector<int> mst;
 			std::vector<int> nodes;
@@ -3011,7 +3014,7 @@ namespace PGL {
 
 #pragma region DevelopmentRelated
 
-		static void CerrLine(const std::string line)
+		static void CerrLine(const std::string& line)
 		{
 			std::cerr << line << std::endl;
 		}
@@ -3019,7 +3022,7 @@ namespace PGL {
 		//tn: total number of iterations
 		//cn: current iteration
 		//fn: output frequency number
-		static void OutputIterInfo(const string title, const int tn, const int cn, const int fn)
+		static void OutputIterInfo(const string& title, const int& tn, const int& cn, const int& fn)
 		{
 			if (cn % (tn / fn) == 0)
 			{
@@ -3029,13 +3032,13 @@ namespace PGL {
 			}
 		}
 
-		static void MAssert(std::string& str)
+		static void MAssert(const std::string& str)
 		{
 			std::cerr << str << std::endl;
 			system("pause");
 		}
 
-		static void MAssert(char* str)
+		static void MAssert(const char* str)
 		{
 			std::cerr << str << std::endl;
 			system("pause");
@@ -3060,7 +3063,7 @@ namespace PGL {
 			return std::string(tmp);
 		}
 
-		static bool WinCopy(const std::string& source_file, const std::string target_folder)
+		static bool WinCopy(const std::string& source_file, const std::string& target_folder)
 		{
 			if (!Functs::DetectExisting(source_file))
 			{
@@ -3081,7 +3084,7 @@ namespace PGL {
 
 #pragma endregion
 
-		static void ColorMapping(double isolevel, double& output_c_0, double& output_c_1, double& output_c_2)
+		static void ColorMapping(const double& isolevel, double& output_c_0, double& output_c_1, double& output_c_2)
 		{
 
 
@@ -3131,11 +3134,6 @@ namespace PGL {
 			output_c_1 = v[1];
 			output_c_2 = v[2];
 		}
-		
-		
-
-
-
 	};
 
 		//To debug a release build
