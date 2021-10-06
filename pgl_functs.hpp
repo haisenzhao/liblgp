@@ -3001,6 +3001,11 @@ namespace PGL {
 
 #pragma region DevelopmentRelated
 
+		static void CerrLine(const std::string line)
+		{
+			std::cerr << line << std::endl;
+		}
+
 		//tn: total number of iterations
 		//cn: current iteration
 		//fn: output frequency number
@@ -3049,7 +3054,13 @@ namespace PGL {
 		{
 			if (!Functs::DetectExisting(source_file))
 			{
-				MAssert("File does not exist: " + source_file);
+				MAssert("Source file does not exist: " + source_file);
+				return false;
+			}
+
+			if (!Functs::DetectExisting(target_folder))
+			{
+				MAssert("Target folder does not exist: " + target_folder);
 				return false;
 			}
 

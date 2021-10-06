@@ -14,7 +14,9 @@ int main(int argc, char* argv[])
 	std::cerr <<"WinGetCurDirectory: " << Functs::WinGetCurDirectory() << std::endl;
 	std::cerr << "WinGetUserName: " << Functs::WinGetUserName() << std::endl;
 	
-	Functs::MAssert("Test PGL library...");
+	std::cerr<<Functs::DetectExisting("E:\\ece")<<std::endl;
+	std::cerr << Functs::DetectExisting("E:\\ece\\") << std::endl;
+
 	system("pause");
 	return 0;
 }
