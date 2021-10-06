@@ -718,6 +718,12 @@ namespace PGL {
 			return mt[t1];
 		}
 
+		template <class T1, class T2>
+		static bool MapContain(std::map<T1, T2>& mt, T1& t1)
+		{
+			return mt.find(t1) != mt.end();
+		}
+
 		static Vector1i1 RemoveDuplicate(const Vector1i1& vec_)
 		{
 			Vector1i1 vec = vec_;
