@@ -2757,7 +2757,7 @@ namespace PGL {
 			return path;
 		}
 
-		static VectorStr1 GetFilesInDirectory(std::string& path)
+		static VectorStr1 GetFilesInDirectory(const std::string& path)
 		{
 			vector<string> names;
 			string search_path = path + "/*.*";
