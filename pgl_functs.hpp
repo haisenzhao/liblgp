@@ -625,8 +625,9 @@ namespace PGL {
 				return "-" + str;
 		}
 
-		static std::string DoubleString(const Vector1d1& ds, int p = 8, bool order = false, const std::string insert_str_0 = "")
+		static std::string DoubleString(const Vector1d1& ds_, int p = 8, bool order = false, const std::string insert_str_0 = "")
 		{
+			Vector1d1 ds = ds_;
 			if (order)std::sort(ds.begin(), ds.end());
 			std::string str;
 			for (int i = 0; i < ds.size(); i++)
