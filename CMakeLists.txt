@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 3.5)
 # Set the project name
 project (pgl)
 
+#add _CRT_SECURE_NO_WARNINGS
+if(MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
     pgl_functs.hpp
