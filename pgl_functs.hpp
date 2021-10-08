@@ -3079,6 +3079,7 @@ namespace PGL {
 			}
 
 			std::string str = "copy " + source_file + " " + target_folder;
+			std::cerr << "Command string: " << str << std::endl;
 			system(str.c_str());
 			return true;
 		}
