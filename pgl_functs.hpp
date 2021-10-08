@@ -3050,6 +3050,12 @@ namespace PGL {
 			std::string cmd = "python " + Functs::EXP(py_path) + " " + paras;
 			system(cmd.c_str());
 		}
+
+		static void RunCMD(const std::string& cmd_str)
+		{
+			std::cerr << "Command String: " << cmd_str << std::endl;;
+			system(cmd_str.c_str());
+		}
 		
 		static std::string WinGetUserName()
 		{
