@@ -12,9 +12,7 @@ endif()
 set(SOURCES
     pgl_functs.hpp
     RI.hpp
-    RI.cpp
     tinyxml2.hpp
-    tinyxml2.cpp
 	main.cpp
 )
 # Add an executable with the above sources
