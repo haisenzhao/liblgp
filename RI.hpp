@@ -21,8 +21,9 @@ public:
 	std::ofstream ofile;
 	std::ifstream ifile;
 	bool ol;
-
+	bool cout_log=false;
 	RI(const bool ol_, const string path);
+	RI(const bool ol_, const string path, const bool cout_log_);
 	void Close();
 	int Check();
 	void Read(const string t, const string l, const string& name);
@@ -67,7 +68,22 @@ public:
 	void Out(const string& name, std::vector<std::pair<Vector3d1, double>>& t);
 };
 
-RI::RI(const bool ol_, const string path) :numb(0), ol(ol_)
+RI::RI(const bool ol_, const string path) :numb(0), ol(ol_),cout_log(false)
+{
+	if (ol_)
+	{
+		ofile.open(path);
+	}
+	else
+	{
+		if (!Functs::DetectExisting(path))
+			Functs::MAssert("void Init(const string path)");
+		ifile.open(path);
+	}
+}
+
+
+RI::RI(const bool ol_, const string path, const bool cout_log_) :numb(0), ol(ol_), cout_log(cout_log_)
 {
 	if (ol_)
 	{
@@ -122,7 +138,7 @@ void RI::Read(const string t, const string l, const string& name)
 			//Functs::MAssert("577");
 		}
 
-		if (atoi(t.c_str()) % 100 == 0)
+		if(cout_log && atoi(t.c_str()) % 100 == 0)
 			std::cerr << t << std::endl;
 	}
 }
