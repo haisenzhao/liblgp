@@ -106,7 +106,7 @@ namespace PGL {
 	static double MAXDOUBLE = 100000000000.0;
 	static std::random_device MATHRD;  //Will be used to obtain a seed for the random number engine
 	static std::mt19937 MATHGEN(0); //Standard mersenne_twister_engine seeded with rd()
-
+	static std::string CERR_ITER = "  ";
 
 	struct TimeClock
 	{
@@ -3019,7 +3019,7 @@ namespace PGL {
 		static bool CerrLine(const std::string& line, const int level=0)
 		{
 			for (int i = 0; i < level; i++)
-				std::cerr << "  ";
+				std::cerr << CERR_ITER;
 			std::cerr << line << std::endl;
 			return true;
 		}
@@ -3027,11 +3027,16 @@ namespace PGL {
 		//tn: total number of iterations
 		//cn: current iteration
 		//fn: output frequency number
-		static void OutputIterInfo(const string& title, const int& tn, const int& cn, const int& fn)
+		static void OutputIterInfo(const string& title, const int& tn, const int& cn, const int& fn, const int level = 0)
 		{
 			if (cn % (tn / fn) == 0)
 			{
-				if (cn == 0) std::cerr << title << ": ";
+				if (cn == 0) 
+				{ 
+					for (int i = 0; i < level; i++)
+						std::cerr << CERR_ITER;
+					std::cerr << title << ": "; 
+				}
 				std::cerr << Functs::DoubleString((double)cn / (double)tn, 3) << "% ";
 				if (cn + tn / fn >= tn) std::cerr << std::endl;
 			}
