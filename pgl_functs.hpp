@@ -3015,8 +3015,11 @@ namespace PGL {
 
 #pragma region DevelopmentRelated
 
-		static bool CerrLine(const std::string& line)
+
+		static bool CerrLine(const std::string& line, const int level=0)
 		{
+			for (int i = 0; i < level; i++)
+				std::cerr << "  ";
 			std::cerr << line << std::endl;
 			return true;
 		}
