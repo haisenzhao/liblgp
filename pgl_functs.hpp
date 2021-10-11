@@ -3023,6 +3023,19 @@ namespace PGL {
 			return true;
 		}
 
+		static bool CerrLine(ofstream &file, const std::string& line, const int level = 0)
+		{
+			for (int i = 0; i < level; i++)
+			{	
+				file << CERR_ITER;
+				std::cerr << CERR_ITER;
+			}
+			file << line << std::endl;
+			std::cerr << line << std::endl;
+			return true;
+		}
+
+
 		//tn: total number of iterations
 		//cn: current iteration
 		//fn: output frequency number
