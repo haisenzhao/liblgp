@@ -3015,7 +3015,6 @@ namespace PGL {
 
 #pragma region DevelopmentRelated
 
-
 		static bool CerrLine(const std::string& line, const int level=0)
 		{
 			for (int i = 0; i < level; i++)
@@ -3094,6 +3093,20 @@ namespace PGL {
 			}
 
 			std::string str = "copy " + source_file + " " + target_folder;
+			std::cerr << "Command string: " << str << std::endl;
+			system(str.c_str());
+			return true;
+		}
+
+		static bool WinRename(const std::string& source_file, const std::string& rename_file)
+		{
+			if (!Functs::DetectExisting(source_file))
+			{
+				MAssert("Source file does not exist: " + source_file);
+				return false;
+			}
+
+			std::string str = "rename " + source_file + " " + rename_file;
 			std::cerr << "Command string: " << str << std::endl;
 			system(str.c_str());
 			return true;
