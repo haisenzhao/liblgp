@@ -3111,6 +3111,19 @@ namespace PGL {
 			return true;
 		}
 
+		static bool WinDel(const std::string& source_file)
+		{
+			if (!Functs::DetectExisting(source_file))
+			{
+				MAssert("Source file does not exist: " + source_file);
+				return false;
+			}
+			std::string str = "del " + source_file;
+			std::cerr << "Command string: " << str << std::endl;
+			system(str.c_str());
+			return true;
+		}
+
 		static bool WinRename(const std::string& source_file, const std::string& rename_file)
 		{
 			if (!Functs::DetectExisting(source_file))
