@@ -1065,6 +1065,26 @@ namespace PGL {
 			return length;
 		}
 
+		static Vector2d1 RemoveClosePoints(const Vector2d1& xys_)
+		{
+			Vector2d1 xys = xys_;
+			std::vector<int> remove_int;
+			if (xys.size() > 2)
+			{
+				for (int i = 0; i < xys.size() - 1; i++)
+				{
+					double d = GetDistance(xys[i], xys[i+1]);
+					if (d < 0.00001) remove_int.push_back(i + 1);
+				}
+
+				for (int i = remove_int.size() - 1; i >= 0; i--)
+				{
+					xys.erase(xys.begin() + remove_int[i]);
+				}
+			}
+			return xys;
+		}
+
 		static Vector3d PlaneProject(const Vector3d& planar_location, Vector3d& planar_direction, const Vector3d& p)
 		{
 			if (IsAlmostZero(GetLength(planar_location, p)))
