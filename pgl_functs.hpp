@@ -398,6 +398,35 @@ namespace PGL {
 			return str.find(sub) != std::string::npos;
 		}
 
+		static std::string StringReplace(const string& source, const string& toReplace,const string& replaceWith)
+		{
+			size_t pos = 0;
+			size_t cursor = 0;
+			int repLen = toReplace.length();
+			stringstream builder;
+
+			do
+			{
+				pos = source.find(toReplace, cursor);
+
+				if (string::npos != pos)
+				{
+					//copy up to the match, then append the replacement
+					builder << source.substr(cursor, pos - cursor);
+					builder << replaceWith;
+
+					// skip past the match 
+					cursor = pos + repLen;
+				}
+			} while (string::npos != pos);
+
+			//copy the remainder
+			builder << source.substr(cursor);
+
+			return (builder.str());
+		}
+
+		
 		template <class Type>
 		static std::string IntString(Type& i)
 		{
