@@ -1004,6 +1004,15 @@ namespace PGL {
 			return radius;
 		}
 
+		static double GetTriangleArea(const Vector3d & v0, const Vector3d & v1, const Vector3d & v2)
+		{
+			double a = GetDistance(v0, v1);
+			double b = GetDistance(v2, v1);
+			double c = GetDistance(v0, v2);
+			double p = (a + b + c) / 2.0;
+			return sqrt(p * (p - a) * (p - b) * (p - c));
+		}
+
 		template <class Type>
 		static double GetLength(const Type& v0, const Type& v1) {
 			return GetLength(v0 - v1);
