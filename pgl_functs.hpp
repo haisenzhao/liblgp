@@ -1432,6 +1432,40 @@ namespace PGL {
 			SetVectorLength(planar_direction, 1.0);
 		}
 
+
+
+		// Compute barycentric coordinates (u, v, w) for
+		// point p with respect to triangle (a, b, c)
+		static void Barycentric(const Vector3d& p, const Vector3d& a, const Vector3d& b, const Vector3d& c, double& u, double& v, double& w)
+		{
+			Vector3d v0 = GetMinus(b, a), v1 = GetMinus(c, a), v2 = GetMinus(p, a);
+
+			double d00 = GetDotproduct(v0, v0);
+			double d01 = GetDotproduct(v0, v1);
+			double d11 = GetDotproduct(v1, v1);
+			double d20 = GetDotproduct(v2, v0);
+			double d21 = GetDotproduct(v2, v1);
+			double denom = d00 * d11 - d01 * d01;
+			v = (d11 * d20 - d01 * d21) / denom;
+			w = (d00 * d21 - d01 * d20) / denom;
+			u = 1.0f - v - w;
+		}
+
+		static Vector3d Barycentric(const Vector3d& p, const Vector3d& a, const Vector3d& b, const Vector3d& c)
+		{
+			Vector3d v0 = GetMinus(b, a), v1 = GetMinus(c, a), v2 = GetMinus(p, a);
+			double d00 = GetDotproduct(v0, v0);
+			double d01 = GetDotproduct(v0, v1);
+			double d11 = GetDotproduct(v1, v1);
+			double d20 = GetDotproduct(v2, v0);
+			double d21 = GetDotproduct(v2, v1);
+			double denom = d00 * d11 - d01 * d01;
+			double v = (d11 * d20 - d01 * d21) / denom;
+			double w = (d00 * d21 - d01 * d20) / denom;
+			double u = 1.0f - v - w;
+			return Vector3d(u,v,w);
+		}
+
 		//===============================================================
 		template <class Type>
 		static bool DetectColinear(const Type& v, const Type& s, const Type& e, const double& angle_match_error, const double& dis_match_error)
@@ -1779,6 +1813,15 @@ namespace PGL {
 		template <class Type>
 		static double GetDotproduct(const Type& v1, const Type& v2) {
 			return glm::dot(v1, v2);
+		}
+
+		template <class Type>
+		static Type GetMinus(const Type& a, const Type& b)
+		{
+			Type c;
+			for (int i = 0; i < a.length(); i++)
+				c[i] = a[i] - b[i];
+			return c;
 		}
 
 		static bool AreAlmostEqual(const double& value1, const double& value2) {
