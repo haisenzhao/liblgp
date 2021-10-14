@@ -1776,7 +1776,8 @@ namespace PGL {
 			return glm::cross(v1, v2);
 		}
 
-		static double GetDotproduct(const Vector2d& v1, const Vector2d& v2) {
+		template <class Type>
+		static double GetDotproduct(const Type& v1, const Type& v2) {
 			return glm::dot(v1, v2);
 		}
 
