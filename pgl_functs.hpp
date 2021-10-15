@@ -20,11 +20,11 @@
 #else
 #include <io.h>
 #include <direct.h>
+#include <windows.h>
 #endif
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
 #include <tchar.h>
 #include <locale>
 #include <codecvt>
