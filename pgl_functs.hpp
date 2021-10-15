@@ -14,7 +14,11 @@
 #include <math.h>
 #include <random>
 #include <fstream>
-#include <io.h>
+#ifdef __APPLE__
+        #include <sys/uio.h>
+#else
+        #include <sys/io.h>
+#endif
 #include <direct.h>
 #include <stdio.h>
 #include <stdlib.h>
