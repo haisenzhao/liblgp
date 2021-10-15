@@ -17,7 +17,7 @@
 #ifdef __APPLE__
         #include <sys/uio.h>
 #else
-        #include <sys/io.h>
+        #include <io.h>
 #endif
 #include <direct.h>
 #include <stdio.h>
