@@ -402,6 +402,35 @@ namespace PGL {
 			return str.find(sub) != std::string::npos;
 		}
 
+		static std::string StringReplace(const string& source, const string& toReplace,const string& replaceWith)
+		{
+			size_t pos = 0;
+			size_t cursor = 0;
+			int repLen = toReplace.length();
+			stringstream builder;
+
+			do
+			{
+				pos = source.find(toReplace, cursor);
+
+				if (string::npos != pos)
+				{
+					//copy up to the match, then append the replacement
+					builder << source.substr(cursor, pos - cursor);
+					builder << replaceWith;
+
+					// skip past the match 
+					cursor = pos + repLen;
+				}
+			} while (string::npos != pos);
+
+			//copy the remainder
+			builder << source.substr(cursor);
+
+			return (builder.str());
+		}
+
+		
 		template <class Type>
 		static std::string IntString(Type& i)
 		{
@@ -979,6 +1008,15 @@ namespace PGL {
 			return radius;
 		}
 
+		static double GetTriangleArea(const Vector3d & v0, const Vector3d & v1, const Vector3d & v2)
+		{
+			double a = GetDistance(v0, v1);
+			double b = GetDistance(v2, v1);
+			double c = GetDistance(v0, v2);
+			double p = (a + b + c) / 2.0;
+			return sqrt(p * (p - a) * (p - b) * (p - c));
+		}
+
 		template <class Type>
 		static double GetLength(const Type& v0, const Type& v1) {
 			return GetLength(v0 - v1);
@@ -1407,6 +1445,40 @@ namespace PGL {
 			SetVectorLength(planar_direction, 1.0);
 		}
 
+
+
+		// Compute barycentric coordinates (u, v, w) for
+		// point p with respect to triangle (a, b, c)
+		static void Barycentric(const Vector3d& p, const Vector3d& a, const Vector3d& b, const Vector3d& c, double& u, double& v, double& w)
+		{
+			Vector3d v0 = GetMinus(b, a), v1 = GetMinus(c, a), v2 = GetMinus(p, a);
+
+			double d00 = GetDotproduct(v0, v0);
+			double d01 = GetDotproduct(v0, v1);
+			double d11 = GetDotproduct(v1, v1);
+			double d20 = GetDotproduct(v2, v0);
+			double d21 = GetDotproduct(v2, v1);
+			double denom = d00 * d11 - d01 * d01;
+			v = (d11 * d20 - d01 * d21) / denom;
+			w = (d00 * d21 - d01 * d20) / denom;
+			u = 1.0f - v - w;
+		}
+
+		static Vector3d Barycentric(const Vector3d& p, const Vector3d& a, const Vector3d& b, const Vector3d& c)
+		{
+			Vector3d v0 = GetMinus(b, a), v1 = GetMinus(c, a), v2 = GetMinus(p, a);
+			double d00 = GetDotproduct(v0, v0);
+			double d01 = GetDotproduct(v0, v1);
+			double d11 = GetDotproduct(v1, v1);
+			double d20 = GetDotproduct(v2, v0);
+			double d21 = GetDotproduct(v2, v1);
+			double denom = d00 * d11 - d01 * d01;
+			double v = (d11 * d20 - d01 * d21) / denom;
+			double w = (d00 * d21 - d01 * d20) / denom;
+			double u = 1.0f - v - w;
+			return Vector3d(u,v,w);
+		}
+
 		//===============================================================
 		template <class Type>
 		static bool DetectColinear(const Type& v, const Type& s, const Type& e, const double& angle_match_error, const double& dis_match_error)
@@ -1751,8 +1823,18 @@ namespace PGL {
 			return glm::cross(v1, v2);
 		}
 
-		static double GetDotproduct(const Vector2d& v1, const Vector2d& v2) {
+		template <class Type>
+		static double GetDotproduct(const Type& v1, const Type& v2) {
 			return glm::dot(v1, v2);
+		}
+
+		template <class Type>
+		static Type GetMinus(const Type& a, const Type& b)
+		{
+			Type c;
+			for (int i = 0; i < a.length(); i++)
+				c[i] = a[i] - b[i];
+			return c;
 		}
 
 		static bool AreAlmostEqual(const double& value1, const double& value2) {
