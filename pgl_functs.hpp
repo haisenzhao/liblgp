@@ -15,11 +15,13 @@
 #include <random>
 #include <fstream>
 #ifdef __APPLE__
-        #include <sys/uio.h>
+#include <sys/uio.h>
+#include <unistd.h>
 #else
-        #include <io.h>
-#endif
+#include <io.h>
 #include <direct.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
