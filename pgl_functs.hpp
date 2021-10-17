@@ -2606,9 +2606,6 @@ namespace PGL {
 				return ival;
 			};
 
-			std::cerr << path << std::endl;
-
-
 			double x, y, z;
 			char line[1024], v0[1024], v1[1024], v2[1024];
 
@@ -2619,12 +2616,10 @@ namespace PGL {
 				Functs::MAssert("This file does not exist: " + std::string(path));
 				return;
 			};
-			std::cerr << 4545 << std::endl;
 
 			int i = 0;
 			while (fgets(line, 1024, fp)) 
 			{
-				std::cerr << line << std::endl;
 				if (line[0] == 'v') 
 				{
 					sscanf(line, "%*s%lf%lf%lf", &x, &y, &z);
@@ -2661,7 +2656,7 @@ namespace PGL {
 
 				LoadObj3d(path.c_str(), coords, tris);
 
-				std::cerr << 211 <<" "<<coords.size() << std::endl;
+				std::cerr << 211 <<" coords: "<<coords.size() <<" tris: "<<tris.size()<< std::endl;
 
 				if (coords.size() == 0)
 				{
