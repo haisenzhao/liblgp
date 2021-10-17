@@ -2595,7 +2595,76 @@ namespace PGL {
 			return hModule;
 		};
 
+		static void LoadObj3d(const std::string & path, std::vector<double>&coords, std::vector<int>&tris)
 		{
+			auto get_first_integer = [](const char* v)
+			{
+				int ival;
+				std::string s(v);
+				std::replace(s.begin(), s.end(), '/', ' ');
+				sscanf(s.c_str(), "%d", &ival);
+				return ival;
+			};
+
+			double x, y, z;
+			char line[1024], v0[1024], v1[1024], v2[1024];
+
+			// open the file, return if open fails
+			FILE* fp = fopen(path.c_str(), "r");
+			if (!fp)
+			{
+				Functs::MAssert("This file does not exist: " + path);
+				return;
+			};
+
+			int i = 0;
+			while (fgets(line, 1024, fp)) {
+
+				if (line[0] == 'v') {
+					sscanf(line, "%*s%lf%lf%lf", &x, &y, &z);
+					coords.push_back(x);
+					coords.push_back(y);
+					coords.push_back(z);
+				}
+				else if (line[0] == 'f') {
+					sscanf(line, "%*s%s%s%s", v0, v1, v2);
+					tris.push_back(get_first_integer(v0) - 1);
+					tris.push_back(get_first_integer(v1) - 1);
+					tris.push_back(get_first_integer(v2) - 1);
+				}
+			}
+			fclose(fp);
+		};
+
+		static void LoadObj3d(const std::string & path, Vector3d1 & vecs, Vector1i1 & face_id_0, Vector1i1 & face_id_1, Vector1i1 & face_id_2)
+		{
+			if (path.substr(path.size() - 3, path.size()) == "obj")
+			{
+				std::vector<double> coords;
+				Vector1i1 tris;
+
+				LoadObj3d(path.c_str(), coords, tris);
+				if (coords.size() == 0)
+				{
+					return;
+				}
+
+				for (int i = 0; i < (int)coords.size(); i += 3)
+				{
+					vecs.push_back(Vector3d(coords[i + 0], coords[i + 1], coords[i + 2]));
+				}
+
+				for (int i = 0; i < (int)tris.size(); i += 3)
+				{
+					face_id_0.push_back(tris[i + 0]);
+					face_id_1.push_back(tris[i + 1]);
+					face_id_2.push_back(tris[i + 2]);
+				}
+				/*********************************************************************************/
+			}
+		};
+
+
 		static void OutputRectangle2d(const std::string& path, const std::vector<Vector2d>& points)
 		{
 			std::ofstream file(path);
@@ -3159,7 +3228,7 @@ namespace PGL {
 						std::cerr << CERR_ITER;
 					std::cerr << title << ": "; 
 				}
-				std::cerr << Functs::DoubleString((double)cn / (double)tn, 3) << "% ";
+				std::cerr << Functs::DoubleString((double)(100.0*cn/tn), 1) << "% ";
 				if (cn + tn / fn >= tn) std::cerr << std::endl;
 			}
 		}
