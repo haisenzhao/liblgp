@@ -2647,6 +2647,9 @@ namespace PGL {
 			std::string path = path_;
 			std::cerr << path<< std::endl;
 
+			std::cerr <<" vecs.size(): "<< vecs.size() << std::endl;
+
+
 			if (path.substr(path.size() - 3, path.size()) == "obj")
 			{
 				std::cerr << 122 << std::endl;
