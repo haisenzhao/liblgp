@@ -409,7 +409,7 @@ namespace PGL {
 		{
 			size_t pos = 0;
 			size_t cursor = 0;
-			int repLen = toReplace.length();
+			int repLen = (int)toReplace.length();
 			stringstream builder;
 
 			do
@@ -1118,11 +1118,11 @@ namespace PGL {
 			{
 				for (int i = 0; i < xys.size() - 1; i++)
 				{
-					double d = GetDistance(xys[i], xys[i+1]);
+					double d = GetDistance(xys[i], xys[(int)(i+1)]);
 					if (d < 0.00001) remove_int.push_back(i + 1);
 				}
 
-				for (int i = remove_int.size() - 1; i >= 0; i--)
+				for (int i = (int)(remove_int.size() - 1); i >= 0; i--)
 				{
 					xys.erase(xys.begin() + remove_int[i]);
 				}
@@ -1834,7 +1834,7 @@ namespace PGL {
 		template <class Type>
 		static Type GetMinus(const Type& a, const Type& b)
 		{
-			Type c;
+			Type c=a;
 			for (int i = 0; i < a.length(); i++)
 				c[i] = a[i] - b[i];
 			return c;
