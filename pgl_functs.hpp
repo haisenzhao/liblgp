@@ -2606,16 +2606,20 @@ namespace PGL {
 				return ival;
 			};
 
+			std::cerr << path << std::endl;
+
+
 			double x, y, z;
 			char line[1024], v0[1024], v1[1024], v2[1024];
 
 			// open the file, return if open fails
 			FILE* fp = fopen(path, "r");
-			if (!fp)
+			if (!Functs::DetectExisting(path))
 			{
 				Functs::MAssert("This file does not exist: " + std::string(path));
 				return;
 			};
+			std::cerr << 4545 << std::endl;
 
 			int i = 0;
 			while (fgets(line, 1024, fp)) {
@@ -2638,13 +2642,21 @@ namespace PGL {
 
 		static void LoadObj3d(const char* path_, Vector3d1 & vecs, Vector1i1 & face_id_0, Vector1i1 & face_id_1, Vector1i1 & face_id_2)
 		{
+			std::cerr << path_ << std::endl;
 			std::string path = path_;
+			std::cerr << path<< std::endl;
+
 			if (path.substr(path.size() - 3, path.size()) == "obj")
 			{
+				std::cerr << 122 << std::endl;
+
 				std::vector<double> coords;
 				Vector1i1 tris;
 
 				LoadObj3d(path.c_str(), coords, tris);
+
+				std::cerr << 211 << std::endl;
+
 				if (coords.size() == 0)
 				{
 					return;
