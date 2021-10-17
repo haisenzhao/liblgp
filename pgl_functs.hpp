@@ -2595,7 +2595,7 @@ namespace PGL {
 			return hModule;
 		};
 
-		static void LoadObj3d(const std::string & path, std::vector<double>&coords, std::vector<int>&tris)
+		static void LoadObj3d(const char* path, std::vector<double>&coords, std::vector<int>&tris)
 		{
 			auto get_first_integer = [](const char* v)
 			{
@@ -2610,10 +2610,10 @@ namespace PGL {
 			char line[1024], v0[1024], v1[1024], v2[1024];
 
 			// open the file, return if open fails
-			FILE* fp = fopen(path.c_str(), "r");
+			FILE* fp = fopen(path, "r");
 			if (!fp)
 			{
-				Functs::MAssert("This file does not exist: " + path);
+				Functs::MAssert("This file does not exist: " + std::string(path));
 				return;
 			};
 
@@ -2636,8 +2636,9 @@ namespace PGL {
 			fclose(fp);
 		};
 
-		static void LoadObj3d(const std::string & path, Vector3d1 & vecs, Vector1i1 & face_id_0, Vector1i1 & face_id_1, Vector1i1 & face_id_2)
+		static void LoadObj3d(const char* path_, Vector3d1 & vecs, Vector1i1 & face_id_0, Vector1i1 & face_id_1, Vector1i1 & face_id_2)
 		{
+			std::string path = path_;
 			if (path.substr(path.size() - 3, path.size()) == "obj")
 			{
 				std::vector<double> coords;
