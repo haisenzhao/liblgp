@@ -2622,19 +2622,25 @@ namespace PGL {
 			std::cerr << 4545 << std::endl;
 
 			int i = 0;
-			while (fgets(line, 1024, fp)) {
-
-				if (line[0] == 'v') {
+			while (fgets(line, 1024, fp)) 
+			{
+				std::cerr << line << std::endl;
+				if (line[0] == 'v') 
+				{
 					sscanf(line, "%*s%lf%lf%lf", &x, &y, &z);
 					coords.push_back(x);
 					coords.push_back(y);
 					coords.push_back(z);
 				}
-				else if (line[0] == 'f') {
-					sscanf(line, "%*s%s%s%s", v0, v1, v2);
-					tris.push_back(get_first_integer(v0) - 1);
-					tris.push_back(get_first_integer(v1) - 1);
-					tris.push_back(get_first_integer(v2) - 1);
+				else
+				{
+					if (line[0] == 'f')
+					{
+						sscanf(line, "%*s%s%s%s", v0, v1, v2);
+						tris.push_back(get_first_integer(v0) - 1);
+						tris.push_back(get_first_integer(v1) - 1);
+						tris.push_back(get_first_integer(v2) - 1);
+					}
 				}
 			}
 			fclose(fp);
@@ -2655,7 +2661,7 @@ namespace PGL {
 
 				LoadObj3d(path.c_str(), coords, tris);
 
-				std::cerr << 211 << std::endl;
+				std::cerr << 211 <<" "<<coords.size() << std::endl;
 
 				if (coords.size() == 0)
 				{
