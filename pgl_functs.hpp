@@ -2666,6 +2666,9 @@ namespace PGL {
 				for (int i = 0; i < (int)coords.size(); i += 3)
 				{
 					std::cerr << "coords: " << i <<" / "<<coords.size()<< std::endl;
+					std::cerr << coords[i + 0] << std::endl;
+					std::cerr << coords[i + 1] << std::endl;
+					std::cerr << coords[i + 2] << std::endl;
 					vecs.push_back(Vector3d(coords[i + 0], coords[i + 1], coords[i + 2]));
 				}
 
