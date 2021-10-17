@@ -2595,6 +2595,7 @@ namespace PGL {
 			return hModule;
 		};
 
+		{
 		static void OutputRectangle2d(const std::string& path, const std::vector<Vector2d>& points)
 		{
 			std::ofstream file(path);
