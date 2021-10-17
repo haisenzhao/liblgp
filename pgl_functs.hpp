@@ -2665,11 +2665,14 @@ namespace PGL {
 
 				for (int i = 0; i < (int)coords.size(); i += 3)
 				{
+					std::cerr << "coords: " << i <<" / "<<coords.size()<< std::endl;
 					vecs.push_back(Vector3d(coords[i + 0], coords[i + 1], coords[i + 2]));
 				}
 
 				for (int i = 0; i < (int)tris.size(); i += 3)
 				{
+					std::cerr << "tris: " << i << " / " << tris.size() << std::endl;
+
 					face_id_0.push_back(tris[i + 0]);
 					face_id_1.push_back(tris[i + 1]);
 					face_id_2.push_back(tris[i + 2]);
