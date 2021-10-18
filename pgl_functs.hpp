@@ -3242,7 +3242,9 @@ namespace PGL {
 		//fn: output frequency number
 		static void OutputIterInfo(const string& title, const int& tn, const int& cn, const int& fn, const int level = 0)
 		{
-			if (cn % (tn / fn) == 0)
+			int delta = fn > tn ? 1 : tn / fn;
+
+			if (cn % delta == 0)
 			{
 				if (cn == 0) 
 				{ 
@@ -3251,7 +3253,7 @@ namespace PGL {
 					std::cerr << title << ": "; 
 				}
 				std::cerr << Functs::DoubleString((double)(100.0*cn/tn), 1) << "% ";
-				if (cn + tn / fn >= tn) std::cerr << std::endl;
+				if (cn + delta >= tn) std::cerr << std::endl;
 			}
 		}
 
