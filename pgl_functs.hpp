@@ -3259,13 +3259,13 @@ namespace PGL {
 
 		static void MAssert(const std::string& str)
 		{
-			std::cerr << str << std::endl;
+			std::cerr <<"Bug: " << str << std::endl;
 			system("pause");
 		}
 
 		static void MAssert(const char* str)
 		{
-			std::cerr << str << std::endl;
+			std::cerr << "Bug: " << str << std::endl;
 			system("pause");
 		}
 
