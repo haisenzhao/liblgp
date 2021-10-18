@@ -3340,7 +3340,7 @@ namespace PGL {
 		}
 
 		template <class Type>
-		void XMLP(Type& t, const tinyxml2::XMLElement* params, const std::string& name)
+		static void XMLP(Type& t, const tinyxml2::XMLElement* params, const std::string& name)
 		{
 			string t_type = typeid(t).name();
 			if (params->FirstChildElement(name.c_str()))
