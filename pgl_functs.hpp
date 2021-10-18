@@ -313,6 +313,19 @@ namespace PGL {
 					v.emplace_back(s);
 			return v;
 		}
+
+		static Vector1i1 SetUnion(Vector1i2& sets)
+		{
+			Vector1i1 start = sets[0];
+
+			for (int i = 1; i < sets.size(); i++)
+			{
+				start = SetUnion(start, sets[i]);
+			}
+
+			return start;
+		}
+
 		static Vector1i1 SetIntersection(const Vector1i1& first, const Vector1i1& second)
 		{
 			Vector1i1 v;
