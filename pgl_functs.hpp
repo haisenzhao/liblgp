@@ -41,7 +41,7 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 
-#include "tinyxml2.hpp"
+//#include "tinyxml2.hpp"
 
 //glm modules
 //http://glm.g-truc.net/0.9.8/api/modules.html
@@ -3339,22 +3339,22 @@ namespace PGL {
 			return true;
 		}
 
-		template <class Type>
-		static void XMLP(Type& t, const tinyxml2::XMLElement* params, const std::string& name)
-		{
-			string t_type = typeid(t).name();
-			if (params->FirstChildElement(name.c_str()))
-			{
-				if(t_type== typeid(int).name())
-					t = atoi(params->FirstChildElement(name.c_str())->GetText());
-				if (t_type == typeid(double).name())
-					t = atof(params->FirstChildElement(name.c_str())->GetText());
-				if (t_type == typeid(string).name())
-					t = params->FirstChildElement(name.c_str())->GetText();
-			}
-			else
-				Functs::MAssert("Did not find the parameter: " + name);
-		};
+		//template <class Type>
+		//static void XMLP(Type& t, const tinyxml2::XMLElement* params, const std::string& name)
+		//{
+		//	string t_type = typeid(t).name();
+		//	if (params->FirstChildElement(name.c_str()))
+		//	{
+		//		if(t_type== typeid(int).name())
+		//			t = atoi(params->FirstChildElement(name.c_str())->GetText());
+		//		if (t_type == typeid(double).name())
+		//			t = atof(params->FirstChildElement(name.c_str())->GetText());
+		//		if (t_type == typeid(string).name())
+		//			t = params->FirstChildElement(name.c_str())->GetText();
+		//	}
+		//	else
+		//		Functs::MAssert("Did not find the parameter: " + name);
+		//};
 
 #pragma endregion
 
