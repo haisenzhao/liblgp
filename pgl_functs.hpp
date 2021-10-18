@@ -3360,10 +3360,16 @@ namespace PGL {
 
 #pragma endregion
 
+
+		static Vector3d ColorMapping(const double& isolevel)
+		{
+			double output_c_0, output_c_1, output_c_2;
+			ColorMapping(isolevel, output_c_0, output_c_1, output_c_2);
+			return Vector3d(output_c_0, output_c_1, output_c_2);
+		}
+
 		static void ColorMapping(const double& isolevel, double& output_c_0, double& output_c_1, double& output_c_2)
 		{
-
-
 			Vector3d v;
 			if (isolevel >= 0 && isolevel <= 0.25)
 			{
