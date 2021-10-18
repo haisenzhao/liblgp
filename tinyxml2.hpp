@@ -21,6 +21,9 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
+#ifndef Tinixml2_hpp
+#define Tinixml2_hpp
+
 #ifndef TINYXML2_INCLUDED
 #define TINYXML2_INCLUDED
 
@@ -5121,3 +5124,6 @@ bool XMLPrinter::Visit(const XMLUnknown& unknown)
 #endif
 
 #endif // TINYXML2_INCLUDED
+
+
+#endif
