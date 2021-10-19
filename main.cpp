@@ -14,6 +14,11 @@ int main(int argc, char* argv[])
 	std::cerr <<"WinGetCurDirectory: " << Functs::WinGetCurDirectory() << std::endl;
 	std::cerr << "WinGetUserName: " << Functs::WinGetUserName() << std::endl;
 	
+	auto a = Functs::DetectExisting("E:\\Dropbox\\Mold\\microstructures\\demo\\pipeline\\3_accessible");
+	auto b = Functs::DetectExisting("E:\\Dropbox\\Mold\\microstructures\\demo\\pipeline\\3_accessible2");
+	Functs::CerrLine(a);
+	Functs::CerrLine(a);
+
 	system("pause");
 	return 0;
 }

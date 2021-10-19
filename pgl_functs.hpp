@@ -3221,7 +3221,7 @@ namespace PGL {
 		{
 			for (int i = 0; i < level; i++)
 				std::cerr << CERR_ITER;
-			if(GetTypeId(line)==GetTypeId(string))
+			if(GetTypeId(line)==GetTypeId(string("")))
 				std::cerr << line << std::endl;
 			else
 				std::cerr << std::to_string(line).c_str() << std::endl;
