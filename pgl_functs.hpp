@@ -29,6 +29,8 @@
 
 #include <locale>
 #include <codecvt>
+#include <chrono>
+#include <thread>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -3257,16 +3259,27 @@ namespace PGL {
 			}
 		}
 
-		static void MAssert(const std::string& str)
+		static void MAssert(const std::string& str, const int sleep_seconds=-1)
 		{
 			std::cerr <<"Bug: " << str << std::endl;
-			system("pause");
+			if (sleep_seconds <= 0)
+				system("pause");
+			else
+				MSleep(sleep_seconds);
 		}
 
-		static void MAssert(const char* str)
+		static void MAssert(const char* str, const int sleep_seconds = -1)
 		{
 			std::cerr << "Bug: " << str << std::endl;
-			system("pause");
+			if (sleep_seconds <= 0)
+				system("pause");
+			else
+				MSleep(sleep_seconds);
+		}
+
+		static void MSleep(const int& second)
+		{
+			this_thread::sleep_for(chrono::milliseconds(second*1000));
 		}
 
 		static void RunPY(const std::string& py_path, const std::string& paras)
