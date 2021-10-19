@@ -43,7 +43,6 @@
 #include <Eigen/Core>
 #include <Eigen/Dense>
 
-//#include "tinyxml2.hpp"
 
 //glm modules
 //http://glm.g-truc.net/0.9.8/api/modules.html
