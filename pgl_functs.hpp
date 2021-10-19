@@ -3216,24 +3216,25 @@ namespace PGL {
 #pragma endregion
 
 #pragma region DevelopmentRelated
-
-		static bool CerrLine(const std::string& line, const int level=0)
+		template <class Type>
+		static bool CerrLine(const Type& line, const int level=0)
 		{
 			for (int i = 0; i < level; i++)
 				std::cerr << CERR_ITER;
-			std::cerr << line << std::endl;
+			std::cerr << std::to_string(line) << std::endl;
 			return true;
 		}
 
-		static bool CerrLine(ofstream &file, const std::string& line, const int level = 0)
+		template <class Type>
+		static bool CerrLine(ofstream &file, const Type& line, const int level = 0)
 		{
 			for (int i = 0; i < level; i++)
 			{	
 				file << CERR_ITER;
 				std::cerr << CERR_ITER;
 			}
-			file << line << std::endl;
-			std::cerr << line << std::endl;
+			file << std::to_string(line) << std::endl;
+			std::cerr << std::to_string(line) << std::endl;
 			return true;
 		}
 
