@@ -3259,7 +3259,7 @@ namespace PGL {
 			}
 		}
 
-		static void MAssert(const std::string& str, const int sleep_seconds=-1)
+		static void MAssert(const std::string& str, const double sleep_seconds=-1)
 		{
 			std::cerr <<"Bug: " << str << std::endl;
 			if (sleep_seconds <= 0)
@@ -3268,7 +3268,7 @@ namespace PGL {
 				MSleep(sleep_seconds);
 		}
 
-		static void MAssert(const char* str, const int sleep_seconds = -1)
+		static void MAssert(const char* str, const double sleep_seconds = -1)
 		{
 			std::cerr << "Bug: " << str << std::endl;
 			if (sleep_seconds <= 0)
@@ -3277,9 +3277,9 @@ namespace PGL {
 				MSleep(sleep_seconds);
 		}
 
-		static void MSleep(const int& second)
+		static void MSleep(const double& second)
 		{
-			this_thread::sleep_for(chrono::milliseconds(second*1000));
+			this_thread::sleep_for(chrono::milliseconds((int)(second*1000)));
 		}
 
 		static void RunPY(const std::string& py_path, const std::string& paras)
