@@ -3221,7 +3221,10 @@ namespace PGL {
 		{
 			for (int i = 0; i < level; i++)
 				std::cerr << CERR_ITER;
-			std::cerr << std::to_string(line) << std::endl;
+			if(GetTypeId(line)==GetTypeId(string))
+				std::cerr << line << std::endl;
+			else
+				std::cerr << std::to_string(line).c_str() << std::endl;
 			return true;
 		}
 
@@ -3352,6 +3355,12 @@ namespace PGL {
 			std::cerr << "Command string: " << str << std::endl;
 			system(str.c_str());
 			return true;
+		}
+
+		template <class Type>
+		static std::string GetTypeId(const Type& t)
+		{
+			return  typeid(t).name();
 		}
 
 		//template <class Type>
