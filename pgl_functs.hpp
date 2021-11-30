@@ -106,6 +106,7 @@ typedef std::tuple<int, int, int> TI3;
 typedef Vector1<std::tuple<int, int, int>> VectorTI3;
 
 
+
 using namespace std;
 
 namespace PGL {
@@ -118,11 +119,19 @@ namespace PGL {
 	static std::mt19937 MATHGEN(0); //Standard mersenne_twister_engine seeded with rd()
 	static std::string CERR_ITER = "  ";
 
+	struct PGLTriMesh
+	{
+		Vector3d1 vecs;
+		Vector1i1 face_id_0;
+		Vector1i1 face_id_1;
+		Vector1i1 face_id_2;
+	};
+
 	struct TimeClock
 	{
 	public:
-		TimeClock():start(0), end(0), duration(0){ start = clock(); };
-		void StartClock(){ start = clock();};
+		TimeClock() :start(0), end(0), duration(0) { start = clock(); };
+		void StartClock() { start = clock(); };
 		double EndClock()
 		{
 			end = clock();
@@ -136,7 +145,7 @@ namespace PGL {
 	class Functs
 	{
 	public:
-	
+
 #pragma region StatisticsCombinationSet
 
 		template <class Type>
@@ -189,10 +198,7 @@ namespace PGL {
 			int nb = 1;
 			for (auto& group : groups) nb = nb * group;
 
-			if (nb == 0)
-			{
-				Functs::MAssert("nb == 0 in Selection(const Vector1i1& groups)");
-			}
+			Functs::MAssert(nb != 0, "nb == 0 in Selection(const Vector1i1& groups)");
 
 			Vector1i1 nbs(1, nb);
 			for (auto& group : groups)
@@ -421,7 +427,7 @@ namespace PGL {
 			return str.find(sub) != std::string::npos;
 		}
 
-		static std::string StringReplace(const string& source, const string& toReplace,const string& replaceWith)
+		static std::string StringReplace(const string& source, const string& toReplace, const string& replaceWith)
 		{
 			size_t pos = 0;
 			size_t cursor = 0;
@@ -449,7 +455,7 @@ namespace PGL {
 			return (builder.str());
 		}
 
-		
+
 		template <class Type>
 		static std::string IntString(Type& i)
 		{
@@ -504,12 +510,12 @@ namespace PGL {
 		}
 
 		template <class Type>
-		static std::string VectorString(const Type& v, const string insert_str="", int p = 3)
+		static std::string VectorString(const Type& v, const string insert_str = "", int p = 3)
 		{
 			std::string str;
 			for (int i = 0; i < v.length(); i++)
 			{
-				if(i== v.length()-1)
+				if (i == v.length() - 1)
 					str += DoubleString(v[i], p);
 				else
 					str += DoubleString(v[i], p) + insert_str;
@@ -550,6 +556,8 @@ namespace PGL {
 
 			return str;
 		}
+
+
 
 		static std::string VectorString(const Vector3d3& vecs_3)
 		{
@@ -694,7 +702,7 @@ namespace PGL {
 			iss >> num;
 			return num;
 		}
-		
+
 		template <class Type>
 		static Type StringToNum(const string& str)
 		{
@@ -703,7 +711,16 @@ namespace PGL {
 			iss >> num;
 			return num;
 		}
-	
+
+		static constexpr unsigned int StringEncode(const char* str, int h = 0)
+		{
+			return !str[h] ? 5381 : (StringEncode(str, h + 1) * 33) ^ str[h];
+		}
+
+		static constexpr unsigned int StringEncode(const string& str, int h = 0)
+		{
+			return StringEncode(str.c_str(), h);
+		}
 
 		static vector<string> SplitStr(const string& str, const char& delimiter)
 		{
@@ -775,8 +792,8 @@ namespace PGL {
 		static T2 MapFind(const std::map<T1, T2>& mt, const T1& t1)
 		{
 			if (mt.find(t1) == mt.end())
-				MAssert("if (mt.find(t1) == mt.end())");
-			return mt[t1];
+				Functs::MAssert("The input is not in this map.");
+			return mt.find(t1)->second;
 		}
 
 		template <class T1, class T2>
@@ -795,7 +812,7 @@ namespace PGL {
 
 		static Vector3d EigenVector(const Eigen::Vector3d& vec)
 		{
-			return Vector3d(vec[0],vec[1],vec[2]);
+			return Vector3d(vec[0], vec[1], vec[2]);
 		};
 
 		static Vector3d1 EigenVector(const std::vector<Eigen::Vector3d>& vecs)
@@ -824,12 +841,12 @@ namespace PGL {
 				return Math_PI;
 			return glm::acos(d);
 		}
-		
+
 		static double RadiantoAngle(const double& r)
 		{
-			return r / Math_PI*180.0;
+			return r / Math_PI * 180.0;
 		}
-		
+
 		static double Radian2Angle(const double& radian)
 		{
 			return radian / Math_PI * 180.0;
@@ -840,23 +857,23 @@ namespace PGL {
 			return angle / 180.0 * Math_PI;
 		}
 
-		static Vector3d SetVectorLength(Vector3d& v, const double& length)
+		static Vector3d SetVectorLength(const Vector3d& v, const double& length)
 		{
 			double l = GetLength(v);
-
-			v[0] = v[0] / l * length;
-			v[1] = v[1] / l * length;
-			v[2] = v[2] / l * length;
-
-			return v;
+			Vector3d vc;
+			vc[0] = v[0] / l * length;
+			vc[1] = v[1] / l * length;
+			vc[2] = v[2] / l * length;
+			return vc;
 		}
 
-		static Vector2d SetVectorLength(Vector2d& v, const double& length)
+		static Vector2d SetVectorLength(const Vector2d& v, const double& length)
 		{
 			double l = GetLength(v);
-			v[0] = v[0] / l * length;
-			v[1] = v[1] / l * length;
-			return v;
+			Vector3d vc;
+			vc[0] = v[0] / l * length;
+			vc[1] = v[1] / l * length;
+			return vc;
 		}
 
 		//existing bugs in this function
@@ -1027,7 +1044,7 @@ namespace PGL {
 			return radius;
 		}
 
-		static double GetTriangleArea(const Vector3d & v0, const Vector3d & v1, const Vector3d & v2)
+		static double GetTriangleArea(const Vector3d& v0, const Vector3d& v1, const Vector3d& v2)
 		{
 			double a = GetDistance(v0, v1);
 			double b = GetDistance(v2, v1);
@@ -1134,7 +1151,7 @@ namespace PGL {
 			{
 				for (int i = 0; i < xys.size() - 1; i++)
 				{
-					double d = GetDistance(xys[i], xys[(int)(i+1)]);
+					double d = GetDistance(xys[i], xys[(int)(i + 1)]);
 					if (d < 0.00001) remove_int.push_back(i + 1);
 				}
 
@@ -1183,7 +1200,7 @@ namespace PGL {
 			if (method == "MinimalDistance") return GetRandomDirections_Minimal_Distance(count);
 			if (method == "RegularDistribution") return GetRandomDirections_Regular_Distribution(count);
 
-			MAssert("Input method does not be implemented: "+ method);
+			MAssert("Input method does not be implemented: " + method);
 			return Vector3d1();
 		}
 
@@ -1284,7 +1301,7 @@ namespace PGL {
 		}
 
 		//random sample a set of directions on the Gaussian Sphere
-		static Vector3d1 GetRandomDirections_Minimal_Distance(const int& dns, const int dis_iters =100)
+		static Vector3d1 GetRandomDirections_Minimal_Distance(const int& dns, const int dis_iters = 100)
 		{
 			double gaussion_sphere_radius = 1.0;
 			double idea_distance = 2 * gaussion_sphere_radius / sqrt(dns);
@@ -1437,7 +1454,7 @@ namespace PGL {
 			}
 		}
 
-		static Vector3d IntersectPointPlane2Ray(const Vector3d& planar_location, Vector3d& planar_direction, 
+		static Vector3d IntersectPointPlane2Ray(const Vector3d& planar_location, Vector3d& planar_direction,
 			const Vector3d& ray_location, Vector3d& ray_vector)
 		{
 			Vector3d project_point = PlaneProject(planar_location, planar_direction, ray_location);
@@ -1448,7 +1465,7 @@ namespace PGL {
 			double length = distance / cos(angle);
 			return ray_location + SetVectorLength(ray_vector, length);
 		}
-		
+
 		static Vector3d ComputeNormalFromPolyline(const Vector3d1& points)
 		{
 			Vector3d planar_direction;
@@ -1495,7 +1512,7 @@ namespace PGL {
 			double v = (d11 * d20 - d01 * d21) / denom;
 			double w = (d00 * d21 - d01 * d20) / denom;
 			double u = 1.0f - v - w;
-			return Vector3d(u,v,w);
+			return Vector3d(u, v, w);
 		}
 
 		//===============================================================
@@ -1523,7 +1540,7 @@ namespace PGL {
 		};
 
 		template <class Type>
-		static bool DetectVertical(const std::pair<Type, Type>& seg_0, const std::pair<Type, Type>& seg_1, 
+		static bool DetectVertical(const std::pair<Type, Type>& seg_0, const std::pair<Type, Type>& seg_1,
 			const double& angle_match_error, const double& dis_match_error)
 		{
 			return DetectVertical(seg_0.first, seg_0.second, seg_1.first, seg_1.second, angle_match_error, dis_match_error);
@@ -1557,7 +1574,7 @@ namespace PGL {
 		};
 
 		template <class Type>
-		static bool DetectParallel(const std::pair<Type, Type>& seg_0, const std::pair<Type, Type>& seg_1, 
+		static bool DetectParallel(const std::pair<Type, Type>& seg_0, const std::pair<Type, Type>& seg_1,
 			const double& angle_match_error, const double& dis_match_error)
 		{
 			return DetectParallel(seg_0.second - seg_0.first, seg_1.second - seg_1.first, angle_match_error, dis_match_error);
@@ -1685,10 +1702,19 @@ namespace PGL {
 			return vecs_1;
 		};
 
+		static std::vector<Vector2d> GetUnitSquare()
+		{
+			std::vector<Vector2d> square;
+			square.push_back(Vector2d(-0.5, -0.5));
+			square.push_back(Vector2d(0.5, -0.5));
+			square.push_back(Vector2d(0.5, 0.5));
+			square.push_back(Vector2d(-0.5, 0.5));
+			return square;
+		};
 
-		static void GetUnitCube(Vector3d1& cube_vecs,
-			Vector1i1& cube_face_id_0, Vector1i1& cube_face_id_1, Vector1i1& cube_face_id_2,
-			const double& scale = 1.0)
+
+
+		static void GetUnitCube(Vector3d1& cube_vecs, Vector1i1& cube_face_id_0, Vector1i1& cube_face_id_1, Vector1i1& cube_face_id_2, const double& scale = 1.0)
 		{
 			cube_vecs.clear();
 			cube_face_id_0.clear();
@@ -1734,6 +1760,12 @@ namespace PGL {
 			}
 		};
 
+		static PGLTriMesh GetUnitCube(const double& scale = 1.0)
+		{
+			PGLTriMesh tm;
+			GetUnitCube(tm.vecs, tm.face_id_0, tm.face_id_1, tm.face_id_2, scale);
+			return tm;
+		}
 
 		static Vector3d1 EmumerateRotations()
 		{
@@ -1850,7 +1882,7 @@ namespace PGL {
 		template <class Type>
 		static Type GetMinus(const Type& a, const Type& b)
 		{
-			Type c=a;
+			Type c = a;
 			for (int i = 0; i < a.length(); i++)
 				c[i] = a[i] - b[i];
 			return c;
@@ -1875,7 +1907,7 @@ namespace PGL {
 		static bool IsAlmostZero_Double(const double& value, const double& EPSILON) {
 			return (value < EPSILON) && (value > -EPSILON);
 		}
-		
+
 		/// Returns true if two given floating point numbers are epsilon-equal.
 		/// Method automatically adjust the epsilon to the absolute size of given numbers.
 		static bool AreAlmostEqual(const float& value1, const float& value2) {
@@ -1901,10 +1933,34 @@ namespace PGL {
 		{
 			double maxd = vec[0];
 			for (int i = 0; i < vec.length(); i++)
-				maxd = max(maxd,vec[i]);
+				maxd = max(maxd, vec[i]);
 			return maxd;
 		}
 
+		static void GetMinMax(const Vector1d1& ds, double& mind, double& maxd)
+		{
+			mind = ds[0];
+			maxd = ds[0];
+			for (auto& d : ds)
+			{
+				mind = min(mind, d);
+				maxd = max(maxd, d);
+			}
+		}
+
+		static void GetMinMax(const Vector1d2& ds, double& mind, double& maxd)
+		{
+			mind = ds.front().front();
+			maxd = ds.front().front();
+			for (auto& d : ds)
+			{
+				for (auto& d_ : d)
+				{
+					mind = min(mind, d_);
+					maxd = max(maxd, d_);
+				}
+			}
+		}
 
 		template<class Type>
 		static bool VectorInsertNoDuplicate(std::vector<Type>& vecs, const Type& element)
@@ -1932,10 +1988,18 @@ namespace PGL {
 		}
 
 		template<class Type>
-		static bool CheckContain(const std::vector <Type>& vecs, const Type& element)
+		static bool CheckContain(const Vector1<Type>& vecs, const Type& element)
 		{
 			return std::find(vecs.begin(), vecs.end(), element) != vecs.end();
 		}
+
+		template<class Type>
+		static bool CheckContain(const Vector2<Type>& vecs, const Type& element)
+		{
+			return VectorIndex(vecs, element) >= 0;
+			//return std::find(vecs.begin(), vecs.end(), element) != vecs.end();
+		}
+
 
 		template <class Type>
 		static int VectorIndex(const std::vector <Type>& vecs, const Type& element)
@@ -1948,6 +2012,25 @@ namespace PGL {
 				}
 			}
 			return -1;
+		}
+
+
+		template <class Type>
+		static int VectorSize(const Vector2<Type>& vecs)
+		{
+			int nb = 0;
+			for (auto& vec : vecs)
+				nb += vec.size();
+			return nb;
+		}
+
+		template <class Type>
+		static int VectorSize(const Vector3<Type>& vecs)
+		{
+			int nb = 0;
+			for (auto& vec : vecs)
+				nb += VectorSize(vec);
+			return nb;
 		}
 
 		template <class Type>
@@ -2086,7 +2169,7 @@ namespace PGL {
 		static Vector3d1 VecApplyM(const Vector3d1& vecs, const glm::dmat4& M)
 		{
 			Vector3d1 ps;
-			for (auto &p : vecs)
+			for (auto& p : vecs)
 				ps.emplace_back(VecApplyM(p, M));
 			return ps;
 		}
@@ -2107,7 +2190,7 @@ namespace PGL {
 		static Vector3d1 PosApplyM(const Vector3d1& vecs, const glm::dmat4& M)
 		{
 			Vector3d1 ps;
-			for (auto &p : vecs)
+			for (auto& p : vecs)
 				ps.emplace_back(PosApplyM(p, M));
 			return ps;
 		}
@@ -2132,55 +2215,55 @@ namespace PGL {
 				pses.emplace_back(PosApplyM(vecs, M));
 			return pses;
 		}
-		
-		static glm::dmat4 RotationMatrixXYZ(const Vector3d& xx, const Vector3d &yy, const Vector3d &zz)
+
+		static glm::dmat4 RotationMatrixXYZ(const Vector3d& xx, const Vector3d& yy, const Vector3d& zz)
 		{
 			auto x = xx;
 			auto y = yy;
 			auto z = zz;
-		
+
 			ZeroVector(x);
 			ZeroVector(y);
 			ZeroVector(z);
 			x = x / (double)GetLength(x);
 			y = y / (double)GetLength(y);
 			z = z / (double)GetLength(z);
-		
+
 			glm::dmat4  rotationMatrix;
-		
+
 			rotationMatrix[0][0] = x[0];
 			rotationMatrix[0][1] = y[0];
 			rotationMatrix[0][2] = z[0];
 			rotationMatrix[0][3] = 0.0;
-		
+
 			rotationMatrix[1][0] = x[1];
 			rotationMatrix[1][1] = y[1];
 			rotationMatrix[1][2] = z[1];
 			rotationMatrix[1][3] = 0.0;
-		
+
 			rotationMatrix[2][0] = x[2];
 			rotationMatrix[2][1] = y[2];
 			rotationMatrix[2][2] = z[2];
 			rotationMatrix[2][3] = 0.0;
-		
+
 			rotationMatrix[3][0] = 0.0;
 			rotationMatrix[3][1] = 0.0;
 			rotationMatrix[3][2] = 0.0;
 			rotationMatrix[3][3] = 1.0;
-		
+
 			return rotationMatrix;
-		
+
 		}
 
 
-		static glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d &t, const Vector3d &n)
+		static glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d& t, const Vector3d& n)
 		{
 			double angle = GetAngleBetween(o, t);
-	
+
 			if (IsAlmostZero(angle))
 			{
 				glm::dmat4  rotationMatrix;
-	
+
 				rotationMatrix[0][0] = 1.0;
 				rotationMatrix[0][1] = 0.0;
 				rotationMatrix[0][2] = 0.0;
@@ -2197,7 +2280,7 @@ namespace PGL {
 				rotationMatrix[3][1] = 0.0;
 				rotationMatrix[3][2] = 0.0;
 				rotationMatrix[3][3] = 1.0;
-	
+
 				return rotationMatrix;
 			}
 			else
@@ -2205,8 +2288,8 @@ namespace PGL {
 				return RotationMatrix(n, angle);
 			}
 		}
-	
-		static void AAA(const Vector3d& v,Vector3d &n)
+
+		static void AAA(const Vector3d& v, Vector3d& n)
 		{
 			auto a = v[0];
 			auto b = v[1];
@@ -2214,76 +2297,76 @@ namespace PGL {
 			bool bx = IsAlmostZero(a);
 			bool by = IsAlmostZero(b);
 			bool bz = IsAlmostZero(c);
-		
-			if (bx&&by&&bz)
+
+			if (bx && by && bz)
 			{
 				std::cerr << "if (bx&&by&&bz)" << std::endl;
 				system("pause");
 			}
-		
-			if (bx&&by&&!bz)
+
+			if (bx && by && !bz)
 			{
 				n[0] = 1.0;
 				n[1] = 1.0;
 				n[2] = 0.0;
 			}
-			if (bx&&!by&&bz)
+			if (bx && !by && bz)
 			{
 				n[0] = 1.0;
 				n[1] = 0.0;
 				n[2] = 1.0;
 			}
-		
-			if (bx&&!by&&!bz)
+
+			if (bx && !by && !bz)
 			{
 				n[0] = 1.0;
 				n[1] = 1.0;
-				n[2] = -b/c;
+				n[2] = -b / c;
 			}
-		
-			if (!bx&&by&&bz)
+
+			if (!bx && by && bz)
 			{
 				n[0] = 0.0;
 				n[1] = 1.0;
 				n[2] = 1.0;
 			}
-		
-			if (!bx&&by&&!bz)
+
+			if (!bx && by && !bz)
 			{
 				n[0] = 1.0;
 				n[1] = 1.0;
 				n[2] = -a / c;
 			}
-			if (!bx&&!by&&bz)
+			if (!bx && !by && bz)
 			{
 				n[0] = 1.0;
-				n[1] = -a/b;
+				n[1] = -a / b;
 				n[2] = 1.0;
 			}
-		
-			if (!bx&&!by&&!bz)
+
+			if (!bx && !by && !bz)
 			{
 				n[0] = 1.0;
 				n[1] = 1.0;
-				n[2] = -(a+b) / c;
+				n[2] = -(a + b) / c;
 			}
-		
+
 		}
 
-		static glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d &t)
+		static glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d& t)
 		{
 			Vector3d n = GetCrossproduct(o, t);
 			double angle = GetAngleBetween(o, t);
-	
+
 			if (IsAlmostZero(angle - Math_PI))
 			{
-				AAA(o,n);
+				AAA(o, n);
 			}
-	
+
 			if (IsAlmostZero(angle))
 			{
 				glm::dmat4  rotationMatrix;
-	
+
 				rotationMatrix[0][0] = 1.0;
 				rotationMatrix[0][1] = 0.0;
 				rotationMatrix[0][2] = 0.0;
@@ -2300,7 +2383,7 @@ namespace PGL {
 				rotationMatrix[3][1] = 0.0;
 				rotationMatrix[3][2] = 0.0;
 				rotationMatrix[3][3] = 1.0;
-	
+
 				return rotationMatrix;
 			}
 			else
@@ -2508,20 +2591,20 @@ namespace PGL {
 #pragma region IOFunctions
 
 		static bool LoadExisting(const std::string& path)
-		{	
+		{
 			std::ifstream file(path, std::ios::in);
 			if (!file) return false;
 			return true;
 		}
-	
-		static bool LoadVectors(const std::string& path, Vector3d3 &vec_3)
+
+		static bool LoadVectors(const std::string& path, Vector3d3& vec_3)
 		{
 			//zigzag_final_path
-			int nb_0,nb_1,nb_2;
+			int nb_0, nb_1, nb_2;
 			std::ifstream file(path, std::ios::in);
-		
+
 			if (!file) return false;
-			
+
 			file >> nb_0;
 			for (int i = 0; i < nb_0; i++)
 			{
@@ -2530,7 +2613,7 @@ namespace PGL {
 				for (int j = 0; j < nb_1; j++)
 				{
 					file >> nb_2;
-					Vector3d1 vec_1(nb_2,Vector3d(0.0,0.0,0.0));
+					Vector3d1 vec_1(nb_2, Vector3d(0.0, 0.0, 0.0));
 					for (int k = 0; k < nb_2; k++)
 						file >> vec_1[k][0] >> vec_1[k][1] >> vec_1[k][2];
 					vec_2.emplace_back(vec_1);
@@ -2539,18 +2622,17 @@ namespace PGL {
 			}
 			file.clear();
 			file.close();
-		
+
 			return true;
 		}
-		
-		
-		static bool LoadVectors(const std::string& path, Vector3d1 &vec_3)
+
+		static bool LoadVectors(const std::string& path, Vector3d1& vec_3)
 		{
 			//zigzag_final_path
 			std::ifstream file(path, std::ios::in);
-		
+
 			if (!file) return false;
-		
+
 			int nb;
 			file >> nb;
 			for (int i = 0; i < nb; i++)
@@ -2560,35 +2642,35 @@ namespace PGL {
 			}
 			file.clear();
 			file.close();
-		
+
 			return true;
 		}
 
-		static void OutputVectors(const std::string& out_path, const Vector3d3 &vecs)
+		static void OutputVectors(const std::string& out_path, const Vector3d3& vecs)
 		{
 			std::ofstream file(out_path);
 			file << vecs.size() << std::endl;
-		
-			for (int i = 0; i < vecs.size(); i++){
+
+			for (int i = 0; i < vecs.size(); i++) {
 				file << vecs[i].size() << std::endl;
-				for (int j = 0; j < vecs[i].size(); j++){
+				for (int j = 0; j < vecs[i].size(); j++) {
 					file << vecs[i][j].size() << std::endl;
 					for (int k = 0; k < vecs[i][j].size(); k++)
-						file<< vecs[i][j][k][0] << " " << vecs[i][j][k][1] << " " << vecs[i][j][k][2] << " ";
+						file << vecs[i][j][k][0] << " " << vecs[i][j][k][1] << " " << vecs[i][j][k][2] << " ";
 					file << "" << std::endl;
 				}
 			}
-		
+
 			file.clear();
 			file.close();
 		}
-		
-		static void OutputVectors(const std::string& out_path, const Vector3d1 &vecs)
+
+		static void OutputVectors(const std::string& out_path, const Vector3d1& vecs)
 		{
 			std::ofstream file(out_path);
 			file << vecs.size() << std::endl;
 			for (int i = 0; i < vecs.size(); i++)
-				file << vecs[i][0] << " " << vecs[i][1] << " " << vecs[i][2] <<std::endl;
+				file << vecs[i][0] << " " << vecs[i][1] << " " << vecs[i][2] << std::endl;
 			file.clear();
 			file.close();
 		}
@@ -2596,8 +2678,8 @@ namespace PGL {
 
 		static HMODULE LoadHMODULE(const string& dll_path)
 		{
-			if(!DetectExisting(dll_path))
-				MAssert("The dll does not exist: "+dll_path);
+			if (!DetectExisting(dll_path))
+				MAssert("The dll does not exist: " + dll_path);
 
 			HMODULE hModule = LoadLibrary(_T(dll_path.c_str()));
 			if (!hModule)
@@ -2611,7 +2693,7 @@ namespace PGL {
 			return hModule;
 		};
 
-		static void LoadObj3d(const char* path, std::vector<double>&coords, std::vector<int>&tris)
+		static void LoadObj3d(const char* path, std::vector<double>& coords, std::vector<int>& tris)
 		{
 			auto get_first_integer = [](const char* v)
 			{
@@ -2634,9 +2716,9 @@ namespace PGL {
 			};
 
 			int i = 0;
-			while (fgets(line, 1024, fp)) 
+			while (fgets(line, 1024, fp))
 			{
-				if (line[0] == 'v') 
+				if (line[0] == 'v')
 				{
 					sscanf(line, "%*s%lf%lf%lf", &x, &y, &z);
 					coords.push_back(x);
@@ -2657,7 +2739,7 @@ namespace PGL {
 			fclose(fp);
 		};
 
-		static void LoadObj3d(const char* path_, Vector3d1 & vecs, Vector1i1 & face_id_0, Vector1i1 & face_id_1, Vector1i1 & face_id_2)
+		static void LoadObj3d(const char* path_, Vector3d1& vecs, Vector1i1& face_id_0, Vector1i1& face_id_1, Vector1i1& face_id_2)
 		{
 			std::string path = path_;
 			if (path.substr(path.size() - 3, path.size()) == "obj")
@@ -2713,12 +2795,15 @@ namespace PGL {
 
 		static void OutputObj3d(const std::string& path, const Vector3d1& points)
 		{
-			std::ofstream file(path);
-
-			for (auto& p : points)
+			if (points.size() < 3)
 			{
-				file << "v " << p[0] << " " << p[1] << " " << p[2] << std::endl;
+				std::cout << "CGAL_Output_Obj error: vecs.size() < 3 " << std::endl;
+				return;
 			}
+
+			std::ofstream file(path);
+			for (auto& p : points)
+				file << "v " << p[0] << " " << p[1] << " " << p[2] << std::endl;
 
 			int nb = 1;
 			file << "f ";
@@ -2887,6 +2972,509 @@ namespace PGL {
 			file.close();
 		};
 
+		static void OutputObj3d(const std::string& path, const PGLTriMesh& tm)
+		{
+			OutputObj3d(path, tm.vecs, tm.face_id_0, tm.face_id_1, tm.face_id_2);
+		}
+
+		static void OutputObj3d(const std::string& path, const Vector3d1& vecs, const std::vector<int>& face_id_0, const std::vector<int>& face_id_1, const std::vector<int>& face_id_2)
+		{
+			if (vecs.size() < 3 || face_id_0.size() < 1 || face_id_1.size() < 1 || face_id_2.size() < 1)
+			{
+				std::cout << "vecs.size() < 3 || face_id_0.size() < 1 || face_id_1.size() < 1 || face_id_2.size() < 1" << std::endl;
+				return;
+			}
+
+			for (int i = 0; i < face_id_0.size(); i++)
+			{
+				int index_0 = face_id_0[i];
+				int index_1 = face_id_1[i];
+				int index_2 = face_id_2[i];
+				if (index_0 < 0 || index_0 >= vecs.size() || index_1 < 0 || index_1 >= vecs.size() || index_2 < 0 || index_2 >= vecs.size())
+				{
+					std::cout << "index_0 < 0 || index_0 >= vecs.size() || index_1 < 0 || index_1 >= vecs.size() || index_2 < 0 || index_2 >= vecs.size()" << std::endl;
+					return;
+				}
+			}
+
+			std::ofstream file(path);
+			for (int i = 0; i < vecs.size(); i++)
+			{
+				OutputIterInfo("Output Vecs: ", (int)vecs.size(), i, 10);
+				Vector3d v = vecs[i];
+				file << "v " << v[0] << " " << v[1] << " " << v[2] << std::endl;
+			}
+
+			for (int i = 0; i < face_id_0.size(); i++)
+			{
+				OutputIterInfo("Output faces: ", (int)face_id_0.size(), i, 10);
+				int index_0 = face_id_0[i];
+				int index_1 = face_id_1[i];
+				int index_2 = face_id_2[i];
+				if (index_0 != index_1 && index_0 != index_2 && index_1 != index_2)
+					file << "f " << index_0 + 1 << " " << index_1 + 1 << " " << index_2 + 1 << std::endl;
+			}
+			file.close();
+		};
+
+		static void OutputObj3d(const char* path, const Vector3d1& vecs, const std::vector<std::vector<int>>& face_ids)
+		{
+			std::vector<int> face_id_0;
+			std::vector<int> face_id_1;
+			std::vector<int> face_id_2;
+
+			for (int i = 0; i < face_ids.size(); i++)
+			{
+				face_id_0.push_back(face_ids[i][0]);
+				face_id_1.push_back(face_ids[i][1]);
+				face_id_2.push_back(face_ids[i][2]);
+			}
+
+			OutputObj3d(path, vecs, face_id_0, face_id_1, face_id_2);
+		}
+
+		static void OutputObj3d(const char* path, const Vector3d1& vecs, const std::vector<std::vector<int>>& face_ids, const std::vector<int>& triangles_lables, const int& index)
+		{
+			std::vector<int> face_id_0;
+			std::vector<int> face_id_1;
+			std::vector<int> face_id_2;
+
+			std::vector<int> lables(vecs.size(), -1);
+			for (int i = 0; i < face_ids.size(); i++)
+			{
+				face_id_0.push_back(face_ids[i][0]);
+				face_id_1.push_back(face_ids[i][1]);
+				face_id_2.push_back(face_ids[i][2]);
+				if (triangles_lables[i] == index)
+				{
+					lables[face_ids[i][0]] = 0;
+					lables[face_ids[i][1]] = 0;
+					lables[face_ids[i][2]] = 0;
+				}
+			}
+			Vector3d1 new_vecs;
+			std::vector<int> new_face_id_0;
+			std::vector<int> new_face_id_1;
+			std::vector<int> new_face_id_2;
+
+			int vertices_nb = 0;
+			for (int i = 0; i < vecs.size(); i++)
+			{
+				if (lables[i] == 0)
+				{
+					Vector3d v = vecs[i];
+					new_vecs.push_back(v);
+					lables[i] = vertices_nb;
+					vertices_nb++;
+				}
+			}
+
+			for (int i = 0; i < face_id_0.size(); i++)
+			{
+				if (triangles_lables[i] == index)
+				{
+					new_face_id_0.push_back(lables[face_id_0[i]]);
+					new_face_id_1.push_back(lables[face_id_1[i]]);
+					new_face_id_2.push_back(lables[face_id_2[i]]);
+				}
+			}
+
+			OutputObj3d(path, new_vecs, new_face_id_0, new_face_id_1, new_face_id_2);
+		}
+
+		static void OutputObj3d(const char* path, const Vector3d1& vecs, const Vector3d1& colors, const std::vector<int>& face_id_0, const std::vector<int>& face_id_1, const std::vector<int>& face_id_2)
+		{
+			if (vecs.size() < 3 || colors.size() < 3 || face_id_0.size() < 1 || face_id_1.size() < 1 || face_id_2.size() < 1)
+			{
+				std::cout << "CGAL_Output_Obj error: vecs.size() < 3 || face_id_0.size() < 1 || face_id_1.size() < 1 || face_id_2.size() < 1" << std::endl;
+				return;
+			}
+
+			for (int i = 0; i < face_id_0.size(); i++)
+			{
+				int index_0 = face_id_0[i];
+				int index_1 = face_id_1[i];
+				int index_2 = face_id_2[i];
+
+				if (index_0 < 0 || index_0 >= vecs.size() || index_1 < 0 || index_1 >= vecs.size() || index_2 < 0 || index_2 >= vecs.size())
+				{
+					std::cout << "CGAL_Output_Obj error: index_0 < 0 || index_0 >= vecs.size() || index_1 < 0 || index_1 >= vecs.size() || index_2 < 0 || index_2 >= vecs.size()" << std::endl;
+					return;
+				}
+			}
+
+			std::ofstream file(path);
+			for (int i = 0; i < vecs.size(); i++)
+			{
+				file << "v " << vecs[i][0] << " " << vecs[i][1] << " " << vecs[i][2] << " " << colors[i][0] << " " << colors[i][1] << " " << colors[i][2] << std::endl;
+			}
+
+			for (int i = 0; i < face_id_0.size(); i++)
+			{
+				int index_0 = face_id_0[i];
+				int index_1 = face_id_1[i];
+				int index_2 = face_id_2[i];
+
+				if (index_0 != index_1 && index_0 != index_2 && index_1 != index_2)
+					file << "f " << index_0 + 1 << " " << index_1 + 1 << " " << index_2 + 1 << std::endl;
+			}
+			file.close();
+		}
+
+		static void OutputObj3d(const char* path, const Vector3d1& vecs, const Vector3d1& colors, const std::vector<std::vector<int>>& face_ids)
+		{
+			std::vector<int> face_id_0;
+			std::vector<int> face_id_1;
+			std::vector<int> face_id_2;
+			for (int i = 0; i < face_ids.size(); i++)
+			{
+				face_id_0.push_back(face_ids[i][0]);
+				face_id_1.push_back(face_ids[i][1]);
+				face_id_2.push_back(face_ids[i][2]);
+			}
+			OutputObj3d(path, vecs, colors, face_id_0, face_id_1, face_id_2);
+		}
+
+		static void OutputOff3d(const char* path, const Vector3d1& vecs, const std::vector<int>& face_id_0, const std::vector<int>& face_id_1, const std::vector<int>& face_id_2)
+		{
+			if (vecs.size() < 3 || face_id_0.size() < 1 || face_id_1.size() < 1 || face_id_2.size() < 1)
+			{
+				std::cout << "CGAL_Output_Off error: vecs.size() < 3 || face_id_0.size() < 1 || face_id_1.size() < 1 || face_id_2.size() < 1" << std::endl;
+				return;
+			}
+
+			for (int i = 0; i < face_id_0.size(); i++)
+			{
+				int index_0 = face_id_0[i];
+				int index_1 = face_id_1[i];
+				int index_2 = face_id_2[i];
+
+				if (index_0 < 0 || index_0 >= vecs.size() || index_1 < 0 || index_1 >= vecs.size() || index_2 < 0 || index_2 >= vecs.size())
+				{
+					std::cout << "CGAL_Output_Off error: index_0 < 0 || index_0 >= vecs.size() || index_1 < 0 || index_1 >= vecs.size() || index_2 < 0 || index_2 >= vecs.size()" << std::endl;
+					return;
+				}
+			}
+			std::ofstream file(path);
+			file << "OFF" << std::endl;
+			file << vecs.size() << " " << face_id_0.size() << " 0" << std::endl;
+			for (int i = 0; i < vecs.size(); i++)
+				file << vecs[i][0] << " " << vecs[i][1] << " " << vecs[i][2] << std::endl;
+			for (int i = 0; i < face_id_0.size(); i++)
+				file << "3 " << face_id_0[i] << " " << face_id_1[i] << " " << face_id_2[i] << " " << std::endl;
+			file.close();
+		}
+
+		static void OutputMtl(const string& path, const Vector3d1& colors, const string& pre_name)
+		{
+			ofstream file(path);
+			for (int i = 0; i < colors.size(); i++)
+			{
+				auto color = colors[i];
+				file << "newmtl " << pre_name << i << std::endl;
+				file << "illum 4" << std::endl;
+				file << "Kd " << color[0] << " " << color[1] << " " << color[2] << std::endl;
+				file << "Ka 0.00 0.00 0.00" << std::endl;
+				file << "Tf 1.00 1.00 1.00" << std::endl;
+				file << "Ni 1.00" << std::endl;
+			}
+			file.close();
+		}
+
+
+		static void Export_Segment(std::ofstream& export_file_output, int& export_index,
+			const string& s_name, const Vector3d& start, const Vector3d& end,
+			const double& radius, const bool cube_face = true)
+		{
+			Export_Segment(export_file_output, export_index, s_name, Vector3d(-1.0, -1.0, -1.0), "", start, end, radius, cube_face);
+		}
+
+		static void Export_Segment(std::ofstream& export_file_output, int& export_index,
+			const string& s_name, const Vector3d& rgb, const Vector3d& start, const Vector3d& end,
+			const double& radius, const bool cube_face = true)
+		{
+			Export_Segment(export_file_output, export_index, s_name, rgb, "", start, end, radius, cube_face);
+		}
+
+		static void Export_Segment(std::ofstream& export_file_output, int& export_index,
+			const string& s_name, const string& mtl_name, const Vector3d& start, const Vector3d& end,
+			const double& radius, const bool cube_face = true)
+		{
+			Export_Segment(export_file_output, export_index, s_name, Vector3d(0.0, 0.0, 0.0), mtl_name, start, end, radius, cube_face);
+		}
+
+		static void Export_Segment(std::ofstream& export_file_output, int& export_index,
+			const string& s_name, const Vector3d& rgb, const string& mtl_name, const Vector3d& start, const Vector3d& end,
+			const double& radius, const bool cube_face = true)
+		{
+			Vector3d normal = end - start;
+			Vector3d base_1 = Vector3dBase(normal);
+
+			base_1 = SetVectorLength(base_1, radius);
+
+			Vector3d1 vecs;
+
+			if (cube_face)
+			{
+				for (int i = 0; i < 4; i++) {
+					double angle = (double)(i)*Math_PI / 2.0;
+					Vector3d v = Functs::RotationAxis(normal + base_1, angle, normal);
+					vecs.push_back(v + start);
+				}
+				for (int i = 0; i < 4; i++) {
+					vecs.push_back(vecs[i] - normal);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < 2; i++) {
+					double angle = (double)(i)*Math_PI;
+					Vector3d v = Functs::RotationAxis(normal + base_1, angle, normal);
+					vecs.push_back(v + start);
+				}
+				for (int i = 0; i < 2; i++) {
+					vecs.push_back(vecs[i] - normal);
+				}
+			}
+
+			Vector1i2 faces;
+			if (cube_face)
+			{
+				int face_index_0[4] = { 0, 1, 2, 3 };
+				int face_index_1[4] = { 5, 1, 0, 4 };
+				int face_index_2[4] = { 4, 0, 3, 7 };
+				int face_index_3[4] = { 5, 4, 7, 6 };
+				int face_index_4[4] = { 7, 3, 2, 6 };
+				int face_index_5[4] = { 6, 2, 1, 5 };
+
+				faces.push_back(std::vector<int>(face_index_0, face_index_0 + 4));
+				faces.push_back(std::vector<int>(face_index_1, face_index_1 + 4));
+				faces.push_back(std::vector<int>(face_index_2, face_index_2 + 4));
+				faces.push_back(std::vector<int>(face_index_3, face_index_3 + 4));
+				faces.push_back(std::vector<int>(face_index_4, face_index_4 + 4));
+				faces.push_back(std::vector<int>(face_index_5, face_index_5 + 4));
+			}
+			else
+			{
+				int face_index_0[4] = { 0, 1, 3, 2 };
+				faces.push_back(std::vector<int>(face_index_0, face_index_0 + 4));
+			}
+
+
+			for (int i = 0; i < vecs.size(); i++)
+			{
+				if (mtl_name.size() != 0)
+				{
+					export_file_output << "v " << vecs[i][0] << " " << vecs[i][1] << " " << vecs[i][2] << std::endl;
+
+				}
+				else
+				{
+					if (rgb[0] >= 0 && rgb[1] >= 0 && rgb[2] >= 0)
+						export_file_output << "v " << vecs[i][0] << " " << vecs[i][1] << " " << vecs[i][2] << " " <<
+						rgb[0] << " " << rgb[1] << " " << rgb[2] << std::endl;
+					else
+						export_file_output << "v " << vecs[i][0] << " " << vecs[i][1] << " " << vecs[i][2] << std::endl;
+				}
+			}
+
+			if (std::string(s_name).size() != 0)
+				export_file_output << "g " + std::string(s_name) << std::endl;
+
+			if (mtl_name.size() != 0)
+				export_file_output << "usemtl " << mtl_name << std::endl;
+
+			for (int i = 0; i < faces.size(); i++) {
+				export_file_output << "f ";
+
+				for (int j = 0; j < faces[i].size(); j++) {
+					export_file_output << faces[i][j] + export_index << " ";
+				}
+				export_file_output << "" << std::endl;
+			}
+
+			export_index += (int)vecs.size();
+		}
+
+		static void Export_Stick(std::ofstream& export_file_output, int& export_index,
+			const string& s_name, const Vector3d& rgb, const Vector3d1& start_poly, const Vector3d1& end_poly)
+		{
+			Export_Stick(export_file_output, export_index, s_name, rgb, "", start_poly, end_poly);
+		}
+
+		static void Export_Stick(std::ofstream& export_file_output, int& export_index,
+			const string& s_name, const string& mtl_name, const Vector3d1& start_poly, const Vector3d1& end_poly)
+		{
+			Export_Stick(export_file_output, export_index, s_name, Vector3d(-1.0, -1.0, -1.0), mtl_name, start_poly, end_poly);
+		}
+
+		static void Export_Stick(std::ofstream& export_file_output, int& export_index,
+			const string& s_name, const Vector3d1& start_poly, const Vector3d1& end_poly)
+		{
+			Export_Stick(export_file_output, export_index, s_name, Vector3d(-1.0, -1.0, -1.0), "", start_poly, end_poly);
+		}
+
+		static void Export_Stick(std::ofstream& export_file_output, int& export_index,
+			const string& s_name, const Vector3d& rgb, const string& mtl_name, const Vector3d1& start_poly, const Vector3d1& end_poly)
+		{
+			//Functs::MAssert(start_poly.size()<3||end_poly.size()<3|| start_poly.size()!=end_poly.size(), "start_poly.size()<3||end_poly.size()<3|| start_poly.size()!=end_poly.size()");
+
+			for (int i = 0; i < start_poly.size(); i++)
+			{
+				if (mtl_name.size() != 0)
+				{
+					export_file_output << "v " << start_poly[i][0] << " " << start_poly[i][1] << " " << start_poly[i][2] << std::endl;
+
+				}
+				else
+				{
+					if (rgb[0] >= 0 && rgb[1] >= 0 && rgb[2] >= 0)
+						export_file_output << "v " << start_poly[i][0] << " " << start_poly[i][1] << " " << start_poly[i][2] << " " <<
+						rgb[0] << " " << rgb[1] << " " << rgb[2] << std::endl;
+					else
+						export_file_output << "v " << start_poly[i][0] << " " << start_poly[i][1] << " " << start_poly[i][2] << std::endl;
+				}
+			}
+
+			for (int i = 0; i < end_poly.size(); i++)
+			{
+				if (mtl_name.size() != 0)
+				{
+					export_file_output << "v " << end_poly[i][0] << " " << end_poly[i][1] << " " << end_poly[i][2] << std::endl;
+
+				}
+				else
+				{
+					if (rgb[0] >= 0 && rgb[1] >= 0 && rgb[2] >= 0)
+						export_file_output << "v " << end_poly[i][0] << " " << end_poly[i][1] << " " << end_poly[i][2] << " " <<
+						rgb[0] << " " << rgb[1] << " " << rgb[2] << std::endl;
+					else
+						export_file_output << "v " << end_poly[i][0] << " " << end_poly[i][1] << " " << end_poly[i][2] << std::endl;
+				}
+			}
+
+
+			if (std::string(s_name).size() != 0)
+				export_file_output << "g " + std::string(s_name) << std::endl;
+
+			if (mtl_name.size() != 0)
+				export_file_output << "usemtl " << mtl_name << std::endl;
+
+			export_file_output << "f ";
+			for (int i = 0; i < start_poly.size(); i++)
+				export_file_output << i + export_index << " ";
+			export_file_output << std::endl;
+
+			export_file_output << "f ";
+			for (int i = end_poly.size() - 1; i >= 0; i--)
+				export_file_output << i + export_index + start_poly.size() << " ";
+			export_file_output << std::endl;
+
+			for (int i = 0; i < start_poly.size(); i++)
+			{
+				auto a = std::to_string(export_index + i);
+				auto b = std::to_string(export_index + (i + 1) % start_poly.size());
+				auto a_ = std::to_string(start_poly.size() + export_index + i);
+				auto b_ = std::to_string(start_poly.size() + export_index + (i + 1) % start_poly.size());
+
+				export_file_output << "f " << a_ << " " << b_ << " " << b << " " << a << std::endl;;
+			}
+
+			export_index += (int)start_poly.size() + (int)end_poly.size();
+		}
+
+		static void Export_Point
+		(std::ofstream& export_file_output, int& export_index, const string& s_name, const Vector3d point, const double& radius)
+		{
+			Export_Point(export_file_output, export_index, s_name, Vector3d(-1.0, -1.0, -1.0), "", point, radius);
+		}
+
+		static void Export_Point
+		(std::ofstream& export_file_output, int& export_index, const string& s_name,
+			const Vector3d& rgb, const Vector3d point, const double& radius)
+		{
+			Export_Point(export_file_output, export_index, s_name, rgb, "", point, radius);
+		}
+
+		static void Export_Point
+		(std::ofstream& export_file_output, int& export_index, const string& s_name,
+			const string& mtl_name, const Vector3d point, const double& radius)
+		{
+			Export_Point(export_file_output, export_index, s_name, Vector3d(0.0, 0.0, 0.0), mtl_name, point, radius);
+		}
+
+		static void Export_Point
+		(std::ofstream& export_file_output, int& export_index, const string& s_name,
+			const Vector3d& rgb, const string& mtl_name, const Vector3d point, const double& radius)
+		{
+			Vector3d1 vecs;
+			vecs.push_back(Vector3d(0.5, 0.5, 0.5));
+			vecs.push_back(Vector3d(-0.5, 0.5, 0.5));
+			vecs.push_back(Vector3d(-0.5, 0.5, -0.5));
+			vecs.push_back(Vector3d(0.5, 0.5, -0.5));
+
+			vecs.push_back(Vector3d(0.5, -0.5, 0.5));
+			vecs.push_back(Vector3d(-0.5, -0.5, 0.5));
+			vecs.push_back(Vector3d(-0.5, -0.5, -0.5));
+			vecs.push_back(Vector3d(0.5, -0.5, -0.5));
+
+			Vector1i2 faces;
+
+			int face_index_0[4] = { 0, 1, 2, 3 };
+			int face_index_1[4] = { 5, 1, 0, 4 };
+			int face_index_2[4] = { 4, 0, 3, 7 };
+			int face_index_3[4] = { 5, 4, 7, 6 };
+			int face_index_4[4] = { 7, 3, 2, 6 };
+			int face_index_5[4] = { 6, 2, 1, 5 };
+
+			faces.push_back(std::vector<int>(face_index_0, face_index_0 + 4));
+			faces.push_back(std::vector<int>(face_index_1, face_index_1 + 4));
+			faces.push_back(std::vector<int>(face_index_2, face_index_2 + 4));
+			faces.push_back(std::vector<int>(face_index_3, face_index_3 + 4));
+			faces.push_back(std::vector<int>(face_index_4, face_index_4 + 4));
+			faces.push_back(std::vector<int>(face_index_5, face_index_5 + 4));
+
+
+
+
+			for (int i = 0; i < vecs.size(); i++) {
+				vecs[i][0] = vecs[i][0] * radius;
+				vecs[i][1] = vecs[i][1] * radius;
+				vecs[i][2] = vecs[i][2] * radius;
+
+				vecs[i][0] += point[0];
+				vecs[i][1] += point[1];
+				vecs[i][2] += point[2];
+
+				if (mtl_name.size() != 0)
+					export_file_output << "v " << vecs[i][0] << " " << vecs[i][1] << " " << vecs[i][2] << std::endl;
+				else
+				{
+					if (rgb[0] >= 0 && rgb[1] >= 0 && rgb[2] >= 0)
+						export_file_output << "v " << vecs[i][0] << " " << vecs[i][1] << " " << vecs[i][2] << " " << rgb[0] << " " << rgb[1] << " " << rgb[2] << std::endl;
+					else
+						export_file_output << "v " << vecs[i][0] << " " << vecs[i][1] << " " << vecs[i][2] << std::endl;
+				}
+			}
+
+			if (std::string(s_name).size() != 0)
+				export_file_output << "g " + std::string(s_name) << std::endl;
+
+			if (mtl_name.size() != 0)
+				export_file_output << "usemtl " << mtl_name << std::endl;
+
+
+			for (int i = 0; i < faces.size(); i++) {
+				export_file_output << "f ";
+
+				for (int j = (int)faces[i].size() - 1; j >= 0; j--) {
+					export_file_output << faces[i][j] + export_index << " ";
+				}
+				export_file_output << "" << std::endl;
+			}
+			export_index += 8;
+		}
+
 		static void Output_tree(const int& nodes_nb, const std::vector<int>& edges,
 			const std::string& path, const std::vector<string> labels = std::vector<string>())
 		{
@@ -2927,6 +3515,8 @@ namespace PGL {
 			file.clear();
 			file.close();
 		}
+
+
 
 		static bool DetectExisting(const std::string& path)
 		{
@@ -3135,6 +3725,17 @@ namespace PGL {
 			return ConnectedComponents(node_nb, tree_);
 		}
 
+		static std::vector<std::vector<int>> ConnectedComponentsGeneral(const Vector1i1& nodes, const std::vector<std::pair<int, int>>& tree)
+		{
+			std::vector<int> tree_;
+			for (auto& o : tree)
+			{
+				tree_.emplace_back(o.first);
+				tree_.emplace_back(o.second);
+			}
+			return ConnectedComponentsGeneral(nodes, tree_);
+		}
+
 		static std::vector<std::vector<int>> ConnectedComponentsGeneral(const Vector1i1& nodes, const std::vector<int>& tree)
 		{
 			int node_nb = static_cast<int>(nodes.size());
@@ -3216,7 +3817,7 @@ namespace PGL {
 #pragma endregion
 
 #pragma region DevelopmentRelated
-		static bool CerrLine(const string& line, const int level=0)
+		static bool CerrLine(const string& line, const int level = 0)
 		{
 			for (int i = 0; i < level; i++)
 				std::cerr << CERR_ITER;
@@ -3224,10 +3825,10 @@ namespace PGL {
 			return true;
 		}
 
-		static bool CerrLine(ofstream &file, const std::string& line, const int level = 0)
+		static bool CerrLine(ofstream& file, const std::string& line, const int level = 0)
 		{
 			for (int i = 0; i < level; i++)
-			{	
+			{
 				file << CERR_ITER;
 				std::cerr << CERR_ITER;
 			}
@@ -3246,27 +3847,18 @@ namespace PGL {
 
 			if (cn % delta == 0)
 			{
-				if (cn == 0) 
-				{ 
+				if (cn == 0)
+				{
 					for (int i = 0; i < level; i++)
 						std::cerr << CERR_ITER;
-					std::cerr << title << ": "; 
+					std::cerr << title << ": ";
 				}
-				std::cerr << Functs::DoubleString((double)(100.0*cn/tn), 1) << "% ";
+				std::cerr << Functs::DoubleString((double)(100.0 * cn / tn), 1) << "% ";
 				if (cn + delta >= tn) std::cerr << std::endl;
 			}
 		}
 
-		static void MAssert(const std::string& str, const double sleep_seconds=-1)
-		{
-			std::cerr <<"Bug: " << str << std::endl;
-			if (sleep_seconds <= 0)
-				system("pause");
-			else
-				MSleep(sleep_seconds);
-		}
-
-		static void MAssert(const char* str, const double sleep_seconds = -1)
+		static void MAssert(const std::string& str, const double sleep_seconds = -1)
 		{
 			std::cerr << "Bug: " << str << std::endl;
 			if (sleep_seconds <= 0)
@@ -3275,9 +3867,27 @@ namespace PGL {
 				MSleep(sleep_seconds);
 		}
 
+		static void MAssert(const char* str, const double sleep_seconds = -1)
+		{
+			MAssert(std::string(str), sleep_seconds);
+		}
+
+
+		static bool MAssert(const bool& b, const std::string& str, const double sleep_seconds = -1)
+		{
+			if (!b)MAssert(str, sleep_seconds);
+			return b;
+		}
+
+		static bool MAssert(const bool& b, const char* str, const double sleep_seconds = -1)
+		{
+			if (!b)MAssert(str, sleep_seconds);
+			return b;
+		}
+
 		static void MSleep(const double& second)
 		{
-			this_thread::sleep_for(chrono::milliseconds((int)(second*1000)));
+			this_thread::sleep_for(chrono::milliseconds((int)(second * 1000)));
 		}
 
 		static void RunPY(const std::string& py_path, const std::string& paras)
@@ -3291,7 +3901,7 @@ namespace PGL {
 			std::cerr << "Command String: " << cmd_str << std::endl;;
 			system(cmd_str.c_str());
 		}
-		
+
 		static std::string WinGetUserName()
 		{
 			char* user = getenv("username");
@@ -3305,7 +3915,7 @@ namespace PGL {
 			return std::string(tmp);
 		}
 
-		static bool WinCopy(const std::string& source_file, const std::string& target_folder)
+		static bool WinCopy(const std::string& source_file, const std::string& target_folder, const bool& b = true)
 		{
 			if (!Functs::DetectExisting(source_file))
 			{
@@ -3320,25 +3930,25 @@ namespace PGL {
 			}
 
 			std::string str = "copy " + source_file + " " + target_folder;
-			std::cerr << "Command string: " << str << std::endl;
+			if (b) std::cerr << "Command string: " << str << std::endl;
 			system(str.c_str());
 			return true;
 		}
 
-		static bool WinDel(const std::string& source_file)
+		static bool WinDel(const std::string& source_file, const bool& b = true)
 		{
 			if (!Functs::DetectExisting(source_file))
 			{
-				MAssert("Source file does not exist: " + source_file);
+				//MAssert("Source file does not exist: " + source_file);
 				return false;
 			}
 			std::string str = "del " + source_file;
-			std::cerr << "Command string: " << str << std::endl;
+			if (b) std::cerr << "Command string: " << str << std::endl;
 			system(str.c_str());
 			return true;
 		}
 
-		static bool WinRename(const std::string& source_file, const std::string& rename_file)
+		static bool WinRename(const std::string& source_file, const std::string& rename_file, const bool& b = true)
 		{
 			if (!Functs::DetectExisting(source_file))
 			{
@@ -3347,7 +3957,7 @@ namespace PGL {
 			}
 
 			std::string str = "rename " + source_file + " " + rename_file;
-			std::cerr << "Command string: " << str << std::endl;
+			if (b) std::cerr << "Command string: " << str << std::endl;
 			system(str.c_str());
 			return true;
 		}
@@ -3357,23 +3967,6 @@ namespace PGL {
 		{
 			return  typeid(t).name();
 		}
-
-		//template <class Type>
-		//static void XMLP(Type& t, const tinyxml2::XMLElement* params, const std::string& name)
-		//{
-		//	string t_type = typeid(t).name();
-		//	if (params->FirstChildElement(name.c_str()))
-		//	{
-		//		if(t_type== typeid(int).name())
-		//			t = atoi(params->FirstChildElement(name.c_str())->GetText());
-		//		if (t_type == typeid(double).name())
-		//			t = atof(params->FirstChildElement(name.c_str())->GetText());
-		//		if (t_type == typeid(string).name())
-		//			t = params->FirstChildElement(name.c_str())->GetText();
-		//	}
-		//	else
-		//		Functs::MAssert("Did not find the parameter: " + name);
-		//};
 
 #pragma endregion
 
@@ -3435,12 +4028,14 @@ namespace PGL {
 		}
 	};
 
-		//To debug a release build
-		//Open the Property Pages dialog box for the project.
-		//Click the C / C++ node. Set Debug Information Format to C7 compatible(/ Z7) or Program Database(/ Zi).
-		//Expand Linker and click the General node.Set Enable Incremental Linking to No(/ INCREMENTAL:NO).
-		//Select the Debugging node.Set Generate Debug Info to Yes(/ DEBUG).
-		//Select the Optimization node.Set References to / OPT:REF and Enable COMDAT Folding to / OPT : ICF.
+	typedef Functs FF;
+	//To debug a release build
+	//Open the Property Pages dialog box for the project.
+	//Click the C / C++ node. Set Debug Information Format to C7 compatible(/ Z7) or Program Database(/ Zi).
+	//Expand Linker and click the General node.Set Enable Incremental Linking to No(/ INCREMENTAL:NO).
+	//Select the Debugging node.Set Generate Debug Info to Yes(/ DEBUG).
+	//Select the Optimization node.Set References to / OPT:REF and Enable COMDAT Folding to / OPT : ICF.
+
 
 }
 #endif 
