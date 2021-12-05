@@ -676,7 +676,6 @@ namespace PGL {
 					str += std::to_string(a);
 					d1 = d1 - (double)a / (double)pow(10, i);
 				}
-				return str;
 			}
 
 			if (d >= 0)
@@ -893,6 +892,15 @@ namespace PGL {
 				return n;
 			}
 			return n;
+		}
+
+		static Vector3d GetNormal(const Vector3d& v0, const Vector3d& v1)
+		{
+			MAssert(!IsAlmostZero(GetLength(v0)), "v0 is zero.");
+			MAssert(!IsAlmostZero(GetLength(v1)), "v1 is zero.");
+			double angle = GetAngleBetween(v0, v1);
+			if (IsAlmostZero(angle) || IsAlmostZero(angle - Math_PI))return Vector3dBase(v0);
+			return GetCrossproduct(v0, v1);
 		}
 
 		static Vector3d GetCenter(const Vector3d1& points)
@@ -1469,7 +1477,7 @@ namespace PGL {
 		static Vector3d ComputeNormalFromPolyline(const Vector3d1& points)
 		{
 			Vector3d planar_direction;
-			planar_direction = GetCrossproduct(points[0] - points[1], points[2] - points[1]);
+			planar_direction = GetNormal(points[0] - points[1], points[2] - points[1]);
 			SetVectorLength(planar_direction, 1.0);
 			return planar_direction;
 		}
@@ -1477,7 +1485,7 @@ namespace PGL {
 		static void  ComputePlanarFromPolyline(Vector3d& planar_location, Vector3d& planar_direction, const Vector3d1& points)
 		{
 			planar_location = points[0];
-			planar_direction = GetCrossproduct(points[0] - points[1], points[2] - points[1]);
+			planar_direction = GetNormal(points[0] - points[1], points[2] - points[1]);
 			SetVectorLength(planar_direction, 1.0);
 		}
 
