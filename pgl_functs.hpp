@@ -119,6 +119,14 @@ namespace PGL {
 	static std::mt19937 MATHGEN(0); //Standard mersenne_twister_engine seeded with rd()
 	static std::string CERR_ITER = "  ";
 
+#ifdef __APPLE__
+	static bool MACEN = true;
+	static bool WINEN = false;
+#else
+	static bool MACEN = false;
+	static bool WINEN = true;
+#endif
+
 	struct PGLTriMesh
 	{
 		Vector3d1 vecs;
@@ -1321,8 +1329,6 @@ namespace PGL {
 
 				for (int j = 0; j < dis_iters; j++)
 				{
-					Vector3d center(0.0, 0.0, 0.0);
-
 					//glm::ballRand(gaussion_sphere_radius) is slower than my solution
 					Vector3d random_direction = GetRandomDirection(gaussion_sphere_radius);
 
@@ -2485,10 +2491,13 @@ namespace PGL {
 
 			double outputMatrix[4][1] = { 0.0, 0.0, 0.0, 0.0 };
 
-			for (int i = 0; i < 4; i++) {
-				for (int j = 0; j < 1; j++) {
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 1; j++)
+				{
 					outputMatrix[i][j] = 0;
-					for (int k = 0; k < 4; k++) {
+					for (int k = 0; k < 4; k++)
+					{
 						outputMatrix[i][j] += rotationMatrix[i][k] * inputMatrix[k][j];
 					}
 				}
@@ -2683,7 +2692,7 @@ namespace PGL {
 			file.close();
 		}
 
-
+#ifndef __APPLE__
 		static HMODULE LoadHMODULE(const string& dll_path)
 		{
 			if (!DetectExisting(dll_path))
@@ -2700,6 +2709,7 @@ namespace PGL {
 
 			return hModule;
 		};
+#endif
 
 		static void LoadObj3d(const char* path, std::vector<double>& coords, std::vector<int>& tris)
 		{
@@ -2723,7 +2733,6 @@ namespace PGL {
 				return;
 			};
 
-			int i = 0;
 			while (fgets(line, 1024, fp))
 			{
 				if (line[0] == 'v')
@@ -2815,7 +2824,7 @@ namespace PGL {
 
 			int nb = 1;
 			file << "f ";
-			for (auto& p : points)
+			for (int p = 0; p < points.size(); p++)
 			{
 				file << IntString(nb) << " ";
 				nb++;
@@ -2847,7 +2856,7 @@ namespace PGL {
 					file << "g " + str + "_f_" << i << std::endl;
 				auto points_ = points[i];
 				file << "f ";
-				for (auto& p : points_)
+				for (int p = 0; p < points.size(); p++)
 				{
 					file << IntString(nb) << " ";
 					nb++;
@@ -2886,7 +2895,7 @@ namespace PGL {
 
 					auto points_ = points[i][j];
 					file << "f ";
-					for (auto& p : points_)
+					for (int p = 0; p < points.size(); p++)
 					{
 						file << IntString(nb) << " ";
 						nb++;
@@ -2902,7 +2911,6 @@ namespace PGL {
 		{
 			std::ofstream file(path);
 
-			int index = 0;
 			for (int i = 0; i < points.size(); i++)
 			{
 				auto color = colors[i];
@@ -2927,7 +2935,7 @@ namespace PGL {
 
 					auto points_ = points[i][j];
 					file << "f ";
-					for (auto& p : points_)
+					for (int p = 0; p < points.size(); p++)
 					{
 						file << IntString(nb) << " ";
 						nb++;
@@ -2943,7 +2951,6 @@ namespace PGL {
 		{
 			std::ofstream file(path);
 
-			int index = 0;
 			for (int i = 0; i < points.size(); i++)
 			{
 				for (int j = 0; j < points[i].size(); j++)
@@ -2968,7 +2975,7 @@ namespace PGL {
 
 					auto points_ = points[i][j];
 					file << "f ";
-					for (auto& p : points_)
+					for (int p = 0; p < points.size(); p++)
 					{
 						file << IntString(nb) << " ";
 						nb++;
@@ -3528,12 +3535,15 @@ namespace PGL {
 
 		static bool DetectExisting(const std::string& path)
 		{
-			return (_access(path.c_str(), 0) != -1);
+			bool b = (access(path.c_str(), 0) != -1);
+			return b;
 		}
 
+
+#ifndef __APPLE__
 		static void ClearFolder(const std::string& path)
 		{
-			if (_access(path.c_str(), 0) == -1)
+			if (access(path.c_str(), 0) == -1)
 			{
 				if (_mkdir(path.c_str())) {};
 			}
@@ -3547,7 +3557,41 @@ namespace PGL {
 				if (_mkdir(path.c_str())) {};
 			}
 		}
+#else
+		static void ClearFolder(const std::string& path)
+		{
+			if (access(path.c_str(), 0) == -1)
+			{
+				std::string mkdir_cmd = "mkdir " + path;
+				system(mkdir_cmd.c_str());
+			}
+			else
+			{
+				if (WINEN)
+				{
+					std::string del_cmd = "del /f/s/q " + path + " > nul";
+					system(del_cmd.c_str());
+					std::string rmdir_cmd = "rmdir /s/q " + path;
+					system(rmdir_cmd.c_str());
 
+					std::string mkdir_cmd = "mkdir " + path;
+					system(mkdir_cmd.c_str());
+				}
+				if (MACEN)
+				{
+					std::string del_cmd = "rm -rf " + path;
+					system(del_cmd.c_str());
+					std::string mkdir_cmd = "mkdir " + path;
+					system(mkdir_cmd.c_str());
+				}
+			}
+		}
+#endif
+
+
+
+
+#ifndef __APPLE__
 		static std::string EXP(const std::string& py_path)
 		{
 			std::string path = std::string(_pgmptr).substr(0, std::string(_pgmptr).find_last_of('\\')) + py_path;
@@ -3575,8 +3619,16 @@ namespace PGL {
 			}
 			return names;
 		}
-
-
+#else
+		static VectorStr1 GetFilesInDirectory(const std::string& path)
+		{
+			vector<string> names;
+			//for (const auto & entry : fs::directory_iterator(path))
+			 //   names.push_back(entry.path());
+			Functs::MAssert("static VectorStr1 GetFilesInDirectory(const std::string& path)");
+			return names;
+		}
+#endif
 
 
 
@@ -3660,11 +3712,6 @@ namespace PGL {
 				int edge_index_1 = static_cast<int>(2) * minimal_cost_edge_index + 1;
 				int node_index_0 = edges[edge_index_0];
 				int node_index_1 = edges[edge_index_1];
-
-				if (node_index_0 == 16 && node_index_1 == 18)
-				{
-					int dsad = 0;
-				}
 
 				int container_0 = -1;
 				int container_0_0 = -1;
@@ -3870,7 +3917,13 @@ namespace PGL {
 		{
 			std::cerr << "Bug: " << str << std::endl;
 			if (sleep_seconds <= 0)
+			{
+#ifdef __APPLE__
+				system("read -p 'Press Enter to continue...' var");
+#else
 				system("pause");
+#endif
+			}
 			else
 				MSleep(sleep_seconds);
 		}
@@ -3898,11 +3951,27 @@ namespace PGL {
 			this_thread::sleep_for(chrono::milliseconds((int)(second * 1000)));
 		}
 
+
+#ifndef __APPLE__
 		static void RunPY(const std::string& py_path, const std::string& paras)
 		{
 			std::string cmd = "python " + Functs::EXP(py_path) + " " + paras;
 			system(cmd.c_str());
 		}
+		static std::string WinGetCurDirectory()
+		{
+			char tmp[256];
+			if (_getcwd(tmp, 256)) {};
+			return std::string(tmp);
+		}
+#else
+		static std::string WinGetCurDirectory()
+		{
+			char tmp[256];
+			if (getcwd(tmp, 256)) {};
+			return std::string(tmp);
+		}
+#endif
 
 		static void RunCMD(const std::string& cmd_str)
 		{
@@ -3916,12 +3985,6 @@ namespace PGL {
 			return std::string(user);
 		}
 
-		static std::string WinGetCurDirectory()
-		{
-			char tmp[256];
-			if (_getcwd(tmp, 256)) {};
-			return std::string(tmp);
-		}
 
 		static bool WinCopy(const std::string& source_file, const std::string& target_folder, const bool& b = true)
 		{
@@ -3937,9 +4000,19 @@ namespace PGL {
 				return false;
 			}
 
-			std::string str = "copy " + source_file + " " + target_folder;
-			if (b) std::cerr << "Command string: " << str << std::endl;
-			system(str.c_str());
+			if (WINEN)
+			{
+				std::string str = "copy " + source_file + " " + target_folder;
+				if (b) std::cerr << "Command string: " << str << std::endl;
+				system(str.c_str());
+			}
+			if (MACEN)
+			{
+				//% cp -R ~/Documents/Expenses /Volumes/Data/Expenses
+				std::string str = "cp -R " + source_file + " " + target_folder;
+				if (b) std::cerr << "Command string: " << str << std::endl;
+				system(str.c_str());
+			}
 			return true;
 		}
 
