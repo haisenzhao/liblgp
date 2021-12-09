@@ -16,8 +16,8 @@ int main(int argc, char* argv[])
 	
 	auto a = Functs::DetectExisting("E:\\Dropbox\\Mold\\microstructures\\demo\\pipeline\\3_accessible");
 	auto b = Functs::DetectExisting("E:\\Dropbox\\Mold\\microstructures\\demo\\pipeline\\3_accessible2");
-	Functs::CerrLine(a);
-	Functs::CerrLine(a);
+	Functs::CerrLine(std::to_string(a));
+	Functs::CerrLine(std::to_string(b));
 
 	system("pause");
 	return 0;

@@ -21,7 +21,23 @@ public:
 	std::ofstream ofile;
 	std::ifstream ifile;
 	bool ol;
-	bool cout_log=false;
+	bool cout_log = false;
+
+	RI(const string path) :numb(0), cout_log(false)
+	{
+		ol = !Functs::DetectExisting(path);
+
+		if (ol)
+		{
+			ofile.open(path);
+		}
+		else
+		{
+			if (!Functs::DetectExisting(path))
+				Functs::MAssert("void Init(const string path)");
+			ifile.open(path);
+		}
+	}
 
 
 	RI(const bool ol_, const string path) :numb(0), ol(ol_), cout_log(false)
@@ -307,6 +323,46 @@ public:
 			}
 		}
 	}
+
+	void Out(const string& name, Vector1i3& t)
+	{
+		string tmp, lmp; int nb;
+		if (ol)
+		{
+			numb++; ofile << numb << ": "; Check();
+			ofile << name << " " << t.size() << " ";
+			for (auto& t_ : t)
+			{
+				ofile << t_.size() << " ";
+				for (auto& t__ : t_)
+				{
+					ofile << t__.size() << " " << Functs::IntString(t__, false, " ") << " ";
+				}
+			}
+			ofile << std::endl;
+		}
+		else
+		{
+			t.clear();
+			ifile >> lmp >> tmp >> nb;
+			Read(lmp, tmp, name);
+			t = Vector1i3(nb, Vector1i2());
+			for (auto& t_ : t)
+			{
+				ifile >> nb;
+				t_ = Vector1i2(nb, Vector1i1());
+				for (auto& t__ : t_)
+				{
+					ifile >> nb;
+					t__ = Vector1i1(nb, -1);
+					for (auto& t___ : t__)
+						ifile >> t___;
+
+				}
+			}
+		}
+	}
+
 	void Out(const string& name, Vector1d2& t)
 	{
 		string tmp, lmp; int nb;
@@ -931,6 +987,40 @@ public:
 			t = Vector2d1(nb, Vector2d());
 			for (auto& t_ : t)
 				ifile >> t_[0] >> t_[1];
+		}
+	}
+
+
+	void Out(const string& name, Vector2d2& t)
+	{
+		string tmp, lmp; int nb;
+
+		if (ol)
+		{
+			numb++; ofile << numb << ": "; Check();
+			ofile << name << " " << t.size() << " ";
+
+			for (auto& t_ : t)
+			{
+				ofile << t_.size() << " ";
+				for (auto& t__ : t_)
+					ofile << fixed << setprecision(8) << t__[0] << " " << t__[1] << " ";
+			}
+			ofile << std::endl;
+		}
+		else
+		{
+			t.clear();
+			ifile >> lmp >> tmp >> nb;
+			Read(lmp, tmp, name);
+			t = Vector2d2(nb, Vector2d1());
+			for (auto& t_ : t)
+			{
+				ifile >> nb;
+				t_ = Vector2d1(nb, Vector2d());
+				for (auto& t__ : t_)
+					ifile >> t__[0] >> t__[1];
+			}
 		}
 	}
 
