@@ -6,6 +6,7 @@ Depend on [glm](https://github.com/g-truc/glm.git) but you don't need to install
 
 # Usage in Cmake
 
+```
 ExternalProject_Add(
     pgl
     PREFIX ${CMAKE_BINARY_DIR}/third_party/pgl
@@ -20,6 +21,7 @@ set(PglIncludeDir ${source_dir})
 
 include_directories(${PpglIncludeDir})
 add_dependencies(${PROJECT_NAME} pgl)
+```
 
 
 # License
