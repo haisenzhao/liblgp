@@ -7,6 +7,7 @@ Depend on [glm](https://github.com/g-truc/glm.git) and [eigen](https://github.co
 # Usage in Cmake
 
 ```
+include(ExternalProject)
 ExternalProject_Add(
     pgl
     PREFIX ${CMAKE_BINARY_DIR}/third_party/pgl
