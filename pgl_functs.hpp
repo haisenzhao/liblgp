@@ -1904,7 +1904,7 @@ namespace PGL {
 			for (int i = 0; i < s; i++)
 			{
 				double min_d = i * x;
-				double max_d = (static_cast<int64_t>(i) + 1) * x;
+				double max_d = (static_cast<int64_t>(i) + 1)* x;
 				if (d >= min_d && d <= max_d)
 				{
 					return i;
@@ -1931,7 +1931,7 @@ namespace PGL {
 			for (int i = 0; i < s; i++)
 			{
 				double min_d = i * x;
-				double max_d = (static_cast<int64_t>(i) + 1) * x;
+				double max_d = (static_cast<int64_t>(i) + 1)* x;
 				if (d >= min_d && d <= max_d)
 				{
 					return i;
@@ -2754,7 +2754,8 @@ namespace PGL {
 			file.close();
 		}
 
-#ifndef __APPLE__
+#if !defined(UNICODE) && !defined(_UNICODE) && !defined(__APPLE__)
+
 		static HMODULE LoadHMODULE(const string& dll_path)
 		{
 			if (!DetectExisting(dll_path))
@@ -2771,6 +2772,7 @@ namespace PGL {
 
 			return hModule;
 		};
+
 #endif
 
 		static void LoadObj3d(const char* path, std::vector<double>& coords, std::vector<int>& tris)
@@ -3667,7 +3669,10 @@ namespace PGL {
 
 		static VectorStr1 GetFilesInDirectory(const std::string& path)
 		{
+
 			vector<string> names;
+
+#if !defined(UNICODE) && !defined(_UNICODE)
 			string search_path = path + "/*.*";
 			WIN32_FIND_DATA fd;
 			HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd);
@@ -3681,6 +3686,8 @@ namespace PGL {
 				} while (::FindNextFile(hFind, &fd));
 				::FindClose(hFind);
 			}
+#endif
+
 			return names;
 		}
 #else
@@ -3772,8 +3779,8 @@ namespace PGL {
 					break;
 
 				//check valid
-				int edge_index_0 = static_cast<int>(2) * minimal_cost_edge_index;
-				int edge_index_1 = static_cast<int>(2) * minimal_cost_edge_index + 1;
+				int edge_index_0 = static_cast<int>(2)* minimal_cost_edge_index;
+				int edge_index_1 = static_cast<int>(2)* minimal_cost_edge_index + 1;
 				int node_index_0 = edges[edge_index_0];
 				int node_index_1 = edges[edge_index_1];
 
