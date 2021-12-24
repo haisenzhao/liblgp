@@ -2,7 +2,7 @@ This code is header only Library developed by Haisen Zhao for his research proje
 
 # Dependency
 
-Depend on [glm](https://github.com/g-truc/glm.git) but you don't need to install them explicitly.
+Depend on [glm](https://github.com/g-truc/glm.git) and [eigen](https://github.com/libigl/eigen.git) but you don't need to install them explicitly.
 
 # Usage in Cmake
 
