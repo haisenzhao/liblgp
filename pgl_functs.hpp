@@ -464,8 +464,8 @@ namespace PGL {
 		}
 
 
-		template <class Type>
-		static std::string IntString(Type& i)
+
+		static std::string IntString(int i)
 		{
 			std::stringstream ss;
 			std::string str;
