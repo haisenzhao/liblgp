@@ -3602,14 +3602,14 @@ namespace PGL {
 
 		static bool DetectExisting(const std::string& path)
 		{
-			bool b = (access(path.c_str(), 0) != -1);
-			return b;
+			struct stat buffer;
+			return (stat(path.c_str(), &buffer) == 0);
 		}
 
 #ifndef __APPLE__
 		static void ClearFolder(const std::string& path)
 		{
-			if (access(path.c_str(), 0) == -1)
+			if (!DetectExisting(path))
 			{
 				if (_mkdir(path.c_str())) {};
 			}
