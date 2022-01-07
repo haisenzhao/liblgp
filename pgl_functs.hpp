@@ -465,14 +465,27 @@ namespace PGL {
 
 
 
-		static std::string IntString(int i)
-		{
-			std::stringstream ss;
-			std::string str;
-			ss << i;
-			ss >> str;
-			return str;
-		}
+        static std::string IntString(int i, int p =0)
+        {
+            std::stringstream ss;
+            std::string str;
+            ss << i;
+            ss >> str;
+            
+            if(p>0)
+            {
+                if(i<0) str = IntString(abs(i));
+               
+                auto strc = str.c_str();
+                string strp="";
+                for(int j=p;j>=1;j--)
+                    strp+=j<=str.length()?string(1, strc[j-1]):"0";
+                if(i<0)strp="-"+strp;
+                return strp;
+            }
+            
+            return str;
+        }
 
 		template <class Type>
 		static std::string IntString(const std::vector<Type>& vecs, bool order = false, std::string insert_str = "")
