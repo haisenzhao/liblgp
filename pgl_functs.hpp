@@ -2902,7 +2902,7 @@ namespace PGL {
                     file << "g " + str + "_f_" << i << std::endl;
                 auto points_ = points[i];
                 file << "f ";
-                for (int p = 0; p < points.size(); p++)
+                for (int p = 0; p < points_.size(); p++)
                 {
                     file << IntString(nb) << " ";
                     nb++;
@@ -2941,7 +2941,7 @@ namespace PGL {
 
                     auto points_ = points[i][j];
                     file << "f ";
-                    for (int p = 0; p < points.size(); p++)
+                    for (int p = 0; p < points_.size(); p++)
                     {
                         file << IntString(nb) << " ";
                         nb++;
@@ -2981,7 +2981,7 @@ namespace PGL {
 
                     auto points_ = points[i][j];
                     file << "f ";
-                    for (int p = 0; p < points.size(); p++)
+                    for (int p = 0; p < points_.size(); p++)
                     {
                         file << IntString(nb) << " ";
                         nb++;
@@ -3021,7 +3021,7 @@ namespace PGL {
 
                     auto points_ = points[i][j];
                     file << "f ";
-                    for (int p = 0; p < points.size(); p++)
+                    for (int p = 0; p < points_.size(); p++)
                     {
                         file << IntString(nb) << " ";
                         nb++;
