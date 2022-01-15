@@ -3582,22 +3582,19 @@ namespace PGL {
         }
 
 
-
-
-
 #ifndef __APPLE__
         static void ClearFolder(const std::string& path)
         {
-			if (!FF::DetectExisting(path))
+			if (!DetectExisting(path))
 			{
-				auto folders = FF::SplitStr(FF::StringReplace(path, "\\", "/"), "/");
+				auto folders = SplitStr(StringReplace(path, "\\", "/"), "/");
 				if (folders.back() == "")
 					folders.erase(folders.begin() + folders.size() - 1);
 				std::string str;
 				for (int i = 0; i < folders.size(); i++)
 				{
 					str += folders[i] + "/";
-					if (!FF::DetectExisting(str))
+					if (!DetectExisting(str))
 					{
 						if (_mkdir(str.c_str())) {};
 					}
@@ -3623,14 +3620,14 @@ namespace PGL {
         {
             if (access(path.c_str(), 0) == -1)
             {
-				auto folders = FF::SplitStr(FF::StringReplace(path, "\\", "/"), "/");
+				auto folders = SplitStr(StringReplace(path, "\\", "/"), "/");
 				if (folders.back() == "")
 					folders.erase(folders.begin() + folders.size() - 1);
 				std::string str;
 				for (int i = 0; i < folders.size(); i++)
 				{
 					str += folders[i] + "/";
-					if (!FF::DetectExisting(str))
+					if (!DetectExisting(str))
 					{
                         system(std::string("mkdir " + str).c_str());
 					}
