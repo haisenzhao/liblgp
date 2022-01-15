@@ -14,6 +14,7 @@
 #include <math.h>
 #include <random>
 #include <fstream>
+#include <regex>
 #ifdef __APPLE__
 #include <sys/uio.h>
 #include <unistd.h>
