@@ -3588,19 +3588,30 @@ namespace PGL {
 #ifndef __APPLE__
         static void ClearFolder(const std::string& path)
         {
-            if (!DetectExisting(path))
-            {
-                if (_mkdir(path.c_str())) {};
-            }
-            else
-            {
-                std::string del_cmd = "del /f/s/q " + path + " > nul";
-                system(del_cmd.c_str());
-                std::string rmdir_cmd = "rmdir /s/q " + path;
-                system(rmdir_cmd.c_str());
+			if (!FF::DetectExisting(path))
+			{
+				auto folders = FF::SplitStr(FF::StringReplace(path, "\\", "/"), "/");
+				if (folders.back() == "")
+					folders.erase(folders.begin() + folders.size() - 1);
+				std::string str;
+				for (int i = 0; i < folders.size(); i++)
+				{
+					str += folders[i] + "/";
+					if (!FF::DetectExisting(str))
+					{
+						if (_mkdir(str.c_str())) {};
+					}
+				}
+			}
+			else
+			{
+				std::string del_cmd = "del /f/s/q " + path + " > nul";
+				system(del_cmd.c_str());
+				std::string rmdir_cmd = "rmdir /s/q " + path;
+				system(rmdir_cmd.c_str());
 
-                if (_mkdir(path.c_str())) {};
-            }
+				if (_mkdir(path.c_str())) {};
+			}
         }
         static bool DetectExisting(const std::string& path)
         {
@@ -3612,28 +3623,25 @@ namespace PGL {
         {
             if (access(path.c_str(), 0) == -1)
             {
-                std::string mkdir_cmd = "mkdir " + path;
-                system(mkdir_cmd.c_str());
+				auto folders = FF::SplitStr(FF::StringReplace(path, "\\", "/"), "/");
+				if (folders.back() == "")
+					folders.erase(folders.begin() + folders.size() - 1);
+				std::string str;
+				for (int i = 0; i < folders.size(); i++)
+				{
+					str += folders[i] + "/";
+					if (!FF::DetectExisting(str))
+					{
+                        system(std::string("mkdir " + str).c_str());
+					}
+				}
             }
             else
             {
-                if (WINEN)
-                {
-                    std::string del_cmd = "del /f/s/q " + path + " > nul";
-                    system(del_cmd.c_str());
-                    std::string rmdir_cmd = "rmdir /s/q " + path;
-                    system(rmdir_cmd.c_str());
-
-                    std::string mkdir_cmd = "mkdir " + path;
-                    system(mkdir_cmd.c_str());
-                }
-                if (MACEN)
-                {
-                    std::string del_cmd = "rm -rf " + path;
-                    system(del_cmd.c_str());
-                    std::string mkdir_cmd = "mkdir " + path;
-                    system(mkdir_cmd.c_str());
-                }
+				std::string del_cmd = "rm -rf " + path;
+				system(del_cmd.c_str());
+				std::string mkdir_cmd = "mkdir " + path;
+				system(mkdir_cmd.c_str());
             }
         }
         
