@@ -4184,6 +4184,7 @@ namespace PGL {
 
     typedef Functs FF;
     #define DS FF::DoubleString
+    #define IS FF::IntString
 	
     //To debug a release build
     //Open the Property Pages dialog box for the project.
