@@ -4183,6 +4183,8 @@ namespace PGL {
     };
 
     typedef Functs FF;
+    #define DS FF::DoubleString
+	
     //To debug a release build
     //Open the Property Pages dialog box for the project.
     //Click the C / C++ node. Set Debug Information Format to C7 compatible(/ Z7) or Program Database(/ Zi).
