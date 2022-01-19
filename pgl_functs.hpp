@@ -2859,12 +2859,8 @@ namespace PGL {
 
         static void OutputObj3d(const std::string& path, const Vector3d1& points)
         {
-            if (points.size() < 3)
-            {
-                std::cout << "CGAL_Output_Obj error: vecs.size() < 3 " << std::endl;
-                return;
-            }
-
+            Functs::MAssert(points.size() >= 3,"CGAL_Output_Obj error: vecs.size() < 3 ");
+            
             std::ofstream file(path);
             for (auto& p : points)
                 file << "v " << p[0] << " " << p[1] << " " << p[2] << std::endl;
@@ -2882,6 +2878,36 @@ namespace PGL {
             file.close();
         };
 
+        static void OutputObj3d(const std::string& path, const Vector3d1& points, const Vector3d1& colors)
+        {
+            Functs::MAssert(points.size()==colors.size(),"points.size()!=colors.size()");
+            Functs::MAssert(points.size() >= 3,"CGAL_Output_Obj error: vecs.size() < 3 ");
+
+
+            std::ofstream file(path);
+            for(int i=0;i<points.size();i++)
+            {
+                auto p = points[i], c = colors[i];
+                file << "v ";
+                file << p[0] << " " << p[1] << " " << p[2] <<" ";
+                file << c[0] << " " << c[1] << " " << c[2];
+                file << std::endl;
+            }
+          
+            int nb = 1;
+            file << "f ";
+            for (int p = 0; p < points.size(); p++)
+            {
+                file << IntString(nb) << " ";
+                nb++;
+            }
+            file << "" << std::endl;
+
+            file.clear();
+            file.close();
+        };
+        
+        
         static void OutputObj3d(const std::string& path, const Vector3d2& points, const int output_index = 1, const string str = "")
         {
             std::ofstream file(path);
