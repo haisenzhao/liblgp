@@ -864,23 +864,21 @@ namespace PGL {
             return angle / 180.0 * Math_PI;
         }
 
-        static Vector3d SetVectorLength(const Vector3d& v, const double& length)
+        static Vector3d SetVectorLength(Vector3d& v, const double& length)
         {
             double l = GetLength(v);
-            Vector3d vc;
-            vc[0] = v[0] / l * length;
-            vc[1] = v[1] / l * length;
-            vc[2] = v[2] / l * length;
-            return vc;
+            v[0] = v[0] / l * length;
+            v[1] = v[1] / l * length;
+            v[2] = v[2] / l * length;
+            return v;
         }
 
-        static Vector2d SetVectorLength(const Vector2d& v, const double& length)
+        static Vector2d SetVectorLength(Vector2d& v, const double& length)
         {
             double l = GetLength(v);
-            Vector3d vc;
-            vc[0] = v[0] / l * length;
-            vc[1] = v[1] / l * length;
-            return vc;
+            v[0] = v[0] / l * length;
+            v[1] = v[1] / l * length;
+            return v;
         }
 
         //existing bugs in this function
