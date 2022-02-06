@@ -864,22 +864,32 @@ namespace PGL {
             return angle / 180.0 * Math_PI;
         }
 
-        static Vector3d SetVectorLength(Vector3d& v, const double& length)
+        static void SetVectorLength(Vector3d& v, const double& length)
         {
-            double l = GetLength(v);
-            v[0] = v[0] / l * length;
-            v[1] = v[1] / l * length;
-            v[2] = v[2] / l * length;
-            return v;
+            v = GetVectorLength(v, length);
         }
 
-        static Vector2d SetVectorLength(Vector2d& v, const double& length)
+        static void SetVectorLength(Vector2d& v, const double& length)
         {
-            double l = GetLength(v);
-            v[0] = v[0] / l * length;
-            v[1] = v[1] / l * length;
-            return v;
+            v = GetVectorLength(v, length);
         }
+
+		static Vector3d GetVectorLength(const Vector3d& v, const double& length)
+		{
+			double l = GetLength(v);
+			MAssert(!IsAlmostZero(l), "SetVectorLength: input length is zero.");
+			MAssert(!IsAlmostZero(length), "SetVectorLength: input length is zero.");
+            return Vector3d(v[0] / l * length, v[1] / l * length, v[2] / l * length);
+		}
+
+		static Vector2d GetVectorLength(const Vector2d& v, const double& length)
+		{
+			double l = GetLength(v);
+			MAssert(!IsAlmostZero(l), "SetVectorLength: input length is zero.");
+            MAssert(!IsAlmostZero(length), "SetVectorLength: input length is zero.");
+            return Vector2d(v[0] / l * length, v[1] / l * length);
+		}
+
 
         //existing bugs in this function
         static Vector3d Vector3dBase(const Vector3d& v)
@@ -1188,9 +1198,9 @@ namespace PGL {
             auto backup_planar_direction = planar_direction;
 
             if (angle <= Math_PI / 2.0)
-                return p - SetVectorLength(backup_planar_direction, length * sin(Math_PI / 2.0 - angle));
+                return p - GetVectorLength(backup_planar_direction, length * sin(Math_PI / 2.0 - angle));
             else
-                return p + SetVectorLength(backup_planar_direction, length * sin(angle - Math_PI / 2.0));
+                return p + GetVectorLength(backup_planar_direction, length * sin(angle - Math_PI / 2.0));
 
         }
 
@@ -1477,7 +1487,7 @@ namespace PGL {
                 return ray_location;
             double angle = GetAngleBetween(ray_vector, project_point - ray_location);
             double length = distance / cos(angle);
-            return ray_location + SetVectorLength(ray_vector, length);
+            return ray_location + GetVectorLength(ray_vector, length);
         }
 
         static Vector3d ComputeNormalFromPolyline(const Vector3d1& points)
@@ -3298,7 +3308,7 @@ namespace PGL {
             Vector3d normal = end - start;
             Vector3d base_1 = Vector3dBase(normal);
 
-            base_1 = SetVectorLength(base_1, radius);
+            base_1 = GetVectorLength(base_1, radius);
 
             Vector3d1 vecs;
 
