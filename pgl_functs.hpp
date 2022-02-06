@@ -1177,7 +1177,7 @@ namespace PGL {
             return xys;
         }
 
-        static Vector3d PlaneProject(const Vector3d& planar_location, Vector3d& planar_direction, const Vector3d& p)
+        static Vector3d PlaneProject(const Vector3d& planar_location, const Vector3d& planar_direction, const Vector3d& p)
         {
             if (IsAlmostZero(GetLength(planar_location, p)))
                 return planar_location;
@@ -1185,10 +1185,12 @@ namespace PGL {
             double angle = GetAngleBetween(planar_direction, p - planar_location);
             double length = GetLength(planar_location, p);
 
+            auto backup_planar_direction = planar_direction;
+
             if (angle <= Math_PI / 2.0)
-                return p - SetVectorLength(planar_direction, length * sin(Math_PI / 2.0 - angle));
+                return p - SetVectorLength(backup_planar_direction, length * sin(Math_PI / 2.0 - angle));
             else
-                return p + SetVectorLength(planar_direction, length * sin(angle - Math_PI / 2.0));
+                return p + SetVectorLength(backup_planar_direction, length * sin(angle - Math_PI / 2.0));
 
         }
 
@@ -1564,7 +1566,7 @@ namespace PGL {
             return IsAlmostZero_Double(GetDistance(v0, v1), EPSILON);
         }
 
-        static bool DetectCoplanar(const Vector3d& planar_location_0, Vector3d& planar_direction_0,
+        static bool DetectCoplanar(const Vector3d& planar_location_0, const Vector3d& planar_direction_0,
             const Vector3d& planar_location_1, const Vector3d& planar_direction_1,
             const double& angle_match_error, const double& dis_match_error)
         {
