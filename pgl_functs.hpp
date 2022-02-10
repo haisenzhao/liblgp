@@ -876,17 +876,17 @@ namespace PGL {
 
 		static Vector3d GetVectorLength(const Vector3d& v, const double& length)
 		{
+            if (IsAlmostZero(length)) return Vector3d(0.0, 0.0,0.0);
 			double l = GetLength(v);
 			MAssert(!IsAlmostZero(l), "SetVectorLength: input length is zero.");
-			MAssert(!IsAlmostZero(length), "SetVectorLength: input length is zero.");
             return Vector3d(v[0] / l * length, v[1] / l * length, v[2] / l * length);
 		}
 
 		static Vector2d GetVectorLength(const Vector2d& v, const double& length)
 		{
+            if (IsAlmostZero(length)) return Vector3d(0.0, 0.0, 0.0);
 			double l = GetLength(v);
 			MAssert(!IsAlmostZero(l), "SetVectorLength: input length is zero.");
-            MAssert(!IsAlmostZero(length), "SetVectorLength: input length is zero.");
             return Vector2d(v[0] / l * length, v[1] / l * length);
 		}
 
