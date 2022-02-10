@@ -20,6 +20,17 @@ int main(int argc, char* argv[])
 
    // CC().LoadConfig(argc, argv);
     
+
+	Vector3d bb = FF::RotationAxis(Vector3d(-1,0,1), FF::Angle2Radian(135.0), Vector3d(0,1,0));
+
+	auto m = FF::RotationMatrix(Vector3d(0, 1, 0), FF::Angle2Radian(135.0));
+	Vector3d bb1 = FF::PosApplyM(Vector3d(-1, 0, 1), m);
+
+	auto mm = glm::rotate(FF::Angle2Radian(135.0), Vector3d(0, 1, 0));
+	auto rtv = mm* glm::dvec4(Vector3d(-1, 0, 1), 1.0);
+	auto bb2 = Vector3d(rtv[0], rtv[1], rtv[2]);
+
+
 	auto a = Functs::DetectExisting("E:\\Dropbox\\Mold\\microstructures\\demo\\pipeline\\3_accessible");
 	auto b = Functs::DetectExisting("E:\\Dropbox\\Mold\\microstructures\\demo\\pipeline\\3_accessible2");
 	Functs::CerrLine(std::to_string(a));

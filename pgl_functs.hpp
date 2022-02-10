@@ -2499,11 +2499,12 @@ namespace PGL {
 
         static Vector3d RotationAxis(const Vector3d& p, const double& angle, const Vector3d& n)
         {
-            auto m = RotationMatrix(n, angle);
-            return PosApplyM(p, m);
+            //auto m = RotationMatrix(n, angle);
+            //return PosApplyM(p, m);
 
-            // auto rtv = glm::rotate(angle, n)* glm::dvec4(p, 1.0);
-            // return Vector3d(rtv[0], rtv[1], rtv[2]);
+            auto rtv = glm::rotate(angle, n)* glm::dvec4(p, 1.0);
+            return Vector3d(rtv[0], rtv[1], rtv[2]);
+            
             /*
             glm::dmat4 inputMatrix(0.0);
             inputMatrix[0][0] = p[0];
