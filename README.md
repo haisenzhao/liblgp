@@ -20,7 +20,7 @@ ExternalProject_Add(
 ExternalProject_Get_Property(pgl source_dir)
 set(PglIncludeDir ${source_dir})
 
-include_directories(${PpglIncludeDir})
+include_directories(${PglIncludeDir})
 add_dependencies(${PROJECT_NAME} pgl)
 ```
 
