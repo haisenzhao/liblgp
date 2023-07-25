@@ -2755,7 +2755,7 @@ namespace PGL {
  
             if (!DetectExisting(dll_path))
             {
-                std::string root_path = Functs::WinGetCurDirectory().substr(0, Functs::WinGetCurDirectory().find_last_of("\\"));
+                std::string root_path = Functs::WinGetCurDirectory();
 
                 std::string str;
                 str += "The dll does not exist: " + dll_path + ";\n";
