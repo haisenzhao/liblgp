@@ -2752,8 +2752,15 @@ namespace PGL {
 
         static HMODULE LoadHMODULE(const string& dll_path)
         {
+ 
             if (!DetectExisting(dll_path))
+            {
+                std::string root_path = Functs::WinGetCurDirectory().substr(0, Functs::WinGetCurDirectory().find_last_of("\\"));
+                root_path = root_path.substr(0, root_path.find_last_of("\\") + 1);
+
                 MAssert("The dll does not exist: " + dll_path);
+                MAssert("Current path: " + root_path);
+            }
 
             HMODULE hModule = LoadLibrary(_T(dll_path.c_str()));
             if (!hModule)
