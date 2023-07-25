@@ -2759,8 +2759,8 @@ namespace PGL {
 
                 std::string str;
                 str += "The dll does not exist: " + dll_path + ";\n";
-                str += "The current running directory:" + root_path + ";";
-                str += "Please gurrentee the dll is in the right place;";
+                str += "The current running directory: " + root_path + ";\n";
+                str += "Please gurrentee the dll is in the right place;\n";
                 MAssert(str);
             }
 
