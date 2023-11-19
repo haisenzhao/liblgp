@@ -20,22 +20,22 @@ public:
     int numb = 0;
     std::ofstream ofile;
     std::ifstream ifile;
-    bool ol;
+    bool ol;//TRUE:The file path does not exist£»FALSE:The file path  exists
     bool cout_log=false;
-
+    //Constructor
     RI(const string path) :numb(0), cout_log(false)
     {
         ol = !Functs::DetectExisting(path);
 
-        if (ol)
+        if (ol)//The file path does not exist
         {
-            ofile.open(path);
+            ofile.open(path);//Automatically create files and open them
         }
         else
         {
             if (!Functs::DetectExisting(path))
                 Functs::MAssert("void Init(const string path)");
-            ifile.open(path);
+            ifile.open(path);//If the file path exists, open the file directly
         }
     }
 
@@ -68,7 +68,7 @@ public:
             ifile.open(path);
         }
     }
-
+    //close file
     void Close()
     {
         if (ol)
@@ -132,6 +132,10 @@ public:
         }
     }
 
+    //Out:output numb,name and t,or read information from the file(depend on ol)
+
+    //When ol is true (file does not exist), output "numb:name t" to the created file
+    //When ol is false (file exists), read information from the file (stored in imp, tmp)
     void Out(const string& name, int& t)
     {
         string tmp, lmp;
@@ -146,7 +150,7 @@ public:
             Read(lmp, tmp, name);
         }
     }
-
+    
     void Out(const string& name, double& t)
     {
         string tmp, lmp;
@@ -191,6 +195,7 @@ public:
             Read(lmp, tmp, name);
         }
     }
+   
     void Out(const string& name, string& t)
     {
         string tmp, lmp; int nb;
@@ -220,7 +225,7 @@ public:
             }
             else
             {
-                if (t.find(pt) == std::string::npos)
+                if (t.find(pt) == std::string::npos)//t does not include pt
                 {
                     Functs::MAssert("if (t.find(pt) == std::string::npos)");
                 }
@@ -235,7 +240,7 @@ public:
                 t = pt + t;
         }
     }
-
+  
     void Out(const string& name, VectorTI3& t)
     {
         string tmp, lmp; int nb;
@@ -259,6 +264,7 @@ public:
                 ifile >> std::get<0>(t_) >> std::get<1>(t_) >> std::get<2>(t_);
         }
     }
+   
     void Out(const string& name, Vector1i1& t)
     {
         string tmp, lmp; int nb;
@@ -267,7 +273,7 @@ public:
             numb++;
             ofile << numb << ": ";
             Check();
-            ofile << name << " " << t.size() << " " << Functs::IntString(t, false, " ") << std::endl;
+            ofile << name << " " << t.size() << " " << Functs::Int2String(t, false, " ") << std::endl;
         }
         else
         {
@@ -278,13 +284,14 @@ public:
             for (auto& t_ : t) ifile >> t_;
         }
     }
+    
     void Out(const string& name, Vector1d1& t)
     {
         string tmp, lmp; int nb;
         if (ol)
         {
             numb++; ofile << numb << ": "; Check();
-            ofile << name << " " << t.size() << " " << Functs::DoubleString(t, 8, false, " ") << std::endl;
+            ofile << name << " " << t.size() << " " << Functs::Double2String(t, 8, false, " ") << std::endl;
         }
         else
         {
@@ -295,6 +302,7 @@ public:
             for (auto& t_ : t) ifile >> t_;
         }
     }
+   
     void Out(const string& name, Vector1i2& t)
     {
         string tmp, lmp; int nb;
@@ -304,7 +312,7 @@ public:
             ofile << name << " " << t.size() << " ";
             for (auto& t_ : t)
             {
-                ofile << t_.size() << " " << Functs::IntString(t_, false, " ") << " ";
+                ofile << t_.size() << " " << Functs::Int2String(t_, false, " ") << " ";
             }
             ofile << std::endl;
         }
@@ -336,7 +344,7 @@ public:
                 ofile << t_.size() << " ";
                 for (auto& t__ : t_)
                 {
-                    ofile << t__.size() << " " << Functs::IntString(t__, false, " ") << " ";
+                    ofile << t__.size() << " " << Functs::Int2String(t__, false, " ") << " ";
                 }
             }
             ofile << std::endl;
@@ -372,7 +380,7 @@ public:
             ofile << name << " " << t.size() << " ";
             for (auto& t_ : t)
             {
-                ofile << t_.size() << " " << Functs::DoubleString(t_, 8, false, " ") << " ";
+                ofile << t_.size() << " " << Functs::Double2String(t_, 8, false, " ") << " ";
             }
             ofile << std::endl;
         }
@@ -397,7 +405,7 @@ public:
         if (ol)
         {
             numb++; ofile << numb << ": "; Check();
-            ofile << name << " " << t.size() << " " << Functs::IntString(t, false, " ", " ") << std::endl;
+            ofile << name << " " << t.size() << " " << Functs::Int2String(t, false, " ", " ") << std::endl;
         }
         else
         {
@@ -492,7 +500,7 @@ public:
             numb++; ofile << numb << ": "; Check();
             ofile << name << " " << t.size() << " ";
             for (auto& t_ : t)
-                ofile << t_.size() << " " << Functs::IntString(t_, false, " ", " ") << " ";
+                ofile << t_.size() << " " << Functs::Int2String(t_, false, " ", " ") << " ";
             ofile << std::endl;
         }
         else
@@ -834,7 +842,7 @@ public:
             for (auto& t_ : t)
             {
                 ofile << std::get<0>(t_) << " " << std::get<1>(t_) << " " << std::get<2>(t_).size()
-                    << " " << Functs::IntString(std::get<2>(t_), false, " ") << " ";
+                    << " " << Functs::Int2String(std::get<2>(t_), false, " ") << " ";
             }
             ofile << std::endl;
         }

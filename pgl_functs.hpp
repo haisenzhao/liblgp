@@ -1,5 +1,7 @@
+#pragma warning(disable: 4996)
 #ifndef pgl_hpp
 #define pgl_hpp
+#include <numeric>
 #include <vector>
 #include <set>
 #include <stdexcept>
@@ -33,16 +35,16 @@
 #include <chrono>
 #include <thread>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/norm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/random.hpp>
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_inverse.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/norm.hpp"
+#include "glm/gtx/transform.hpp"
+#include "glm/gtc/random.hpp"
 
-#include <Eigen/Core>
-#include <Eigen/Dense>
+#include "Eigen/Core"
+#include "Eigen/Dense"
 
 
 //glm modules
@@ -57,14 +59,14 @@ namespace PGL {
     using Vector1 = std::vector<datum>;
 
     template <typename datum>
-    using Vector2 = std::vector<std::vector<datum>>;
+    using Vector2 = std::vector<std::vector<datum>>;//two-dimensional array
 
     template <typename datum>
-    using Vector3 = std::vector<std::vector<std::vector<datum>>>;
+    using Vector3 = std::vector<std::vector<std::vector<datum>>>;//three-dimensional array
 
-    typedef glm::highp_dvec2 Vector2d;
+    typedef glm::highp_dvec2 Vector2d;//High precision double precision vector types
     typedef glm::highp_dvec3 Vector3d;
-    typedef glm::highp_ivec2 Vector2i;
+    typedef glm::highp_ivec2 Vector2i;//High precision integer vector types
     typedef glm::highp_ivec3 Vector3i;
 
     typedef Vector1<Vector2d> Vector2d1;
@@ -155,21 +157,24 @@ namespace PGL {
     {
     public:
 
+       
 #pragma region StatisticsCombinationSet
 
         template <class Type>
+        //Calculate the sample variance after Bessel correction
         static Type Variance(const std::vector<Type>& resultSet)
         {
             Type sum = std::accumulate(std::begin(resultSet), std::end(resultSet), 0.0);
-            Type mean = sum / resultSet.size(); //均值
+            Type mean = sum / resultSet.size(); 
             Type accum = 0.0;
             std::for_each(std::begin(resultSet), std::end(resultSet), [&](const Type d) {accum += (d - mean) * (d - mean); });
-            Type stdev = sqrt(accum / (resultSet.size() - 1)); //方差
+            Type stdev = sqrt(accum / (resultSet.size() - 1)); //Variance
 
             return stdev;
         }
 
         //nb>=1
+        //Calculate Factorial (Recursive)
         static int Factorial(const int& n)
         {
             if (n > 1)
@@ -179,6 +184,7 @@ namespace PGL {
         };
 
         //arrangement and combination
+        
         static void Combination(const Vector1i3& combs, const int& nb, const Vector1i2& sequence, const int& max_nb, Vector1i3& output)
         {
             if (output.size() > max_nb)return;
@@ -322,16 +328,16 @@ namespace PGL {
             std::sort(s.begin(), s.end());
             return s;
         };
-
+        //Compute Union
         static Vector1i1 SetUnion(const Vector1i1& first, const Vector1i1& second)
         {
             Vector1i1 v = first;
             for (auto& s : second)
                 if (std::find(first.begin(), first.end(), s) == first.end())
-                    v.emplace_back(s);
+                    v.emplace_back(s);//Unique to second, join union
             return v;
         }
-
+        //Compress two-dimensional data into one-dimensional and remove duplicates
         static Vector1i1 SetUnion(Vector1i2& sets)
         {
             Vector1i1 start = sets[0];
@@ -343,7 +349,7 @@ namespace PGL {
 
             return start;
         }
-
+        //Calculate Intersection
         static Vector1i1 SetIntersection(const Vector1i1& first, const Vector1i1& second)
         {
             Vector1i1 v;
@@ -352,6 +358,7 @@ namespace PGL {
                     v.emplace_back(s);
             return v;
         }
+        //The set after subtracting second from first,namely relative complement
         static Vector1i1 SetSubtraction(const Vector1i1& first, const Vector1i1& second)
         {
             Vector1i1 v;
@@ -361,14 +368,14 @@ namespace PGL {
             return v;
         }
 
-
+        //Find a subset in a two-dimensional vector so that the elements in the subset contain all the elements in the target, and return the index of that subset
         static Vector1i1 FindSetCombination(Vector1i2& input_)
         {
             auto FSC = [](vector<set<int>>& input, set<int>& target, vector<int>& output)
             {
                 set<int> full;
                 for (auto it : input) {
-                    full.insert(it.begin(), it.end());
+                    full.insert(it.begin(), it.end());//Two dimensions reduced to one dimension
                 }
 
                 if (!includes(full.begin(), full.end(), target.begin(), target.end())) {
@@ -418,24 +425,25 @@ namespace PGL {
 
 #pragma endregion
 
-
-#pragma region StringDataStructure
-
+        //String data structure
+#pragma region StringDataStructure  
+        //Integer plus one
         static int INe(const int& i)
         {
             return i + 1;
         }
-
+        //Integer minus one
         static int IPr(const int& i)
         {
             return i - 1;
         }
-
+        //Determine whether a string str contains another string sub
         static bool StringContain(const string& str, const string& sub)
         {
             return str.find(sub) != std::string::npos;
         }
-
+        //Replace String
+        //toReplace:The part replaced with
         static std::string StringReplace(const string& source, const string& toReplace, const string& replaceWith)
         {
             size_t pos = 0;
@@ -465,8 +473,9 @@ namespace PGL {
         }
 
 
-
-        static std::string IntString(int i, int p =0)
+        //Convert integers to strings
+        //p:The number of digits in the converted string, if the original number of digits is insufficient, fill in 0 before it
+        static std::string Int2String(int i, int p =0)
         {
             std::stringstream ss;
             std::string str;
@@ -475,7 +484,7 @@ namespace PGL {
             
             if(p>0)
             {
-                if(i<0) str = IntString(abs(i));
+                if(i<0) str = Int2String(abs(i));
                
                 auto strc = str.c_str();
                 string strp="";
@@ -487,9 +496,12 @@ namespace PGL {
             
             return str;
         }
-
+        //Convert an array into a string and insert the same string between each element.
+        //vecs:The string to convert
+        //order:Choose whether to sort
+        //insert_str:String to Insert
         template <class Type>
-        static std::string IntString(const std::vector<Type>& vecs, bool order = false, std::string insert_str = "")
+        static std::string Int2String(const std::vector<Type>& vecs, bool order = false, std::string insert_str = "")
         {
             std::vector<Type> a = vecs;
             if (order)sort(a.begin(), a.end());
@@ -497,15 +509,15 @@ namespace PGL {
             std::string str;
             for (int i = 0; i < a.size(); i++)
             {
-                str += IntString(a[i]);
+                str += Int2String(a[i]);
                 if (i != a.size() - 1) str += insert_str;
             }
             return str;
 
         }
-
+        //Convert a two-dimensional array to a string
         template <class Type>
-        static std::string IntString(const std::vector<std::vector<Type>>& vecs, bool order = false, std::string insert_str_0 = "", std::string insert_str_1 = "")
+        static std::string Int2String(const std::vector<std::vector<Type>>& vecs, bool order = false, std::string insert_str_0 = "", std::string insert_str_1 = "")
         {
             std::string str;
 
@@ -517,8 +529,9 @@ namespace PGL {
 
             return str;
         }
+        //Convert a three-dimensional array to a string
         template <class Type>
-        static std::string IntString(const std::vector<std::vector<std::vector<Type>>>& vecs, bool order = false, std::string insert_str_0 = "", std::string insert_str_1 = "", std::string insert_str_2 = "")
+        static std::string Int2String(const std::vector<std::vector<std::vector<Type>>>& vecs, bool order = false, std::string insert_str_0 = "", std::string insert_str_1 = "", std::string insert_str_2 = "")
         {
             std::string str;
 
@@ -531,79 +544,21 @@ namespace PGL {
             return str;
         }
 
-        template <class Type>
-        static std::string VectorString(const Type& v, const string insert_str = "", int p = 3)
-        {
-            std::string str;
-            for (int i = 0; i < v.length(); i++)
-            {
-                if (i == v.length() - 1)
-                    str += DoubleString(v[i], p);
-                else
-                    str += DoubleString(v[i], p) + insert_str;
-            }
-            return str;
-        };
-
-        static std::string VectorString(const Vector3d1& vecs)
-        {
-            auto Comp = [](Vector3d& v_0, Vector3d& v_1)
-            {
-                if (IsAlmostZero(abs(v_1[0] - v_0[0])))
-                {
-                    if (IsAlmostZero(abs(v_1[1] - v_0[1])))
-                    {
-                        if (IsAlmostZero(abs(v_1[2] - v_0[2])))
-                            return true;
-                        return v_0[2] < v_1[2];
-                    }
-                    return v_0[1] < v_1[1];
-                }
-                return v_0[0] < v_1[0];
-            };
-
-            Vector3d1 vecs_1 = vecs;
-            std::sort(vecs_1.begin(), vecs_1.end(), Comp);
-
-            std::string str;
-            for (auto& p : vecs_1)
-            {
-                double x = floor(p[0] * 10.0f + 0.5) / 10.0f;
-                double y = floor(p[1] * 10.0f + 0.5) / 10.0f;
-                double z = floor(p[2] * 10.0f + 0.5) / 10.0f;
-                str += DoubleString(x);
-                str += DoubleString(y);
-                str += DoubleString(z);
-            }
-
-            return str;
-        }
-
-
-
-        static std::string VectorString(const Vector3d3& vecs_3)
-        {
-            Vector3d1 vecs_1;
-            for (int i = 0; i < vecs_3.size(); i++)
-                for (int j = 0; j < vecs_3[i].size(); j++)
-                    for (int k = 0; k < vecs_3[i][j].size(); k++)
-                        vecs_1.emplace_back(vecs_3[i][j][k]);
-
-            return VectorString(vecs_1);
-        };
-
-        static std::string IntString(const VectorPI2& vecs, bool order = false,
+        
+        //Convert a two-dimensional pair array to a string
+        static std::string Int2String(const VectorPI2& vecs, bool order = false,
             const std::string insert_str_0 = "", const std::string insert_str_1 = "", const std::string insert_str_2 = "")
         {
             std::string str;
             for (auto& vec : vecs)
             {
-                str += IntString(vec, order, insert_str_0, insert_str_1) + insert_str_2;
+                str += Int2String(vec, order, insert_str_0, insert_str_1) + insert_str_2;
             }
             return str;
         }
-
-        static std::string IntString(const VectorPI1& vecs, bool order = false, const std::string insert_str_0 = "", const std::string insert_str_1 = "")
+        //Convert an array of pair types into a string and insert a string between the two elements of each pair type
+        //first+insert_str+second+....
+        static std::string Int2String(const VectorPI1& vecs, bool order = false, const std::string insert_str_0 = "", const std::string insert_str_1 = "")
         {
             if (order)
             {
@@ -612,7 +567,7 @@ namespace PGL {
                 std::string str;
                 for (int i = 0; i < a.size(); i++)
                 {
-                    str += IntString(a[i].first) + insert_str_0 + IntString(a[i].second);
+                    str += Int2String(a[i].first) + insert_str_0 + Int2String(a[i].second);
                     if (i != a.size() - 1)
                         str += insert_str_1;
                 }
@@ -623,14 +578,14 @@ namespace PGL {
                 std::string str;
                 for (int i = 0; i < vecs.size(); i++)
                 {
-                    str += IntString(vecs[i].first) + insert_str_0 + IntString(vecs[i].second);
+                    str += Int2String(vecs[i].first) + insert_str_0 + Int2String(vecs[i].second);
                     if (i != vecs.size() - 1) str += insert_str_1;
                 }
                 return str;
             }
         }
-
-        static std::string DoubleString(const double& d, int p = 8)
+        //Convert data of type double to  string
+        static std::string Double2String(const double& d, int p = 8)
         {
             double d_ = abs(d);
             double d0 = (int)d_;
@@ -674,44 +629,105 @@ namespace PGL {
             else
                 return "-" + str;
         }
-
-        static std::string DoubleString(const Vector1d1& ds_, int p = 8, bool order = false, const std::string insert_str_0 = "")
+        //Convert the double array into a string, where other strings can be inserted between the array elements
+        static std::string Double2String(const Vector1d1& ds_, int p = 8, bool order = false, const std::string insert_str_0 = "")
         {
             Vector1d1 ds = ds_;
             if (order)std::sort(ds.begin(), ds.end());
             std::string str;
             for (int i = 0; i < ds.size(); i++)
-                str += DoubleString(ds[i], p) + (i == ds.size() - 1 ? "" : insert_str_0);
+                str += Double2String(ds[i], p) + (i == ds.size() - 1 ? "" : insert_str_0);
+            return str;
+        }
+        //Convert an array to a string
+        template <class Type>
+        static std::string Vector2String(const Type& v, const string insert_str = "", int p = 3)
+        {
+            std::string str;
+            for (int i = 0; i < v.length(); i++)
+            {
+                if (i == v.length() - 1)
+                    str += Double2String(v[i], p);
+                else
+                    str += Double2String(v[i], p) + insert_str;
+            }
+            return str;
+        };
+        //Sort a set of three-dimensional vectors and convert them into a string(array dimension:one-dimensional)
+        static std::string Vector2String(const Vector3d1& vecs)
+        {
+            auto Comp = [](Vector3d& v_0, Vector3d& v_1)
+            {
+                if (IsAlmostZero(abs(v_1[0] - v_0[0])))
+                {
+                    if (IsAlmostZero(abs(v_1[1] - v_0[1])))
+                    {
+                        if (IsAlmostZero(abs(v_1[2] - v_0[2])))
+                            return true;
+                        return v_0[2] < v_1[2];
+                    }
+                    return v_0[1] < v_1[1];
+                }
+                return v_0[0] < v_1[0];
+            };
+
+            Vector3d1 vecs_1 = vecs;
+            std::sort(vecs_1.begin(), vecs_1.end(), Comp);
+
+            std::string str;
+            for (auto& p : vecs_1)
+            {
+                double x = floor(p[0] * 10.0f + 0.5) / 10.0f;
+                double y = floor(p[1] * 10.0f + 0.5) / 10.0f;
+                double z = floor(p[2] * 10.0f + 0.5) / 10.0f;
+                str += Double2String(x);
+                str += Double2String(y);
+                str += Double2String(z);
+            }
+
             return str;
         }
 
-        static double StringToDouble(const string& str)
+
+        //Sort a set of three-dimensional vectors and convert them into a string(array dimension:three-dimensional)
+        static std::string Vector2String(const Vector3d3& vecs_3)
+        {
+            Vector3d1 vecs_1;
+            for (int i = 0; i < vecs_3.size(); i++)
+                for (int j = 0; j < vecs_3[i].size(); j++)
+                    for (int k = 0; k < vecs_3[i][j].size(); k++)
+                        vecs_1.emplace_back(vecs_3[i][j][k]);
+
+            return Vector2String(vecs_1);
+        };
+        //Convert string to double  data
+        static double String2Double(const string& str)
         {
             istringstream iss(str);
             double num;
             iss >> num;
             return num;
         }
-
+        //Convert string to type（custom type or basic data type） data
         template <class Type>
-        static Type StringToNum(const string& str)
+        static Type String2Num(const string& str)
         {
             istringstream iss(str);
             Type num;
             iss >> num;
             return num;
         }
-
+        //Encode a null-terminated character array,convert a string to a unique unsigned integer encoding (C style)
         static constexpr unsigned int StringEncode(const char* str, int h = 0)
         {
             return !str[h] ? 5381 : (StringEncode(str, h + 1) * 33) ^ str[h];
         }
-
+      
         static constexpr unsigned int StringEncode(const string& str, int h = 0)
         {
             return StringEncode(str.c_str(), h);
         }
-
+        //Splitting the string str by  delimiter(delimiter is  char)
         static vector<string> SplitStr(const string& str, const char& delimiter)
         {
             vector<string> internal_strs;
@@ -721,7 +737,7 @@ namespace PGL {
                 internal_strs.emplace_back(tok.c_str());
             return internal_strs;
         }
-
+        //Splitting the string str by  delimiter(delimiter is string)
         static vector<string> SplitStr(const string& str, const string& delimiter)
         {
             vector<string> internal_strs;
@@ -736,6 +752,7 @@ namespace PGL {
             internal_strs.push_back(s);
             return internal_strs;
         }
+        //Separate strings by delimiter and convert the separated strings into double data(delimiter is  char)
         static vector<double> SplitD(const string& str, const char& delimiter)
         {
             vector<double> internal_d;
@@ -745,7 +762,7 @@ namespace PGL {
                 internal_d.emplace_back(atof(tok.c_str()));
             return internal_d;
         };
-
+        //Separate strings by delimiter and convert the separated strings into integer data(delimiter is  char)
         static vector<int> SplitI(const string& str, const char& delimiter) {
             vector<int> internal_d;
             stringstream ss(str); // Turn the string into a stream.
@@ -754,7 +771,8 @@ namespace PGL {
                 internal_d.emplace_back(atoi(tok.c_str()));
             return internal_d;
         };
-
+        //Return a specified size integer array and shuffle the order of its elements
+        //size::the size of array
         static Vector1i1 ShuffleVector(const int& size)
         {
             Vector1i1 shuffle_vec;
@@ -763,7 +781,7 @@ namespace PGL {
             std::shuffle(shuffle_vec.begin(), shuffle_vec.end(), MATHGEN);
             return shuffle_vec;
         };
-
+        //Return an increasing array of integers with a range of [minI, maxI]
         static Vector1i1 IncreaseVector(const int& minI, const int& maxI)
         {
             MAssert(minI >= 0 && maxI >= 0 && minI <= maxI, "minI>=0&&maxI>=0&&minI<=maxI");
@@ -771,7 +789,7 @@ namespace PGL {
             for (int i = minI; i <= maxI; i++) vec.push_back(i);
             return vec;
         }
-
+        //Return a decreasing array of integers with a range of [minI, maxI]
         static Vector1i1 DecreaseVector(const int& maxI, const int& minI)
         {
             MAssert(minI >= 0 && maxI >= 0 && minI <= maxI, "minI>=0&&maxI>=0&&minI<=maxI");
@@ -780,21 +798,21 @@ namespace PGL {
             std::reverse(vec.begin(), vec.end());
             return vec;
         }
-
+        //Convert a vector type to a set type
         static set<int> ConvertToSet(const vector<int>& v)
         {
             set<int> s;
             for (int x : v) s.insert(x);
             return s;
         };
-
+        //Convert a set type to a vector type
         static vector<int> ConvertToVector(const set<int>& s)
         {
             vector<int> v;
             for (auto x : s)v.emplace_back(x);
             return v;
         }
-
+        //Find value based on key
         template <class T1, class T2>
         static T2 MapFind(const std::map<T1, T2>& mt, const T1& t1)
         {
@@ -802,101 +820,100 @@ namespace PGL {
                 Functs::MAssert("The input is not in this map.");
             return mt.find(t1)->second;
         }
-
+        //Find if there is a value corresponding to the key in the map data structure
         template <class T1, class T2>
         static bool MapContain(const std::map<T1, T2>& mt, const T1& t1)
         {
             return mt.find(t1) != mt.end();
         }
-
+        //Remove duplicate elements from integer arrays and sort them in ascending order
         static Vector1i1 RemoveDuplicate(const Vector1i1& vec_)
         {
             Vector1i1 vec = vec_;
             sort(vec.begin(), vec.end());
-            vec.erase(unique(vec.begin(), vec.end()), vec.end());
+            vec.erase(unique(vec.begin(), vec.end()), vec.end());//Unique will move the repeating element to the end and return the iterator for the first repeating element
             return vec;
         }
-
-        static Vector3d EigenVector(const Eigen::Vector3d& vec)
+        //Convert Vector3d type in the Eigen library to custom Vector3d type 
+        static Vector3d Eigen2Vector(const Eigen::Vector3d& vec)
         {
             return Vector3d(vec[0], vec[1], vec[2]);
         };
-
-        static Vector3d1 EigenVector(const std::vector<Eigen::Vector3d>& vecs)
+        //Convert an array with elements of Eigen:: Vector3d type to a custom Vector3d1 type  
+        static Vector3d1 Eigen2Vector(const std::vector<Eigen::Vector3d>& vecs)
         {
             Vector3d1 vs;
             for (auto& vec : vecs)
-                vs.push_back(EigenVector(vec));
+                vs.push_back(Eigen2Vector(vec));
             return vs;
         };
 
 #pragma endregion
 
 #pragma region BasicGeomFunctions
-
+        //Get the length of a vector
         template <class Type>
         static double GetLength(const Type& v) {
             return glm::length(v);
         }
-
+        //Calculate the angle between two vectors
         template <class Type>
         static double GetAngleBetween(const Type& v1, const Type& v2) {
-            double d = glm::dot(v1, v2) / (glm::length(v1) * glm::length(v2));
+            double d = glm::dot(v1, v2) / (glm::length(v1) * glm::length(v2));//点乘计算夹角余弦
             if (IsAlmostZero(d - 1.0))
                 return 0.0;
             if (IsAlmostZero(d + 1.0))
                 return Math_PI;
             return glm::acos(d);
         }
-
-        static double RadiantoAngle(const double& r)
-        {
-            return r / Math_PI * 180.0;
-        }
-
+        //Convert radians to angles
+       
         static double Radian2Angle(const double& radian)
         {
             return radian / Math_PI * 180.0;
         }
-
+        //Convert angles to radians
         static double Angle2Radian(const double& angle)
         {
             return angle / 180.0 * Math_PI;
         }
 
+        //Scaling a 3D vector, scale the length of vector v to the specified length 
+        static Vector3d GetVectorLength(const Vector3d& v, const double& length)
+        {
+            if (IsAlmostZero(length)) return Vector3d(0.0, 0.0, 0.0);//Both scaling factor and vector length cannot be zero
+            double l = GetLength(v);
+            MAssert(!IsAlmostZero(l), "SetVectorLength: input length is zero.");
+            return Vector3d(v[0] / l * length, v[1] / l * length, v[2] / l * length);
+        }
+        //Scaling a 2D vector
+        static Vector2d GetVectorLength(const Vector2d& v, const double& length)
+        {
+            if (IsAlmostZero(length)) return Vector3d(0.0, 0.0, 0.0);
+            double l = GetLength(v);
+            MAssert(!IsAlmostZero(l), "SetVectorLength: input length is zero.");
+            return Vector2d(v[0] / l * length, v[1] / l * length);
+        }
+        //Set the length of a 3D vector
         static void SetVectorLength(Vector3d& v, const double& length)
         {
             v = GetVectorLength(v, length);
         }
-
+        //Set the length of a 2D vector
         static void SetVectorLength(Vector2d& v, const double& length)
         {
             v = GetVectorLength(v, length);
         }
 
-		static Vector3d GetVectorLength(const Vector3d& v, const double& length)
-		{
-            if (IsAlmostZero(length)) return Vector3d(0.0, 0.0,0.0);
-			double l = GetLength(v);
-			MAssert(!IsAlmostZero(l), "SetVectorLength: input length is zero.");
-            return Vector3d(v[0] / l * length, v[1] / l * length, v[2] / l * length);
-		}
-
-		static Vector2d GetVectorLength(const Vector2d& v, const double& length)
-		{
-            if (IsAlmostZero(length)) return Vector3d(0.0, 0.0, 0.0);
-			double l = GetLength(v);
-			MAssert(!IsAlmostZero(l), "SetVectorLength: input length is zero.");
-            return Vector2d(v[0] / l * length, v[1] / l * length);
-		}
 
 
         //existing bugs in this function
+        //Finding a vector perpendicular to vector v
         static Vector3d Vector3dBase(const Vector3d& v)
         {
             Vector3d n(1.0, 1.0, 1.0);
             if (!IsAlmostZero(v[0])) {
-                n[0] = -(v[1] + v[2]) / v[0];
+                n[0] = -(v[1] + v[2]) / v[0];//v[0]*n[0]+v[1]*1+v[2]*1=0
                 return n;
             }
             if (!IsAlmostZero(v[1])) {
@@ -909,16 +926,16 @@ namespace PGL {
             }
             return n;
         }
-
+        //Find the normal vector of a plane determined by v1,v2
         static Vector3d GetNormal(const Vector3d& v0, const Vector3d& v1)
         {
             MAssert(!IsAlmostZero(GetLength(v0)), "v0 is zero.");
             MAssert(!IsAlmostZero(GetLength(v1)), "v1 is zero.");
             double angle = GetAngleBetween(v0, v1);
-            if (IsAlmostZero(angle) || IsAlmostZero(angle - Math_PI))return Vector3dBase(v0);
-            return GetCrossproduct(v0, v1);
+            if (IsAlmostZero(angle) || IsAlmostZero(angle - Math_PI))return Vector3dBase(v0);////Two vectors are collinear, finding any perpendicular vector is the normal vector
+            return GetCrossproduct(v0, v1);//If not collinear, cross multiply to find the normal vector
         }
-
+        //Find the center point of a set of three-dimensional points(array dimension: one-dimensional)
         static Vector3d GetCenter(const Vector3d1& points)
         {
             Vector3d center(0.0, 0.0, 0.0);
@@ -927,7 +944,7 @@ namespace PGL {
             center = center / (double)points.size();
             return center;
         }
-
+        //Find the center point of a set of three-dimensional points(array dimension: two-dimensional)
         static Vector3d GetCenter(const Vector3d2& points)
         {
             Vector3d center(0.0, 0.0, 0.0);
@@ -941,7 +958,7 @@ namespace PGL {
             center = center / (double)nb;
             return center;
         }
-
+        //Find the center point of a set of three-dimensional points(array dimension: three-dimensional)
         static Vector3d GetCenter(const Vector3d3& points)
         {
             Vector3d center(0.0, 0.0, 0.0);
@@ -960,7 +977,7 @@ namespace PGL {
             center = center / (double)nb;
             return center;
         }
-
+        //Find the center point of a set of two-dimensional points(array dimension: one-dimensional)
         static Vector2d GetCenter(const std::vector<Vector2d>& points)
         {
             Vector2d center(0.0, 0.0);
@@ -969,7 +986,7 @@ namespace PGL {
             center = center / (double)points.size();
             return center;
         }
-
+        //Find the center point of a set of two-dimensional points(array dimension: two-dimensional)
         static Vector2d GetCenter(const std::vector<std::vector<Vector2d>>& points)
         {
             Vector2d center(0.0, 0.0);
@@ -983,25 +1000,7 @@ namespace PGL {
             center = center / (double)nb;
             return center;
         }
-
-        static void GetBoundingBox(const Vector3d2& points, Vector3d& minimal_corner, Vector3d& maximal_corner)
-        {
-            minimal_corner = Vector3d(MAXDOUBLE, MAXDOUBLE, MAXDOUBLE);
-            maximal_corner = Vector3d(-MAXDOUBLE, -MAXDOUBLE, -MAXDOUBLE);
-            for (int i = 0; i < points.size(); i++)
-            {
-                for (int j = 0; j < points[i].size(); j++)
-                {
-                    minimal_corner[0] = min(minimal_corner[0], points[i][j][0]);
-                    minimal_corner[1] = min(minimal_corner[1], points[i][j][1]);
-                    minimal_corner[2] = min(minimal_corner[2], points[i][j][2]);
-                    maximal_corner[0] = max(maximal_corner[0], points[i][j][0]);
-                    maximal_corner[1] = max(maximal_corner[1], points[i][j][1]);
-                    maximal_corner[2] = max(maximal_corner[2], points[i][j][2]);
-                }
-            }
-        }
-
+        //Find the bounding box of a set of three-dimensional points(array dimension: one-dimensional)
         static void GetBoundingBox(const Vector3d1& points, Vector3d& minimal_corner, Vector3d& maximal_corner)
         {
             minimal_corner = Vector3d(MAXDOUBLE, MAXDOUBLE, MAXDOUBLE);
@@ -1018,6 +1017,27 @@ namespace PGL {
             }
         }
 
+        //Find the bounding box of a set of three-dimensional points(array dimension: two-dimensional)
+        static void GetBoundingBox(const Vector3d2& points, Vector3d& minimal_corner, Vector3d& maximal_corner)
+        {
+            //Two points can determine the range of the bounding box
+            minimal_corner = Vector3d(MAXDOUBLE, MAXDOUBLE, MAXDOUBLE);//Bottom left corner point of bounding box (minimum coordinate point)
+            maximal_corner = Vector3d(-MAXDOUBLE, -MAXDOUBLE, -MAXDOUBLE);//Upper right corner point of bounding box (maximum coordinate point)
+            for (int i = 0; i < points.size(); i++)
+            {
+                for (int j = 0; j < points[i].size(); j++)
+                {
+                    minimal_corner[0] = min(minimal_corner[0], points[i][j][0]);
+                    minimal_corner[1] = min(minimal_corner[1], points[i][j][1]);
+                    minimal_corner[2] = min(minimal_corner[2], points[i][j][2]);
+                    maximal_corner[0] = max(maximal_corner[0], points[i][j][0]);
+                    maximal_corner[1] = max(maximal_corner[1], points[i][j][1]);
+                    maximal_corner[2] = max(maximal_corner[2], points[i][j][2]);
+                }
+            }
+        }
+       
+        //Find the bounding box of a set of three-dimensional points(array dimension: one-dimensional)
         static void GetBoundingBox(const std::vector<Vector2d>& points, Vector2d& minimal_corner, Vector2d& maximal_corner)
         {
             minimal_corner = Vector2d(MAXDOUBLE, MAXDOUBLE);
@@ -1030,7 +1050,7 @@ namespace PGL {
                 maximal_corner[1] = max(maximal_corner[1], points[i][1]);
             }
         }
-
+        //Find the bounding box of a set of three-dimensional points(array dimension: two-dimensional)
         static void GetBoundingBox(const std::vector<std::vector<Vector2d>>& points, Vector2d& minimal_corner, Vector2d& maximal_corner)
         {
             minimal_corner = Vector2d(MAXDOUBLE, MAXDOUBLE);
@@ -1046,14 +1066,14 @@ namespace PGL {
                 }
             }
         }
-
+        //Calculate the radius of the outer circle of a triangle
         static double CircumCircleRaidius(const Vector2d& v0, const Vector2d& v1, const Vector2d& v2)
         {
-            double a = GetLength(v0 - v1);
+            double a = GetLength(v0 - v1);//edge length
             double b = GetLength(v0 - v2);
             double c = GetLength(v1 - v2);
             double p = (a + b + c) / 2.0;
-            double area = (4.0 * pow(p * (p - a) * (p - b) * (p - c), 0.5));
+            double area = (4.0 * pow(p * (p - a) * (p - b) * (p - c), 0.5));//Helen's formula for calculating area
             double radius;
 
             if (IsAlmostZero(area))
@@ -1061,22 +1081,22 @@ namespace PGL {
                 double max_l = a;
                 max_l = max(max_l, b);
                 max_l = max(max_l, c);
-                radius = 10 * max_l;
+                radius = 10 * max_l;//The area is approximately 0, which can be considered as a very linear triangle. Set the area to 10 times the longest side
             }
             else
-                radius = a * b * c / area;
+                radius = a * b * c / area;//Calculating the radius of a circumscribed circle from the area
             return radius;
         }
-
+        //Calculate the area of a triangle
         static double GetTriangleArea(const Vector3d& v0, const Vector3d& v1, const Vector3d& v2)
         {
             double a = GetDistance(v0, v1);
             double b = GetDistance(v2, v1);
             double c = GetDistance(v0, v2);
             double p = (a + b + c) / 2.0;
-            return sqrt(p * (p - a) * (p - b) * (p - c));
+            return sqrt(p * (p - a) * (p - b) * (p - c));//Heron's formula
         }
-
+        //Distance between two points
         template <class Type>
         static double GetLength(const Type& v0, const Type& v1) {
             return GetLength(v0 - v1);
@@ -1086,7 +1106,7 @@ namespace PGL {
         static double GetDistance(const Type& v0, const Type& v1) {
             return GetLength(v0 - v1);
         }
-
+        //Distance from closest point
         template <class Type>
         static double GetDistance(const Type& v, const std::vector<Type>& vs)
         {
@@ -1095,7 +1115,7 @@ namespace PGL {
                 min_d = min(min_d, GetDistance(v, iter));
             return min_d;
         }
-
+        
         template <class Type>
         static double GetDistance(const Type& v, const std::vector<std::vector<Type>>& vs)
         {
@@ -1104,7 +1124,7 @@ namespace PGL {
                 min_d = min(min_d, GetDistance(v, iter));
             return min_d;
         }
-
+        //The average distance between two sets of points
         template <class Type>
         static double GetDistance(const std::vector<std::vector<Type>>& vs1, const std::vector<std::vector<Type>>& vs2)
         {
@@ -1129,7 +1149,7 @@ namespace PGL {
         {
             return (GetDistance(vs1, vs2) + GetDistance(vs2, vs1)) / 2.0;
         }
-
+        //Find the index of the closest point
         template <class Type>
         static int GetNearestPointIndex(const Type& v, const std::vector<Type>& vs)
         {
@@ -1141,12 +1161,12 @@ namespace PGL {
                 if (cur_d < min_d)
                 {
                     min_d = cur_d;
-                    index = 0;
+                    index = i;
                 }
             }
             return index;
         }
-
+        //Calculate the distance between adjacent vectors in a set of vectors and sum it (2D vector)
         static double GetLength(const std::vector<Vector2d>& points)
         {
             double length = 0.0;
@@ -1156,7 +1176,7 @@ namespace PGL {
 
             return length;
         }
-
+        //Calculate the distance between adjacent vectors in a set of vectors and sum it (3D vector)
         static double GetLength(const Vector3d1& points)
         {
             double length = 0.0;
@@ -1166,16 +1186,16 @@ namespace PGL {
 
             return length;
         }
-
+        //Remove points with a distance less than 0.00001 between adjacent points
         static Vector2d1 RemoveClosePoints(const Vector2d1& xys_)
         {
             Vector2d1 xys = xys_;
-            std::vector<int> remove_int;
+            std::vector<int> remove_int;//Store the index of the vector to be deleted
             if (xys.size() > 2)
             {
                 for (int i = 0; i < xys.size() - 1; i++)
                 {
-                    double d = GetDistance(xys[i], xys[(int)(i + 1)]);
+                    double d = GetDistance(xys[i], xys[(int)(i + 1)]);//Calculate the distance between adjacent vectors
                     if (d < 0.00001) remove_int.push_back(i + 1);
                 }
 
@@ -1186,24 +1206,27 @@ namespace PGL {
             }
             return xys;
         }
-
+        //Project a point in 3D space onto a plane.Return projection point coordinates
+        //p:Points to project
+        //planar_location:A point in the plane
+        //planar_direction:A normal vector of a plane
         static Vector3d PlaneProject(const Vector3d& planar_location, const Vector3d& planar_direction, const Vector3d& p)
         {
             if (IsAlmostZero(GetLength(planar_location, p)))
-                return planar_location;
+                return planar_location;//In this case, the projection point is planar_ location
 
-            double angle = GetAngleBetween(planar_direction, p - planar_location);
-            double length = GetLength(planar_location, p);
+            double angle = GetAngleBetween(planar_direction, p - planar_location);//The angle between the normal vector and the vector formed by the point to be projected and a known point in the plane
+            double length = GetLength(planar_location, p);//The distance between a known point and the point to be projected
 
             auto backup_planar_direction = planar_direction;
 
             if (angle <= Math_PI / 2.0)
-                return p - GetVectorLength(backup_planar_direction, length * sin(Math_PI / 2.0 - angle));
+                return p - GetVectorLength(backup_planar_direction, length * sin(Math_PI / 2.0 - angle));//Move the point to be projected towards the normal direction to obtain the projection coordinates
             else
                 return p + GetVectorLength(backup_planar_direction, length * sin(angle - Math_PI / 2.0));
 
         }
-
+        //Generate a three-dimensional vector with a random direction
         static Vector3d GetRandomDirection(const double& direction_length = 1.0)
         {
             double alpha_angle = rand() / double(RAND_MAX) * 2.0 * PGL::Math_PI;
@@ -1218,6 +1241,7 @@ namespace PGL {
         //https://medium.com/@all2one/generating-uniformly-distributed-points-on-sphere-1f7125978c4c
 
         //method: NormalDeviate; TrigDeviate; CoordinateApproach;MinimalDistance;RegularDistribution;
+        //Generate a set of random vectors with different distributions based on different commands
         static Vector3d1 GetRandomDirections(const int& count, const string& method)
         {
             if (method == "NormalDeviate") return GetRandomDirections_Normal_Deviate(count);
@@ -1229,7 +1253,7 @@ namespace PGL {
             MAssert("Input method does not be implemented: " + method);
             return Vector3d1();
         }
-
+        //Using the method of normal distribution to generate random unit vectors with regular distributions
         static Vector3d1 GetRandomDirections_Regular_Distribution(const int& count)
         {
             Vector3d1 directions;
@@ -1253,11 +1277,11 @@ namespace PGL {
             return directions;
         }
 
-
+        //Generating random unit vectors using normal distribution
         static Vector3d1 GetRandomDirections_Normal_Deviate(const int& count)
         {
             std::mt19937 rnd;
-            std::normal_distribution<double> dist(0.0, 1.0);
+            std::normal_distribution<double> dist(0.0, 1.0);//Random numbers with normal distribution, range 0-1
 
             Vector3d1 directions;
             for (int i = 0; i < count; ++i)
@@ -1282,7 +1306,7 @@ namespace PGL {
 
             return directions;
         }
-
+        //Using trigonometric function method to generate random unit vectors
         static Vector3d1 GetRandomDirections_Trig_method(const int& count)
         {
             std::mt19937 rnd;
@@ -1291,23 +1315,23 @@ namespace PGL {
             Vector3d1 directions;
             for (int i = 0; i < count; ++i)
             {
-                double z = 2.0 * dist(rnd) - 1.0;
-                double t = 2.0 * Math_PI * dist(rnd);
+                double z = 2.0 * dist(rnd) - 1.0;//The range of z is -1 to 1
+                double t = 2.0 * Math_PI * dist(rnd);//The range of t is 0 to 2 π
                 double r = sqrt(1.0 - z * z);
                 directions.push_back(Vector3d(r * cos(t), r * sin(t), z));
             }
             return directions;
         };
-
+        //Randomly sampling a set of vectors within a unit sphere
         static Vector3d1 GetRandomDirections_Coordinate_Approach(const int& count)
         {
             std::mt19937 rnd;
-            std::uniform_real_distribution<double> dist(-1.0, 1.0);
+            std::uniform_real_distribution<double> dist(-1.0, 1.0);//The range of random numbers is [-1,1]
 
             Vector3d1 directions;
             for (int i = 0; i < count; ++i)
             {
-                bool rejected = false;
+                bool rejected = false;//Determine if the generated vector is within the unit sphere
                 do
                 {
                     double u = dist(rnd);
@@ -1327,10 +1351,11 @@ namespace PGL {
         }
 
         //random sample a set of directions on the Gaussian Sphere
+        
         static Vector3d1 GetRandomDirections_Minimal_Distance(const int& dns, const int dis_iters = 100)
         {
             double gaussion_sphere_radius = 1.0;
-            double idea_distance = 2 * gaussion_sphere_radius / sqrt(dns);
+            double idea_distance = 2 * gaussion_sphere_radius / sqrt(dns);//Ideal distance, determined based on Gaussian sphere radius and dns
 
             Vector3d1 directions;
             for (int i = 0; i < dns; i++)
@@ -1342,8 +1367,8 @@ namespace PGL {
                     //glm::ballRand(gaussion_sphere_radius) is slower than my solution
                     Vector3d random_direction = GetRandomDirection(gaussion_sphere_radius);
 
-                    auto dis = Functs::GetDistance(random_direction, directions);
-                    if (dis > idea_distance)
+                    auto dis = Functs::GetDistance(random_direction, directions);//Calculate the minimum distance between the current randomly generated vector and the generated vector
+                    if (dis > idea_distance)//If the distance is large enough, add it to the generated vector sequence
                     {
                         directions.push_back(random_direction);
                         break;
@@ -1353,8 +1378,8 @@ namespace PGL {
             }
             return directions;
         }
-
-        static void Connecting_Segments(const Vector3d2& segments, Vector3d2& lines)
+        //Group the segments  according to their connection relationships, and store the segments in each group in lines
+        static void ConnectingSegments(const Vector3d2& segments, Vector3d2& lines)
         {
             //save connecting relations
             std::vector<bool> used(segments.size(), false);
@@ -1477,38 +1502,42 @@ namespace PGL {
                 lines.push_back(line);
             }
         }
-
+        //Calculate the intersection point between a plane and a ray
+        //planar_location:Known point in the plane
+        //planar_direction：Plane normal 
+        //vectorray_location：Ray origin
+        //ray_vector：Ray Direction
         static Vector3d IntersectPointPlane2Ray(const Vector3d& planar_location, Vector3d& planar_direction,
             const Vector3d& ray_location, Vector3d& ray_vector)
         {
-            Vector3d project_point = PlaneProject(planar_location, planar_direction, ray_location);
-            double distance = GetDistance(ray_location, project_point);
+            Vector3d project_point = PlaneProject(planar_location, planar_direction, ray_location);//The projection point of the starting point of a ray on a plane
+            double distance = GetDistance(ray_location, project_point);//The distance between the starting point of the ray and the projection point
             if (IsAlmostZero(GetLength(project_point, ray_location)))
                 return ray_location;
-            double angle = GetAngleBetween(ray_vector, project_point - ray_location);
-            double length = distance / cos(angle);
-            return ray_location + GetVectorLength(ray_vector, length);
+            double angle = GetAngleBetween(ray_vector, project_point - ray_location);//The angle between the direction of a ray and the vector formed by the starting point and projection point of the ray
+            double length = distance / cos(angle);//Distance between starting point and intersection point
+            return ray_location + GetVectorLength(ray_vector, length);//Starting point+vector direction * length
         }
-
+        //Calculate the unit normal vector of a polygon face
         static Vector3d ComputeNormalFromPolyline(const Vector3d1& points)
         {
             Vector3d planar_direction;
-            planar_direction = GetNormal(points[0] - points[1], points[2] - points[1]);
-            SetVectorLength(planar_direction, 1.0);
+            planar_direction = GetNormal(points[0] - points[1], points[2] - points[1]);//normal vector
+            SetVectorLength(planar_direction, 1.0);//normalization
             return planar_direction;
         }
-
+        //Calculate the unit normal vector and the position of a polygonal plane 
         static void  ComputePlanarFromPolyline(Vector3d& planar_location, Vector3d& planar_direction, const Vector3d1& points)
         {
-            planar_location = points[0];
+            planar_location = points[0];//The coordinates of a point in a plane
             planar_direction = GetNormal(points[0] - points[1], points[2] - points[1]);
-            SetVectorLength(planar_direction, 1.0);
+            SetVectorLength(planar_direction, 1.0);//unit normal vector
         }
 
 
 
-        // Compute barycentric coordinates (u, v, w) for
-        // point p with respect to triangle (a, b, c)
+        // Compute barycentric coordinates (u, v, w) for point p with respect to triangle (a, b, c)
+        
         static void Barycentric(const Vector3d& p, const Vector3d& a, const Vector3d& b, const Vector3d& c, double& u, double& v, double& w)
         {
             Vector3d v0 = GetMinus(b, a), v1 = GetMinus(c, a), v2 = GetMinus(p, a);
@@ -1523,7 +1552,7 @@ namespace PGL {
             w = (d00 * d21 - d01 * d20) / denom;
             u = 1.0f - v - w;
         }
-
+      
         static Vector3d Barycentric(const Vector3d& p, const Vector3d& a, const Vector3d& b, const Vector3d& c)
         {
             Vector3d v0 = GetMinus(b, a), v1 = GetMinus(c, a), v2 = GetMinus(p, a);
@@ -1539,17 +1568,18 @@ namespace PGL {
             return Vector3d(u, v, w);
         }
 
-        //===============================================================
+       
+        //Determine whether the three points are collinear
         template <class Type>
         static bool DetectColinear(const Type& v, const Type& s, const Type& e, const double& angle_match_error, const double& dis_match_error)
         {
-            if (DetectCoincident(v, s, dis_match_error) || DetectCoincident(v, e, dis_match_error)) return true;
-            double angle = GetAngleBetween(v - s, e - s);
+            if (DetectCoincident(v, s, dis_match_error) || DetectCoincident(v, e, dis_match_error)) return true;//有其中两个点重合说明共线
+            double angle = GetAngleBetween(v - s, e - s);//不共线就计算夹角，看是否为0或π
             if (IsAlmostZero_Double(angle, angle_match_error))return true;
             if (IsAlmostZero_Double(angle - Math_PI, angle_match_error))return true;
             return false;
         }
-
+        //Determine whether two vectors are perpendicular
         template <class Type>
         static bool DetectVertical(const Type& direction_0, const Type& direction_1, const double& angle_match_error, const double& dis_match_error)
         {
@@ -1560,7 +1590,7 @@ namespace PGL {
         template <class Type>
         static bool DetectVertical(const Type& seg_0_s, const Type& seg_0_e, const Type& seg_1_s, const Type& seg_1_e, const double& angle_match_error, const double& dis_match_error)
         {
-            return DetectVertical(seg_0_e - seg_0_s, seg_0_e - seg_0_s, angle_match_error, dis_match_error);
+            return DetectVertical(seg_0_e - seg_0_s, seg_1_e - seg_1_s, angle_match_error, dis_match_error);
         };
 
         template <class Type>
@@ -1569,27 +1599,27 @@ namespace PGL {
         {
             return DetectVertical(seg_0.first, seg_0.second, seg_1.first, seg_1.second, angle_match_error, dis_match_error);
         };
-
+        //Determine whether two points coincide
         template <class Type>
         static bool DetectCoincident(const Type& v0, const Type& v1, const double& EPSILON = DOUBLE_EPSILON)
         {
             return IsAlmostZero_Double(GetDistance(v0, v1), EPSILON);
         }
-
+        //Determine whether two planes are coplanar
         static bool DetectCoplanar(const Vector3d& planar_location_0, const Vector3d& planar_direction_0,
             const Vector3d& planar_location_1, const Vector3d& planar_direction_1,
             const double& angle_match_error, const double& dis_match_error)
         {
             auto angle = GetAngleBetween(planar_direction_0, planar_direction_1);
-            if (IsAlmostZero_Double(angle - Math_PI, angle_match_error) || IsAlmostZero_Double(angle, angle_match_error))
+            if (IsAlmostZero_Double(angle - Math_PI, angle_match_error) || IsAlmostZero_Double(angle, angle_match_error))//Two parallel planes
             {
-                double dis = GetLength(PlaneProject(planar_location_0, planar_direction_0, planar_location_1), planar_location_1);
+                double dis = GetLength(PlaneProject(planar_location_0, planar_direction_0, planar_location_1), planar_location_1);//Distance between parallel planes
                 return IsAlmostZero_Double(dis, dis_match_error);
             }
             else
                 return false;
         }
-
+        //Determine whether two vectors are parallel
         template <class Type>
         static bool DetectParallel(const Type& direction_0, const Type& direction_1, const double& angle_match_error, const double& dis_match_error)
         {
@@ -1603,26 +1633,28 @@ namespace PGL {
         {
             return DetectParallel(seg_0.second - seg_0.first, seg_1.second - seg_1.first, angle_match_error, dis_match_error);
         };
+        //Determine if the vectors are in the same direction
         template <class Type>
         static bool DetectCoDirection(const Type& direction_0, const Type& direction_1, const double& angle_match_error, const double& dis_match_error)
         {
             auto angle = GetAngleBetween(direction_0, direction_1);
             return (IsAlmostZero_Double(angle, angle_match_error));
         };
-
+        // Determine whether two straight lines are collinear
         template <class Type>
-        static bool DetectColinear_Direction(const Type& location_0, const Type& direction_0, const Type& location_1, const Type& direction_1, const double& angle_match_error, const double& dis_match_error)
+        static bool DetectColinearDirection(const Type& location_0, const Type& direction_0, const Type& location_1, const Type& direction_1, const double& angle_match_error, const double& dis_match_error)
         {
-            if (DetectParallel(direction_0, direction_1, angle_match_error, dis_match_error))
+            if (DetectParallel(direction_0, direction_1, angle_match_error, dis_match_error))//parallel
             {
-                if (IsAlmostZero_Double(GetLength(location_0 - location_1), dis_match_error))
+                if (IsAlmostZero_Double(GetLength(location_0 - location_1), dis_match_error))//Starting point  coincident 
                     return true;
-                return DetectParallel(direction_0, location_1 - location_0, angle_match_error, dis_match_error);
+                return DetectParallel(direction_0, location_1 - location_0, angle_match_error, dis_match_error);//starting point not coincident but collinear
             }
             else
                 return false;
         };
-
+        //Determine whether two straight lines in two-dimensional space coincide
+        //s_ 0, s_ 1 is the starting point of two straight lines, e_ 0, e_ 1 is the endpoint of two straight lines
         static bool DetectAlign2D(const Vector2d& s_0, const Vector2d& e_0, const Vector2d& s_1, const Vector2d& e_1, const double& angle_match_error, const double& dis_match_error)
         {
             double d0 = GetDistance(s_0, s_1);
@@ -1635,7 +1667,7 @@ namespace PGL {
                 return true;
             return false;
         };
-
+        //Determine whether two straight lines in three-dimensional space coincide
         static bool DetectAlign3D(const Vector3d& s_0, const Vector3d& e_0, const Vector3d& s_1, const Vector3d& e_1, const double& angle_match_error, const double& dis_match_error)
         {
             double d0 = GetDistance(s_0, s_1);
@@ -1652,16 +1684,17 @@ namespace PGL {
         //this function has bug ;
         //Do not use it
         template <class Type>
-        static bool DetectColinear_Segment(const Type& s_0, const Type& e_0, const Type& s_1, const Type& e_1, const double& angle_match_error, const double& dis_match_error)
+        static bool DetectColinearSegment(const Type& s_0, const Type& e_0, const Type& s_1, const Type& e_1, const double& angle_match_error, const double& dis_match_error)
         {
             return DetectColinear_Direction(s_0, e_0 - s_0, s_1, e_1 - s_1, angle_match_error, dis_match_error);
         };
 
-        static std::vector<Vector2d> Polygon_Clear(const std::vector<Vector2d>& vecs,
+        //Clear duplicate and collinear points from the polygon, vecs is the point set of the polygon (in order)
+        static std::vector<Vector2d> PolygonClear(const std::vector<Vector2d>& vecs,
             const double& angle_match_error, const double& dis_match_error)
         {
             //remove duplicate points
-            std::vector<Vector2d> vecs_0;
+            std::vector<Vector2d> vecs_0;//Store point sets after deduplication
             for (int i = 0; i < vecs.size(); i++)
             {
                 if (i != vecs.size() - 1)
@@ -1704,13 +1737,13 @@ namespace PGL {
                 }
             }
             //remove collinear points
-            std::vector<Vector2d> vecs_1;
+            std::vector<Vector2d> vecs_1;//Store point sets after removing duplicates and collinear points
             for (int i = 0; i < vecs_0.size(); i++)
             {
-                auto pre_v = vecs_0[(i + vecs_0.size() - 1) % vecs_0.size()];
-                auto cur_v = vecs_0[i];
-                auto next_v = vecs_0[(static_cast<int64_t>(i) + 1) % vecs_0.size()];
-                double angle = GetAngleBetween(cur_v - pre_v, next_v - cur_v);
+                auto pre_v = vecs_0[(i + vecs_0.size() - 1) % vecs_0.size()];//Previous vertex
+                auto cur_v = vecs_0[i];//current vertex
+                auto next_v = vecs_0[(static_cast<int64_t>(i) + 1) % vecs_0.size()];//Next vertex
+                double angle = GetAngleBetween(cur_v - pre_v, next_v - cur_v);//An angle of 0 indicates that three points are collinear and cur can be removed_ V
                 if (angle_match_error > 0.0)
                 {
                     if (!IsAlmostZero_Double(angle, angle_match_error))
@@ -1725,7 +1758,7 @@ namespace PGL {
 
             return vecs_1;
         };
-
+        //Obtain Unit Square
         static std::vector<Vector2d> GetUnitSquare()
         {
             std::vector<Vector2d> square;
@@ -1735,10 +1768,11 @@ namespace PGL {
             square.push_back(Vector2d(-0.5, 0.5));
             return square;
         };
-
+        //Obtaining the edge set of a cube
+      
         static std::vector<std::pair<Vector3d, Vector3d>> GetUnitCubeFrame(const double& scale = 1.0)
         {
-            Vector3d1 cube_vecs;
+            Vector3d1 cube_vecs;//Unit cube
 
             cube_vecs.push_back(Vector3d(0.5, 0.5, 0.5));
             cube_vecs.push_back(Vector3d(-0.5, 0.5, 0.5));
@@ -1750,10 +1784,10 @@ namespace PGL {
             cube_vecs.push_back(Vector3d(-0.5, -0.5, -0.5));
             cube_vecs.push_back(Vector3d(0.5, -0.5, -0.5));
 
-            auto sm = Functs::ScaleMatrix(Vector3d(scale, scale, scale));
-            cube_vecs = Functs::PosApplyM(cube_vecs, sm);
+            auto sm = Functs::ScaleMatrix(Vector3d(scale, scale, scale));//Obtain transformation matrix
+            cube_vecs = Functs::PosApplyMatrix(cube_vecs, sm);//coordinate transformation
 
-            VectorPI1 frames_indexes;
+            VectorPI1 frames_indexes;//Store the index for each edge
             frames_indexes.push_back(std::pair<int, int>(0, 1));
             frames_indexes.push_back(std::pair<int, int>(1, 2));
             frames_indexes.push_back(std::pair<int, int>(2, 3));
@@ -1767,12 +1801,13 @@ namespace PGL {
             frames_indexes.push_back(std::pair<int, int>(7, 3));
             frames_indexes.push_back(std::pair<int, int>(6, 2));
 
-            std::vector<std::pair<Vector3d, Vector3d>> frames;
+            std::vector<std::pair<Vector3d, Vector3d>> frames;//Set of edges
             for (auto& fi : frames_indexes)
                 frames.push_back(std::pair<Vector3d, Vector3d>(cube_vecs[fi.first], cube_vecs[fi.second]));
             return frames;
         }
-
+        //Divide each face of the scaled unit cube into triangular faces（get PGLTriMesh）
+        //cube_vecs:the Point Set of a Cube
         static void GetUnitCube(Vector3d1& cube_vecs, Vector1i1& cube_face_id_0, Vector1i1& cube_face_id_1, Vector1i1& cube_face_id_2, const double& scale = 1.0)
         {
             cube_vecs.clear();
@@ -1791,9 +1826,9 @@ namespace PGL {
             cube_vecs.push_back(Vector3d(0.5, -0.5, -0.5));
 
             auto sm = Functs::ScaleMatrix(Vector3d(scale, scale, scale));
-            cube_vecs = Functs::PosApplyM(cube_vecs, sm);
+            cube_vecs = Functs::PosApplyMatrix(cube_vecs, sm);
 
-            Vector1i2 quad_faces;
+            Vector1i2 quad_faces;//Store vertex indices for each face
             quad_faces.push_back(Vector1i1{ 0, 1, 2, 3 });
             quad_faces.push_back(Vector1i1{ 5, 1, 0, 4 });
             quad_faces.push_back(Vector1i1{ 4, 0, 3, 7 });
@@ -1818,7 +1853,7 @@ namespace PGL {
             GetUnitCube(tm.vecs, tm.face_id_0, tm.face_id_1, tm.face_id_2, scale);
             return tm;
         }
-
+        //Returns the direction vector representing the direction of the coordinate axis
         static Vector3d1 GetAxisAlignDirections()
         {
             Vector3d1 directions;
@@ -1830,7 +1865,7 @@ namespace PGL {
             directions.push_back(Vector3d(0, 0, 1));
             return directions;
         }
-
+        //Obtain a list of vectors containing 24 rotated Euler angles
         static Vector3d1 EmumerateRotations()
         {
             Vector3d1 rotations;
@@ -1866,7 +1901,7 @@ namespace PGL {
             rotations.emplace_back(Vector3d(90.0, -90.0, 90.0));
             rotations.emplace_back(Vector3d(0.0, 0.0, 270.0));
 
-            for (auto& rotation : rotations)
+            for (auto& rotation : rotations)//Convert angles to radians
             {
                 rotation[0] = rotation[0] / 180.0 * Math_PI;
                 rotation[1] = rotation[1] / 180.0 * Math_PI;
@@ -1879,20 +1914,20 @@ namespace PGL {
 #pragma endregion
 
 #pragma region BasicMathFunctions
-
-        static double RandomD(const double& min_d = 0.0, const double& max_d = 1.0)
+        //Returns a random double precision floating-point number within a specified range
+        static double RandomDouble(const double& min_d = 0.0, const double& max_d = 1.0)
         {
-            std::uniform_real_distribution<> dis(min_d, max_d);
+            std::uniform_real_distribution<> dis(min_d, max_d);//Uniformly distributed random numbers，range：[min_d,max_d]
             return dis(MATHGEN);
         }
 
         //select a number among 0,1,2,...,s-1
         //s should be positive int
-        static int RandomI(const int& s)
+        static int RandomInt(const int& s)
         {
             if (s == 1) return 0;
             double x = 1.0 / s;
-            double d = RandomD();
+            double d = RandomDouble();
 
             for (int i = 0; i < s; i++)
             {
@@ -1907,15 +1942,15 @@ namespace PGL {
             return -1;
         }
 
-        static double RandomDD(const double& min_d = 0.0, const double& max_d = 1.0)
+        /*static double RandomDD(const double& min_d = 0.0, const double& max_d = 1.0)//redundancy？
         {
             std::uniform_real_distribution<> dis(min_d, max_d);
             return dis(MATHGEN);
-        }
+        }*/
 
         //select a number among 0,1,2,...,s-1
         //s should be positive int
-        static int RandomII(int s)
+        /*static int RandomII(int s)
         {
             if (s == 1) return 0;
             double x = 1.0 / s;
@@ -1932,17 +1967,18 @@ namespace PGL {
             }
 
             return -1;
-        }
+        }*/
 
+        //Calculate vector cross product
         static Vector3d GetCrossproduct(const Vector3d& v1, const Vector3d& v2) {
             return glm::cross(v1, v2);
         }
-
+        //Calculate vector dot product
         template <class Type>
         static double GetDotproduct(const Type& v1, const Type& v2) {
             return glm::dot(v1, v2);
         }
-
+        //Calculate difference
         template <class Type>
         static Type GetMinus(const Type& a, const Type& b)
         {
@@ -1951,7 +1987,7 @@ namespace PGL {
                 c[i] = a[i] - b[i];
             return c;
         }
-
+        //Judging equality
         static bool AreAlmostEqual(const double& value1, const double& value2) {
             if (value1 == value2) {
                 return true;
@@ -1964,7 +2000,7 @@ namespace PGL {
         static bool AreAlmostEqual_Double(const double& value1, const double& value2, const double& EPSILON) {
             return IsAlmostZero_Double(value1 - value2, EPSILON);
         }
-
+        //Returns true if the number of a double type is approximately zero
         static bool IsAlmostZero(const double& value) {
             return (value < DOUBLE_EPSILON) && (value > -DOUBLE_EPSILON);
         }
@@ -1984,14 +2020,14 @@ namespace PGL {
             float delta = value1 - value2;
             return (-eps < delta) && (eps > delta);
         }
-
+        //Set the parts of a three-dimensional space point that are approximately zero in the three dimensions to zero
         static void ZeroVector(Vector3d& v)
         {
             if (IsAlmostZero(v[0]))v[0] = 0.0;
             if (IsAlmostZero(v[1]))v[1] = 0.0;
             if (IsAlmostZero(v[2]))v[2] = 0.0;
         }
-
+        //Calculate maximum value
         template<class Type>
         static double GetMax(const Type& vec)
         {
@@ -2000,7 +2036,7 @@ namespace PGL {
                 maxd = max(maxd, vec[i]);
             return maxd;
         }
-
+        //Calculate the maximum and minimum values of a one-dimensional array
         static void GetMinMax(const Vector1d1& ds, double& mind, double& maxd)
         {
             mind = ds[0];
@@ -2011,7 +2047,7 @@ namespace PGL {
                 maxd = max(maxd, d);
             }
         }
-
+        //Calculate the maximum and minimum values of a two-dimensional array
         static void GetMinMax(const Vector1d2& ds, double& mind, double& maxd)
         {
             mind = ds.front().front();
@@ -2025,7 +2061,7 @@ namespace PGL {
                 }
             }
         }
-
+        //Insert a non repeating element into the array, and return false if the element already exists in the array.Otherwise, insert and return true
         template<class Type>
         static bool VectorInsertNoDuplicate(std::vector<Type>& vecs, const Type& element)
         {
@@ -2035,14 +2071,14 @@ namespace PGL {
             vecs.emplace_back(element);
             return true;
         }
-
+       
         template<class Type>
         static void VectorInsertNoDuplicate(std::vector<Type>& vecs, const std::vector<Type>& elements)
         {
             for (auto& element : elements)
                 VectorInsertNoDuplicate(vecs, element);
         }
-
+        //Merge two arrays
         template<class Type>
         static std::vector<Type> VectorMerge(const std::vector<Type>& vecs_0, const std::vector<Type>& vecs_1)
         {
@@ -2050,7 +2086,7 @@ namespace PGL {
             result.insert(result.end(), vecs_1.begin(), vecs_1.end());
             return result;
         }
-
+        //Check if the array contains the given element
         template<class Type>
         static bool CheckContain(const Vector1<Type>& vecs, const Type& element)
         {
@@ -2064,7 +2100,7 @@ namespace PGL {
             //return std::find(vecs.begin(), vecs.end(), element) != vecs.end();
         }
 
-
+        //Return the index of the element in an array,or -1 if there is no such element
         template <class Type>
         static int VectorIndex(const std::vector <Type>& vecs, const Type& element)
         {
@@ -2078,25 +2114,6 @@ namespace PGL {
             return -1;
         }
 
-
-        template <class Type>
-        static int VectorSize(const Vector2<Type>& vecs)
-        {
-            int nb = 0;
-            for (auto& vec : vecs)
-                nb += vec.size();
-            return nb;
-        }
-
-        template <class Type>
-        static int VectorSize(const Vector3<Type>& vecs)
-        {
-            int nb = 0;
-            for (auto& vec : vecs)
-                nb += VectorSize(vec);
-            return nb;
-        }
-
         template <class Type>
         static int VectorIndex(const std::vector <std::vector <Type>>& vecs, const Type& element)
         {
@@ -2108,6 +2125,27 @@ namespace PGL {
             return -1;
         }
 
+        //Return the size of a two-dimensional array
+        template <class Type>
+        static int VectorSize(const Vector2<Type>& vecs)
+        {
+            int nb = 0;
+            for (auto& vec : vecs)
+                nb += vec.size();
+            return nb;
+        }
+        //Return the size of a three-dimensional array
+        template <class Type>
+        static int VectorSize(const Vector3<Type>& vecs)
+        {
+            int nb = 0;
+            for (auto& vec : vecs)
+                nb += VectorSize(vec);
+            return nb;
+        }
+
+      
+        //Add a given value to each element in the array
         template <class Type>
         static std::vector <Type> VectorAdd(const std::vector <Type>& vecs, const Type& element)
         {
@@ -2116,7 +2154,7 @@ namespace PGL {
                 r += element;
             return result;
         }
-
+        //Return true if the array contains the given element
         static bool VectorContain(const std::vector<int>& vecs, const int& element)
         {
             for (int i = 0; i < vecs.size(); i++)
@@ -2127,7 +2165,7 @@ namespace PGL {
 
             return false;
         }
-
+        //Return the index of the given element in the array, or -1 if it does not contain the element
         static int VectorContainReturnIndex(const std::vector<int>& vecs, const int& element)
         {
             for (int i = 0; i < vecs.size(); i++)
@@ -2138,7 +2176,7 @@ namespace PGL {
 
             return -1;
         }
-
+        //Return true if an array in two-dimensional space contains a given element (ordered)
         static bool VectorContainForSpecialCase(const std::vector<std::vector<int>>& vecs, const std::vector<int>& element)
         {
             for (int i = 0; i < vecs.size(); i++)
@@ -2149,6 +2187,7 @@ namespace PGL {
 
             return false;
         }
+        //Return true if an array in two-dimensional space contains a given element (unordered)
         static bool VectorContainForSpecialCase1(const std::vector<std::vector<int>>& vecs, const std::vector<int>& element)
         {
             for (int i = 0; i < vecs.size(); i++)
@@ -2159,7 +2198,7 @@ namespace PGL {
 
             return false;
         }
-
+        //Return the index of the given element in an array in two-dimensional space, or -1 if there is no such element(unordered)
         static int VectorContainForSpecialCase2(const std::vector<std::vector<int>>& vecs, const int& element_0, const int& element_1)
         {
             for (int i = 0; i < vecs.size(); i++)
@@ -2169,7 +2208,7 @@ namespace PGL {
             }
             return -1;
         }
-
+        //Return the index of the given element in an array in two-dimensional space, or -1 if there is no such element(ordered)
         static int VectorContainForSpecialCase3(const std::vector<std::vector<int>>& vecs, const int& element_0, const int& element_1)
         {
             for (int i = 0; i < vecs.size(); i++)
@@ -2182,104 +2221,110 @@ namespace PGL {
 
 
 #pragma region Transformation
-
-        static Vector2d Vector3d2d(const Vector3d& v)
+        //Reduce 3d to 2d, remove the z-axis coordinates
+        static Vector2d Vector3dto2d(const Vector3d& v)
         {
             return Vector2d(v[0], v[1]);
         }
-
-        static Vector2d1 Vector3d2d(const Vector3d1& vecs_3d)
+        //Reduce  3d array to  2d array (array dimension is one-dimensional)
+        static Vector2d1 Vector3dto2d(const Vector3d1& vecs_3d)
         {
             Vector2d1 vecs_2d;
             for (auto& v : vecs_3d)
-                vecs_2d.emplace_back(Vector3d2d(v));
+                vecs_2d.emplace_back(Vector3dto2d(v));
             return vecs_2d;
         }
-
-        static Vector2d2 Vector3d2d(const Vector3d2& vecs_3d)
+        //Reduce  3d array to  2d array (array dimension is two-dimensional)
+        static Vector2d2 Vector3dto2d(const Vector3d2& vecs_3d)
         {
             Vector2d2 vecs_2d;
             for (auto v : vecs_3d)
-                vecs_2d.emplace_back(Vector3d2d(v));
+                vecs_2d.emplace_back(Vector3dto2d(v));
             return vecs_2d;
         }
-
-        static Vector3d Vector2d3d(const Vector2d& v, const double& z = 0.0)
+        //2d to 3d. z:set the value of the z-axis
+        static Vector3d Vector2dto3d(const Vector2d& v, const double& z = 0.0)
         {
             return Vector3d(v[0], v[1], z);
         }
-
-        static Vector3d1 Vector2d3d(const Vector2d1& vecs_2d, double z = 0.0)
+        //2d array to 3d array (array dimension is one-dimensional)
+        static Vector3d1 Vector2dto3d(const Vector2d1& vecs_2d, double z = 0.0)
         {
             Vector3d1 vecs_3d;
             for (auto v : vecs_2d)
-                vecs_3d.emplace_back(Vector2d3d(v, z));
+                vecs_3d.emplace_back(Vector2dto3d(v, z));
             return vecs_3d;
         }
-
-        static Vector3d2 Vector2d3d(const Vector2d2& vecs_2d, double z = 0.0)
+        //2d array to 3d array (array dimension is two-dimensional)
+        static Vector3d2 Vector2dto3d(const Vector2d2& vecs_2d, double z = 0.0)
         {
             Vector3d2 vecs_3d;
             for (auto v : vecs_2d)
-                vecs_3d.emplace_back(Vector2d3d(v, z));
+                vecs_3d.emplace_back(Vector2dto3d(v, z));
             return vecs_3d;
         }
-
-        static Vector3d VecApplyM(const Vector3d& v, const  glm::dmat4& M)
+        //Apply a 3d vector v to a 4x4 transformation matrix M and return the transformed result
+        static Vector3d VecApplyMatrix(const Vector3d& v, const  glm::dmat4& M)
         {
             return Vector3d(M * glm::vec4(v, 1.0)) - Vector3d(M * glm::vec4(Vector3d(0.0, 0.0, 0.0), 1.0));
         }
-
-        static Vector3d1 VecApplyM(const Vector3d1& vecs, const glm::dmat4& M)
+        //Affine transformation of one-dimensional vector array
+        static Vector3d1 VecApplyMatrix(const Vector3d1& vecs, const glm::dmat4& M)
         {
             Vector3d1 ps;
             for (auto& p : vecs)
-                ps.emplace_back(VecApplyM(p, M));
+                ps.emplace_back(VecApplyMatrix(p, M));
             return ps;
         }
-
-        static Vector3d2 VecApplyM(const Vector3d2& veces, const glm::dmat4& M)
+        //Affine transformation of  two-dimensional vector array
+        static Vector3d2 VecApplyMatrix(const Vector3d2& veces, const glm::dmat4& M)
         {
             Vector3d2 pses;
             for (auto vecs : veces)
-                pses.emplace_back(VecApplyM(vecs, M));
+                pses.emplace_back(VecApplyMatrix(vecs, M));
             return pses;
         }
-
-        static Vector3d PosApplyM(const Vector3d& v, const glm::dmat4& M)
+        // Coordinate transformation of point
+        static Vector3d PosApplyMatrix(const Vector3d& v, const glm::dmat4& M)
         {
             return Vector3d(M * glm::vec4(v, 1.0));
         }
-
-        static Vector3d1 PosApplyM(const Vector3d1& vecs, const glm::dmat4& M)
+        //Coordinate transformation of one-dimensional point array
+        static Vector3d1 PosApplyMatrix(const Vector3d1& vecs, const glm::dmat4& M)
         {
             Vector3d1 ps;
             for (auto& p : vecs)
-                ps.emplace_back(PosApplyM(p, M));
+                ps.emplace_back(PosApplyMatrix(p, M));
             return ps;
         }
 
-        static std::pair<Vector3d, Vector3d> PosApplyM(const std::pair<Vector3d, Vector3d>& vecs, const glm::dmat4& M)
-        {
-            return std::pair<Vector3d, Vector3d>(PosApplyM(vecs.first, M), PosApplyM(vecs.second, M));
-        }
-
-        static Vector3d2 PosApplyM(const Vector3d2& veces, const glm::dmat4& M)
+        
+        //Coordinate transformation of two-dimensional point array
+        static Vector3d2 PosApplyMatrix(const Vector3d2& veces, const glm::dmat4& M)
         {
             Vector3d2 pses;
             for (auto vecs : veces)
-                pses.emplace_back(PosApplyM(vecs, M));
+                pses.emplace_back(PosApplyMatrix(vecs, M));
             return pses;
         }
-
-        static Vector3d3 PosApplyM(const Vector3d3& veces, const glm::dmat4& M)
+        //Coordinate transformation of three-dimensional point array
+        static Vector3d3 PosApplyMatrix(const Vector3d3& veces, const glm::dmat4& M)
         {
             Vector3d3 pses;
             for (auto vecs : veces)
-                pses.emplace_back(PosApplyM(vecs, M));
+                pses.emplace_back(PosApplyMatrix(vecs, M));
             return pses;
         }
-
+        // Coordinate transformation of point.form like (point,point)
+        static std::pair<Vector3d, Vector3d> PosApplyMatrix(const std::pair<Vector3d, Vector3d>& vecs, const glm::dmat4& M)
+        {
+            return std::pair<Vector3d, Vector3d>(PosApplyMatrix(vecs.first, M), PosApplyMatrix(vecs.second, M));
+        }
+        //Get the rotation matrix
+        //x[0] y[0] z[0] 0
+        //x[1] y[1] z[1] 0
+        //x[2] y[2] z[2] 0
+        // 0    0    0   1
         static glm::dmat4 RotationMatrixXYZ(const Vector3d& xx, const Vector3d& yy, const Vector3d& zz)
         {
             auto x = xx;
@@ -2319,7 +2364,7 @@ namespace PGL {
 
         }
 
-
+        //Generate a rotation matrix, which will rotate vector o around the rotation axis n to the same direction as vector t
         static glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d& t, const Vector3d& n)
         {
             double angle = GetAngleBetween(o, t);
@@ -2352,7 +2397,7 @@ namespace PGL {
                 return RotationMatrix(n, angle);
             }
         }
-
+        /*//Adjust the value of the rotation axis n based on the given vector v
         static void AAA(const Vector3d& v, Vector3d& n)
         {
             auto a = v[0];
@@ -2415,17 +2460,17 @@ namespace PGL {
                 n[2] = -(a + b) / c;
             }
 
-        }
-
+        }*/
+        //Generate a rotation matrix based on the starting vector o and the target vector t, which is used to rotate vector o to the same direction as vector t
         static glm::dmat4 RotationMatrix(const Vector3d& o, const Vector3d& t)
         {
             Vector3d n = GetCrossproduct(o, t);
             double angle = GetAngleBetween(o, t);
 
-            if (IsAlmostZero(angle - Math_PI))
+           /* if (IsAlmostZero(angle - Math_PI))
             {
                 AAA(o, n);
-            }
+            }*/
 
             if (IsAlmostZero(angle))
             {
@@ -2457,7 +2502,7 @@ namespace PGL {
         }
 
 
-
+        //Generate a rotation matrix with a given axis n as the rotation axis and an angle of rotation
         static glm::dmat4 RotationMatrix(const Vector3d& n, const double& angle)
         {
             //return glm::rotate(angle, n);
@@ -2496,15 +2541,73 @@ namespace PGL {
 
             return rotationMatrix;
         }
+       
+        //Generate a translation matrix
+        static glm::dmat4 TranslationMatrix(const Vector3d& v)
+        {
+            glm::dmat4  translationMatrix;
+            translationMatrix[0][0] = 1.0;
+            translationMatrix[0][1] = 0.0;
+            translationMatrix[0][2] = 0.0;
+            translationMatrix[0][3] = 0.0;
 
+            translationMatrix[1][0] = 0.0;
+            translationMatrix[1][1] = 1.0;
+            translationMatrix[1][2] = 0.0;
+            translationMatrix[1][3] = 0.0;
+
+            translationMatrix[2][0] = 0.0;
+            translationMatrix[2][1] = 0.0;
+            translationMatrix[2][2] = 1.0;
+            translationMatrix[2][3] = 0.0;
+
+            translationMatrix[3][0] = v[0];
+            translationMatrix[3][1] = v[1];
+            translationMatrix[3][2] = v[2];
+            translationMatrix[3][3] = 1.0;
+
+            return translationMatrix;
+        }
+        //Generate a scaling matrix,  v is the scaling factor
+        //v[0]  0   0   0
+        //0    v[1] 0   0
+        //0     0   v[2] 0
+        //0    0    0    1
+        static glm::dmat4 ScaleMatrix(const Vector3d& v)
+        {
+            glm::dmat4  translationMatrix;
+            translationMatrix[0][0] = v[0];
+            translationMatrix[0][1] = 0.0;
+            translationMatrix[0][2] = 0.0;
+            translationMatrix[0][3] = 0.0;
+
+            translationMatrix[1][0] = 0.0;
+            translationMatrix[1][1] = v[1];
+            translationMatrix[1][2] = 0.0;
+            translationMatrix[1][3] = 0.0;
+
+            translationMatrix[2][0] = 0.0;
+            translationMatrix[2][1] = 0.0;
+            translationMatrix[2][2] = v[2];
+            translationMatrix[2][3] = 0.0;
+
+            translationMatrix[3][0] = 0;
+            translationMatrix[3][1] = 0;
+            translationMatrix[3][2] = 0;
+            translationMatrix[3][3] = 1.0;
+
+            return translationMatrix;
+        }
+
+        //Rotate around a fixed axis. p:the point to rotate, angle:the angle of rotation, n:the axis of rotation
         static Vector3d RotationAxis(const Vector3d& p, const double& angle, const Vector3d& n)
         {
             //auto m = RotationMatrix(n, angle);
             //return PosApplyM(p, m);
 
-            auto rtv = glm::rotate(angle, n)* glm::dvec4(p, 1.0);
+            auto rtv = glm::rotate(angle, n) * glm::dvec4(p, 1.0);
             return Vector3d(rtv[0], rtv[1], rtv[2]);
-            
+
             /*
             glm::dmat4 inputMatrix(0.0);
             inputMatrix[0][0] = p[0];
@@ -2560,99 +2663,48 @@ namespace PGL {
             return Vector3d(outputMatrix[0][0], outputMatrix[1][0], outputMatrix[2][0]);
             */
         }
-
-        static glm::dmat4 TranslationMatrix(const Vector3d& v)
-        {
-            glm::dmat4  translationMatrix;
-            translationMatrix[0][0] = 1.0;
-            translationMatrix[0][1] = 0.0;
-            translationMatrix[0][2] = 0.0;
-            translationMatrix[0][3] = 0.0;
-
-            translationMatrix[1][0] = 0.0;
-            translationMatrix[1][1] = 1.0;
-            translationMatrix[1][2] = 0.0;
-            translationMatrix[1][3] = 0.0;
-
-            translationMatrix[2][0] = 0.0;
-            translationMatrix[2][1] = 0.0;
-            translationMatrix[2][2] = 1.0;
-            translationMatrix[2][3] = 0.0;
-
-            translationMatrix[3][0] = v[0];
-            translationMatrix[3][1] = v[1];
-            translationMatrix[3][2] = v[2];
-            translationMatrix[3][3] = 1.0;
-
-            return translationMatrix;
-        }
-
-        static glm::dmat4 ScaleMatrix(const Vector3d& v)
-        {
-            glm::dmat4  translationMatrix;
-            translationMatrix[0][0] = v[0];
-            translationMatrix[0][1] = 0.0;
-            translationMatrix[0][2] = 0.0;
-            translationMatrix[0][3] = 0.0;
-
-            translationMatrix[1][0] = 0.0;
-            translationMatrix[1][1] = v[1];
-            translationMatrix[1][2] = 0.0;
-            translationMatrix[1][3] = 0.0;
-
-            translationMatrix[2][0] = 0.0;
-            translationMatrix[2][1] = 0.0;
-            translationMatrix[2][2] = v[2];
-            translationMatrix[2][3] = 0.0;
-
-            translationMatrix[3][0] = 0;
-            translationMatrix[3][1] = 0;
-            translationMatrix[3][2] = 0;
-            translationMatrix[3][3] = 1.0;
-
-            return translationMatrix;
-        }
-
+        //The 2d point p rotates around the specified center point and returns the rotated 2d point
         static Vector2d RotationAxis2d(const Vector2d& p, const double& angle, const Vector2d& center)
         {
             Vector3d r = RotationAxis(Vector3d(p[0] - center[0], 0.0, p[1] - center[1]),
                 angle, Vector3d(0.0, 1.0, 0.0)) + Vector3d(center[0], 0.0, center[1]);
             return Vector2d(r[0], r[2]);
         }
-
+        //The 3d point p rotates around the specified ray axis  and returns the rotated 3d point
         static Vector3d RotationAxis(const Vector3d& p, const double& angle, const Vector3d& ray_point, const Vector3d& ray_vector)
         {
             return RotationAxis(p - ray_point, angle, ray_vector) + ray_point;
         }
-
+        //The 3d point array p rotates around the specified ray axis  and returns the rotated 3d point(array dimension:one-dimensional)
         static void RotationAxis(Vector3d1& points, const double& angle, const Vector3d& ray_point, const Vector3d& ray_vector)
         {
             for (int i = 0; i < points.size(); i++)
                 points[i] = RotationAxis(points[i], angle, ray_point, ray_vector);
         }
-
+        //The 3d point array p rotates around the specified ray axis  and returns the rotated 3d point(array dimension:two-dimensional)
         static void RotationAxis(Vector3d2& points, const double& angle, const Vector3d& ray_point, const Vector3d& ray_vector)
         {
             for (int i = 0; i < points.size(); i++)
                 RotationAxis(points[i], angle, ray_point, ray_vector);
         }
+        //The 3d point array p rotates around the specified ray axis  and returns the rotated 3d point(array dimension:three-dimensional)
         static void RotationAxis(Vector3d3& pointses, const double& angle, const Vector3d& ray_point, const Vector3d& ray_vector)
         {
             for (int i = 0; i < pointses.size(); i++)
                 RotationAxis(pointses[i], angle, ray_point, ray_vector);
         }
-
+        //Perform linear transformations on vectors
         static Vector3d Translate(const Vector3d& p, const Vector3d& v)
         {
             return p + v;
         }
-
+        //Perform  linear transformation on  vector array(array dimension:one-dimensional)
         static void Translate(Vector3d1& points, const Vector3d& v)
         {
             for (int i = 0; i < points.size(); i++)
                 points[i] = Translate(points[i], v);
         }
-
+        //Perform  linear transformation on  vector array(array dimension:two-dimensional)
         static void Translate(Vector3d2& points, const Vector3d& v)
         {
             for (int i = 0; i < points.size(); i++)
@@ -2662,18 +2714,18 @@ namespace PGL {
 
 
 #pragma region IOFunctions
-
+        //Check if the file with the specified path exists
         static bool LoadExisting(const std::string& path)
         {
             std::ifstream file(path, std::ios::in);
             if (!file) return false;
             return true;
         }
-
+        //Load vector array data from a file at the given path（array dimension:three-dimensional )
         static bool LoadVectors(const std::string& path, Vector3d3& vec_3)
         {
             //zigzag_final_path
-            int nb_0, nb_1, nb_2;
+            int nb_0, nb_1, nb_2;//The number of 3d vectors, the number of 2d vectors in each 3d vector, the number of 1d vectors in each 2d vector
             std::ifstream file(path, std::ios::in);
 
             if (!file) return false;
@@ -2698,7 +2750,7 @@ namespace PGL {
 
             return true;
         }
-
+        //Load vector array data from a file at the given path（array dimension:one-dimensional )
         static bool LoadVectors(const std::string& path, Vector3d1& vec_3)
         {
             //zigzag_final_path
@@ -2706,7 +2758,7 @@ namespace PGL {
 
             if (!file) return false;
 
-            int nb;
+            int nb;//The number of vectors
             file >> nb;
             for (int i = 0; i < nb; i++)
             {
@@ -2718,7 +2770,7 @@ namespace PGL {
 
             return true;
         }
-
+        //Output the data of a vector array to a file at the given path（array dimension:three-dimensional )
         static void OutputVectors(const std::string& out_path, const Vector3d3& vecs)
         {
             std::ofstream file(out_path);
@@ -2737,7 +2789,7 @@ namespace PGL {
             file.clear();
             file.close();
         }
-
+        //Output the data of a vector array to a file at the given path（array dimension:one-dimensional )
         static void OutputVectors(const std::string& out_path, const Vector3d1& vecs)
         {
             std::ofstream file(out_path);
@@ -2749,7 +2801,7 @@ namespace PGL {
         }
 
 #if !defined(UNICODE) && !defined(_UNICODE) && !defined(__APPLE__)
-
+        //Load a DLL file with the specified path
         static HMODULE LoadHMODULE(const string& dll_path)
         {
  
@@ -2777,15 +2829,18 @@ namespace PGL {
         };
 
 #endif
-
+        //Load a 3D model file in. obj format
+        //coords:store the vertex coordinates of the model(Every three consecutive elements represent a vertex coordinate)
+        //tris:Store vertex index of triangular faces
         static void LoadObj3d(const char* path, std::vector<double>& coords, std::vector<int>& tris)
         {
+            //Extract the first integer value from a string
             auto get_first_integer = [](const char* v)
             {
                 int ival;
                 std::string s(v);
                 std::replace(s.begin(), s.end(), '/', ' ');
-                sscanf(s.c_str(), "%d", &ival);
+                sscanf(s.c_str(), "%d", &ival);//Read the first integers into ival
                 return ival;
             };
 
@@ -2822,7 +2877,9 @@ namespace PGL {
             }
             fclose(fp);
         };
-
+        //Load a 3D model file in. obj format
+        //vecs:store vertex coordinates
+        //face_id_0(1)(2):store the index of triangular faces
         static void LoadObj3d(const char* path_, Vector3d1& vecs, Vector1i1& face_id_0, Vector1i1& face_id_1, Vector1i1& face_id_2)
         {
             std::string path = path_;
@@ -2853,14 +2910,15 @@ namespace PGL {
             }
         };
 
-
+        //Output the vertex coordinates of a two-dimensional rectangle to a file in the specified path (one face)
+        //One - dimensional vertex coordinates
         static void OutputRectangle2d(const std::string& path, const std::vector<Vector2d>& points)
         {
             std::ofstream file(path);
 
             for (int i = 0; i < points.size(); i++)
             {
-                file << "v " << points[i][0] << " " << points[i][1] << " " << 0.0 << std::endl;
+                file << "v " << points[i][0] << " " << points[i][1] << " " << 0.0 << std::endl;//Output vertex coordinates(set z to zero)
             }
 
             int nb = 1;
@@ -2868,7 +2926,7 @@ namespace PGL {
             file << "f ";
             for (int i = 0; i < points.size(); i++)
             {
-                file << IntString(nb) << " ";
+                file << Int2String(nb) << " ";//Output vertex number of face,number starts from 1
                 nb++;
             }
             file << "" << std::endl;
@@ -2876,7 +2934,8 @@ namespace PGL {
             file.clear();
             file.close();
         }
-
+        //Output the vertex coordinates  of 3D objects to a file in the specified path (one face)
+        //One - dimensional vertex coordinates
         static void OutputObj3d(const std::string& path, const Vector3d1& points)
         {
             Functs::MAssert(points.size() >= 3,"CGAL_Output_Obj error: vecs.size() < 3 ");
@@ -2889,7 +2948,7 @@ namespace PGL {
             file << "f ";
             for (int p = 0; p < points.size(); p++)
             {
-                file << IntString(nb) << " ";
+                file << Int2String(nb) << " ";//Output vertex number of face
                 nb++;
             }
             file << "" << std::endl;
@@ -2897,7 +2956,8 @@ namespace PGL {
             file.clear();
             file.close();
         };
-
+        //Output the vertex coordinates and color values of 3D objects to a file in the specified path(one face)
+        //One - dimensional vertex coordinates
         static void OutputObj3d(const std::string& path, const Vector3d1& points, const Vector3d1& colors)
         {
             Functs::MAssert(points.size()==colors.size(),"points.size()!=colors.size()");
@@ -2918,7 +2978,7 @@ namespace PGL {
             file << "f ";
             for (int p = 0; p < points.size(); p++)
             {
-                file << IntString(nb) << " ";
+                file << Int2String(nb) << " ";
                 nb++;
             }
             file << "" << std::endl;
@@ -2927,7 +2987,8 @@ namespace PGL {
             file.close();
         };
         
-        
+        //Output the vertex coordinates  of 3D objects to a file in the specified path (multiple faces)
+        //two - dimensional vertex coordinates
         static void OutputObj3d(const std::string& path, const Vector3d2& points, const int output_index = 1, const string str = "")
         {
             std::ofstream file(path);
@@ -2951,7 +3012,7 @@ namespace PGL {
                 file << "f ";
                 for (int p = 0; p < points_.size(); p++)
                 {
-                    file << IntString(nb) << " ";
+                    file << Int2String(nb) << " ";
                     nb++;
                 }
                 file << "" << std::endl;
@@ -2960,7 +3021,8 @@ namespace PGL {
             file.clear();
             file.close();
         };
-
+        //Output the vertex coordinates  of 3D objects to a file in the specified path (multiple faces)
+        //three - dimensional vertex coordinates
         static void OutputObj3d(const std::string& path, const Vector3d3& points, const int output_index = 1)
         {
             std::ofstream file(path);
@@ -2990,7 +3052,7 @@ namespace PGL {
                     file << "f ";
                     for (int p = 0; p < points_.size(); p++)
                     {
-                        file << IntString(nb) << " ";
+                        file << Int2String(nb) << " ";
                         nb++;
                     }
                     file << "" << std::endl;
@@ -2999,7 +3061,8 @@ namespace PGL {
             file.clear();
             file.close();
         };
-
+        //Output the vertex coordinates and color values of 3D objects to a file in the specified path(multiple faces)
+        //three - dimensional vertex coordinates,one-dimensional color value
         static void OutputObj3d(const std::string& path, const Vector3d3& points, const Vector3d1& colors, const int& output_index = 1)
         {
             std::ofstream file(path);
@@ -3030,7 +3093,7 @@ namespace PGL {
                     file << "f ";
                     for (int p = 0; p < points_.size(); p++)
                     {
-                        file << IntString(nb) << " ";
+                        file << Int2String(nb) << " ";
                         nb++;
                     }
                     file << "" << std::endl;
@@ -3039,7 +3102,8 @@ namespace PGL {
             file.clear();
             file.close();
         };
-
+        //Output the vertex coordinates and color values of 3D objects to a file in the specified path(multiple faces)
+        //three - dimensional vertex coordinates,two-dimensional color value
         static void OutputObj3d(const std::string& path, const Vector3d3& points, const Vector3d2& colors, int output_index = 1)
         {
             std::ofstream file(path);
@@ -3070,7 +3134,7 @@ namespace PGL {
                     file << "f ";
                     for (int p = 0; p < points_.size(); p++)
                     {
-                        file << IntString(nb) << " ";
+                        file << Int2String(nb) << " ";
                         nb++;
                     }
                     file << "" << std::endl;
@@ -3079,19 +3143,20 @@ namespace PGL {
             file.clear();
             file.close();
         };
-
+        //The parameter is PGLTriMesh
         static void OutputObj3d(const std::string& path, const PGLTriMesh& tm)
         {
             OutputObj3d(path, tm.vecs, tm.face_id_0, tm.face_id_1, tm.face_id_2);
         }
-
+        //vecs:the vertex coordinates
+        //face_id_0(1)(2): the index of triangular facesc:
         static void OutputObj3d(const std::string& path, const Vector3d1& vecs, const std::vector<int>& face_id_0, const std::vector<int>& face_id_1, const std::vector<int>& face_id_2)
         {
             if (vecs.size() < 3 || face_id_0.size() < 1 || face_id_1.size() < 1 || face_id_2.size() < 1)
             {
                 std::cout << "vecs.size() < 3 || face_id_0.size() < 1 || face_id_1.size() < 1 || face_id_2.size() < 1" << std::endl;
                 return;
-            }
+            }//Unable to form a triangular surface
 
             for (int i = 0; i < face_id_0.size(); i++)
             {
@@ -3103,7 +3168,7 @@ namespace PGL {
                     std::cout << "index_0 < 0 || index_0 >= vecs.size() || index_1 < 0 || index_1 >= vecs.size() || index_2 < 0 || index_2 >= vecs.size()" << std::endl;
                     return;
                 }
-            }
+            }//Vertex index out of bounds
 
             std::ofstream file(path);
             for (int i = 0; i < vecs.size(); i++)
@@ -3272,13 +3337,14 @@ namespace PGL {
                 file << "3 " << face_id_0[i] << " " << face_id_1[i] << " " << face_id_2[i] << " " << std::endl;
             file.close();
         }
-
+        //Output color information to an. mtl file
         static void OutputMtl(const string& path, const Vector3d1& colors, const string& pre_name)
         {
             ofstream file(path);
             for (int i = 0; i < colors.size(); i++)
             {
                 auto color = colors[i];
+                //attribute line
                 file << "newmtl " << pre_name << i << std::endl;
                 file << "illum 4" << std::endl;
                 file << "Kd " << color[0] << " " << color[1] << " " << color[2] << std::endl;
@@ -3288,30 +3354,34 @@ namespace PGL {
             }
             file.close();
         }
+        //Export geometric information to an output stream
+        //e_index:Number of exported vertices
+        //s_name:The name of the geometry
+        //rgb:color value
+        //mel_name:material quality
 
-
-        static void Export_Segment(std::ofstream& output, int& e_index,
+        static void ExportSegment(std::ofstream& output, int& e_index,
             const string& s_name, const Vector3d& start, const Vector3d& end,
             const double& radius, const bool cube_face = true)
         {
-            Export_Segment(output, e_index, s_name, Vector3d(-1.0, -1.0, -1.0), "", start, end, radius, cube_face);
+            ExportSegment(output, e_index, s_name, Vector3d(-1.0, -1.0, -1.0), "", start, end, radius, cube_face);
         }
 
-        static void Export_Segment(std::ofstream& output, int& e_index,
+        static void ExportSegment(std::ofstream& output, int& e_index,
             const string& s_name, const Vector3d& rgb, const Vector3d& start, const Vector3d& end,
             const double& radius, const bool cube_face = true)
         {
-            Export_Segment(output, e_index, s_name, rgb, "", start, end, radius, cube_face);
+            ExportSegment(output, e_index, s_name, rgb, "", start, end, radius, cube_face);
         }
 
-        static void Export_Segment(std::ofstream& output, int& e_index,
+        static void ExportSegment(std::ofstream& output, int& e_index,
             const string& s_name, const string& mtl_name, const Vector3d& start, const Vector3d& end,
             const double& radius, const bool cube_face = true)
         {
-            Export_Segment(output, e_index, s_name, Vector3d(0.0, 0.0, 0.0), mtl_name, start, end, radius, cube_face);
+            ExportSegment(output, e_index, s_name, Vector3d(0.0, 0.0, 0.0), mtl_name, start, end, radius, cube_face);
         }
 
-        static void Export_Segment(std::ofstream& output, int& e_index,
+        static void ExportSegment(std::ofstream& output, int& e_index,
             const string& s_name, const Vector3d& rgb, const string& mtl_name, const Vector3d& start, const Vector3d& end,
             const double& radius, const bool cube_face = true)
         {
@@ -3404,26 +3474,26 @@ namespace PGL {
 
             e_index += (int)vecs.size();
         }
-
-        static void Export_Stick(std::ofstream& output, int& e_index,
+        //Export the geometric information of a stick to an output stream
+        static void ExportStick(std::ofstream& output, int& e_index,
             const string& s_name, const Vector3d& rgb, const Vector3d1& start_poly, const Vector3d1& end_poly)
         {
-            Export_Stick(output, e_index, s_name, rgb, "", start_poly, end_poly);
+            ExportStick(output, e_index, s_name, rgb, "", start_poly, end_poly);
         }
 
-        static void Export_Stick(std::ofstream& output, int& e_index,
+        static void ExportStick(std::ofstream& output, int& e_index,
             const string& s_name, const string& mtl_name, const Vector3d1& start_poly, const Vector3d1& end_poly)
         {
-            Export_Stick(output, e_index, s_name, Vector3d(-1.0, -1.0, -1.0), mtl_name, start_poly, end_poly);
+            ExportStick(output, e_index, s_name, Vector3d(-1.0, -1.0, -1.0), mtl_name, start_poly, end_poly);
         }
 
-        static void Export_Stick(std::ofstream& output, int& e_index,
+        static void ExportStick(std::ofstream& output, int& e_index,
             const string& s_name, const Vector3d1& start_poly, const Vector3d1& end_poly)
         {
-            Export_Stick(output, e_index, s_name, Vector3d(-1.0, -1.0, -1.0), "", start_poly, end_poly);
+            ExportStick(output, e_index, s_name, Vector3d(-1.0, -1.0, -1.0), "", start_poly, end_poly);
         }
 
-        static void Export_Stick(std::ofstream& output, int& e_index,
+        static void ExportStick(std::ofstream& output, int& e_index,
             const string& s_name, const Vector3d& rgb, const string& mtl_name, const Vector3d1& start_poly, const Vector3d1& end_poly)
         {
             //Functs::MAssert(start_poly.size()<3||end_poly.size()<3|| start_poly.size()!=end_poly.size(), "start_poly.size()<3||end_poly.size()<3|| start_poly.size()!=end_poly.size()");
@@ -3491,37 +3561,37 @@ namespace PGL {
 
             e_index += (int)start_poly.size() + (int)end_poly.size();
         }
-
-        static void Export_Point(std::ofstream& output, int& e_index, const string& s_name, const Vector3d point, const double& radius)
+        //Export the vertex coordinates and face indices of a cube out of the output file stream to represent a point
+        static void ExportPoint(std::ofstream& output, int& e_index, const string& s_name, const Vector3d point, const double& radius)
         {
-            Export_Point(output, e_index, s_name, Vector3d(-1.0, -1.0, -1.0), "", point, radius);
+            ExportPoint(output, e_index, s_name, Vector3d(-1.0, -1.0, -1.0), "", point, radius);
         }
 
-        static void Export_Point(std::ofstream& output, int& e_index, const string& s_name, const Vector3d& rgb, const Vector3d point, const double& radius)
+        static void ExportPoint(std::ofstream& output, int& e_index, const string& s_name, const Vector3d& rgb, const Vector3d point, const double& radius)
         {
-            Export_Point(output, e_index, s_name, rgb, "", point, radius);
+            ExportPoint(output, e_index, s_name, rgb, "", point, radius);
         }
 
-        static void Export_Point(std::ofstream& output, int& e_index, const string& s_name, const string& mtl_name, const Vector3d point, const double& radius)
+        static void ExportPoint(std::ofstream& output, int& e_index, const string& s_name, const string& mtl_name, const Vector3d point, const double& radius)
         {
-            Export_Point(output, e_index, s_name, Vector3d(0.0, 0.0, 0.0), mtl_name, point, radius);
+            ExportPoint(output, e_index, s_name, Vector3d(0.0, 0.0, 0.0), mtl_name, point, radius);
         }
 
-        static void Export_Point(std::ofstream& output, int& e_index, const Vector3d point, const double& radius)
+        static void ExportPoint(std::ofstream& output, int& e_index, const Vector3d point, const double& radius)
         {
-            Export_Point(output, e_index, "", Vector3d(-1.0, -1.0, -1.0), "", point, radius);
+            ExportPoint(output, e_index, "", Vector3d(-1.0, -1.0, -1.0), "", point, radius);
         }
 
-        static void Export_Point(std::ofstream& output, int& e_index, const Vector3d& rgb, const Vector3d point, const double& radius)
+        static void ExportPoint(std::ofstream& output, int& e_index, const Vector3d& rgb, const Vector3d point, const double& radius)
         {
-            Export_Point(output, e_index, "", rgb, "", point, radius);
+            ExportPoint(output, e_index, "", rgb, "", point, radius);
         }
-
-        static void Export_Point
+        
+        static void ExportPoint
         (std::ofstream& output, int& e_index, const string& s_name,
             const Vector3d& rgb, const string& mtl_name, const Vector3d point, const double& radius)
         {
-            Vector3d1 vecs;
+            Vector3d1 vecs;//The set of vertices of a unit cube
             vecs.push_back(Vector3d(0.5, 0.5, 0.5));
             vecs.push_back(Vector3d(-0.5, 0.5, 0.5));
             vecs.push_back(Vector3d(-0.5, 0.5, -0.5));
@@ -3549,11 +3619,11 @@ namespace PGL {
             faces.push_back(std::vector<int>(face_index_5, face_index_5 + 4));
 
             for (int i = 0; i < vecs.size(); i++) {
-                vecs[i][0] = vecs[i][0] * radius;
+                vecs[i][0] = vecs[i][0] * radius;//Scale
                 vecs[i][1] = vecs[i][1] * radius;
                 vecs[i][2] = vecs[i][2] * radius;
 
-                vecs[i][0] += point[0];
+                vecs[i][0] += point[0];//translation
                 vecs[i][1] += point[1];
                 vecs[i][2] += point[2];
 
@@ -3585,8 +3655,8 @@ namespace PGL {
             }
             e_index += 8;
         }
-
-        static void Output_tree(const int& nodes_nb, const std::vector<int>& edges,
+        //Output the information of the tree to a file at the given path
+        static void Outputtree(const int& nodes_nb, const std::vector<int>& edges,
             const std::string& path, const std::vector<string> labels = std::vector<string>())
         {
             std::ofstream file(path);
@@ -3629,6 +3699,9 @@ namespace PGL {
 
 
 #ifndef __APPLE__
+        //Clear all files and folders in the specified path
+        //If the path does not exist, the function will create all folders in the path
+        //If the path exists, first delete all files and folders under the path, and then create a new empty folder
         static void ClearFolder(const std::string& path)
         {
 			if (!DetectExisting(path))
@@ -3642,20 +3715,21 @@ namespace PGL {
 					str += folders[i] + "/";
 					if (!DetectExisting(str))
 					{
-						if (_mkdir(str.c_str())) {};
+						if (_mkdir(str.c_str())) {};//create the floder
 					}
 				}
 			}
 			else
 			{
 				std::string del_cmd = "del /f/s/q " + path + " > nul";
-				system(del_cmd.c_str());
+				system(del_cmd.c_str());//Delete all files under the path
 				std::string rmdir_cmd = "rmdir /s/q " + path;
-				system(rmdir_cmd.c_str());
+				system(rmdir_cmd.c_str());//Delete all folders under the path
 
 				if (_mkdir(path.c_str())) {};
 			}
         }
+        //Detect if the specified path exists
         static bool DetectExisting(const std::string& path)
         {
             struct stat buffer;
@@ -3699,9 +3773,9 @@ namespace PGL {
 
 
 
-
+        //Generate a complete file path based on the executable file path of the program and the parameters passed in and detect its existence
 #ifndef __APPLE__
-        static std::string EXP(const std::string& py_path)
+        static std::string GenerateFullPath(const std::string& py_path)
         {
             std::string path = std::string(_pgmptr).substr(0, std::string(_pgmptr).find_last_of('\\')) + py_path;
             //std::string path = std::string(_pgmptr).substr(0, std::string(_pgmptr).find_last_of('\\')) + py_path;
@@ -3709,7 +3783,7 @@ namespace PGL {
                 Functs::MAssert("std::string EXP(const std::string py_path="")");
             return path;
         }
-
+        //Obtain and return all file names in the specified directory
         static VectorStr1 GetFilesInDirectory(const std::string& path)
         {
 
@@ -3749,7 +3823,8 @@ namespace PGL {
 #pragma endregion
 
 #pragma region Graph
-
+        //Calculate the minimum spanning tree
+        //edges:Elements are nodes, and adjacent elements represent the starting and ending points of an edge
         static std::vector<int> MinimalSpanningTreeGeneral(
             const std::vector<int>& edges,
             const std::vector<double>& costs)
@@ -3767,16 +3842,17 @@ namespace PGL {
             }
 
             std::vector<int> map_edges;
-            for (auto edge : edges) map_edges.emplace_back(unique_map_0.at(edge));
+            for (auto edge : edges) map_edges.emplace_back(unique_map_0.at(edge));//Map nodes in edges to indexes
 
             auto mst = MinimalSpanningTree(node_nb, map_edges, costs);
 
             std::vector<int> map_mst;
-            for (auto m : mst) map_mst.emplace_back(unique_map_1.at(m));
+            for (auto m : mst) map_mst.emplace_back(unique_map_1.at(m));//Remap index to node
 
             return map_mst;
         }
-
+        //Calculate the minimum spanning tree
+        //edges:The element is the index of a node, and adjacent elements represent the starting and ending points of an edge
         static std::vector<int> MinimalSpanningTree(
             const int& node_nb, const std::vector<int>& edges, const std::vector<double>& costs)
         {
@@ -3791,12 +3867,12 @@ namespace PGL {
                 std::vector<int> container;
                 container.push_back(nodes[i]);
                 containers.push_back(container);
-                std::vector<int>().swap(container);
+                std::vector<int>().swap(container);//Free up empty space
             }
 
             std::vector<bool> edges_used;
             for (int i = 0; i < costs.size(); i++)
-                edges_used.push_back(false);
+                edges_used.push_back(false);//Usage of storage edges
 
             do
             {
@@ -3822,8 +3898,8 @@ namespace PGL {
                     break;
 
                 //check valid
-                int edge_index_0 = static_cast<int>(2)* minimal_cost_edge_index;
-                int edge_index_1 = static_cast<int>(2)* minimal_cost_edge_index + 1;
+                int edge_index_0 = static_cast<int>(2)* minimal_cost_edge_index;//Calculate the index of the starting node of the minimum cost edge in edges
+                int edge_index_1 = static_cast<int>(2)* minimal_cost_edge_index + 1; //Calculate the index of the termination node of the minimum cost edge in edges
                 int node_index_0 = edges[edge_index_0];
                 int node_index_1 = edges[edge_index_1];
 
@@ -3882,7 +3958,9 @@ namespace PGL {
 
             return mst;
         };
-
+        //Find all connected components of a given tree
+        //tree:The element is the index of the starting and ending nodes of each edge
+        //Returns the index of the node in the connected component
         static std::vector<std::vector<int>> ConnectedComponents(const int& node_nb, const std::vector<std::pair<int, int>>& tree)
         {
             std::vector<int> tree_;
@@ -3893,49 +3971,13 @@ namespace PGL {
             }
             return ConnectedComponents(node_nb, tree_);
         }
-
-        static std::vector<std::vector<int>> ConnectedComponentsGeneral(const Vector1i1& nodes, const std::vector<std::pair<int, int>>& tree)
-        {
-            std::vector<int> tree_;
-            for (auto& o : tree)
-            {
-                tree_.emplace_back(o.first);
-                tree_.emplace_back(o.second);
-            }
-            return ConnectedComponentsGeneral(nodes, tree_);
-        }
-
-        static std::vector<std::vector<int>> ConnectedComponentsGeneral(const Vector1i1& nodes, const std::vector<int>& tree)
-        {
-            int node_nb = static_cast<int>(nodes.size());
-
-            std::map<int, int> unique_map_0;
-            std::map<int, int> unique_map_1;
-            for (int i = 0; i < nodes.size(); i++)
-            {
-                unique_map_0.insert(std::pair<int, int>(nodes[i], i));
-                unique_map_1.insert(std::pair<int, int>(i, nodes[i]));
-            }
-
-            std::vector<int> map_edges;
-            for (auto edge : tree) map_edges.emplace_back(unique_map_0.at(edge));
-
-            auto components = ConnectedComponents(node_nb, map_edges);
-
-            std::vector<std::vector<int>> map_components;
-            for (auto component : components)
-            {
-                map_components.emplace_back(std::vector<int>());
-                for (auto c : component)
-                    map_components.back().emplace_back(unique_map_1.at(c));
-            }
-            return map_components;
-        }
-
+        //Find all connected components of a given tree
+        //tree:Store node index with an edge between adjacent nodes
+        //Returns the index of the node in the connected component
         static std::vector<std::vector<int>> ConnectedComponents(const int& node_nb, const std::vector<int>& tree)
         {
-            std::vector<std::vector<int>> components;
-            std::vector<int> index(node_nb, -1);
+            std::vector<std::vector<int>> components;//Store all connected components
+            std::vector<int> index(node_nb, -1);//Index storing the connected components to which each node belongs
             int nb = 0;
             for (int i = 0; i < tree.size(); i = i + 2)
             {
@@ -3976,16 +4018,60 @@ namespace PGL {
                 if (!one.empty())components.emplace_back(one);
             }
 
-            for (int j = 0; j < index.size(); j++) if (index[j] == -1)components.emplace_back(std::vector<int>(1, j));
+            for (int j = 0; j < index.size(); j++) if (index[j] == -1)components.emplace_back(std::vector<int>(1, j));//Add nodes that are not assigned to connected components as a separate connected component to components
 
             for (auto& component : components)
                 std::sort(component.begin(), component.end());
             return components;
         };
+        //Find all connected components of a given tree
+        //Returns the node in the connected component
+        //tree:The element is the index of the starting and ending nodes of each edge
+        static std::vector<std::vector<int>> ConnectedComponentsGeneral(const Vector1i1& nodes, const std::vector<std::pair<int, int>>& tree)
+        {
+            std::vector<int> tree_;
+            for (auto& o : tree)
+            {
+                tree_.emplace_back(o.first);
+                tree_.emplace_back(o.second);
+            }
+            return ConnectedComponentsGeneral(nodes, tree_);
+        }
+        //tree:Store node index with an edge between adjacent nodes
+        static std::vector<std::vector<int>> ConnectedComponentsGeneral(const Vector1i1& nodes, const std::vector<int>& tree)
+        {
+            int node_nb = static_cast<int>(nodes.size());
+
+            std::map<int, int> unique_map_0;
+            std::map<int, int> unique_map_1;
+            for (int i = 0; i < nodes.size(); i++)
+            {
+                unique_map_0.insert(std::pair<int, int>(nodes[i], i));
+                unique_map_1.insert(std::pair<int, int>(i, nodes[i]));
+            }
+
+            std::vector<int> map_edges;
+            for (auto edge : tree) map_edges.emplace_back(unique_map_0.at(edge));//Map nodes in edges to indexes
+
+            auto components = ConnectedComponents(node_nb, map_edges);
+
+            std::vector<std::vector<int>> map_components;
+            for (auto component : components)
+            {
+                map_components.emplace_back(std::vector<int>());
+                for (auto c : component)
+                    map_components.back().emplace_back(unique_map_1.at(c));//Remap index to node
+            }
+            return map_components;
+        }
+
+        
 
 #pragma endregion
 
 #pragma region DevelopmentRelated
+        //Print a line of text in the standard error stream (std:: cerr)
+        //Returns true if printing is successful
         static bool CerrLine(const string& line, const int level = 0)
         {
             for (int i = 0; i < level; i++)
@@ -3993,7 +4079,8 @@ namespace PGL {
             std::cerr << line << std::endl;
             return true;
         }
-
+        //Print a line of text in an output file stream (ofstream) and standard error stream (std:: cerr)
+        //Returns true if printing is successful
         static bool CerrLine(ofstream& file, const std::string& line, const int level = 0)
         {
             for (int i = 0; i < level; i++)
@@ -4006,7 +4093,7 @@ namespace PGL {
             return true;
         }
 
-
+        //Output iteration information in standard error stream (std:: cerr)
         //tn: total number of iterations
         //cn: current iteration
         //fn: output frequency number
@@ -4022,11 +4109,13 @@ namespace PGL {
                         std::cerr << CERR_ITER;
                     std::cerr << title << ": ";
                 }
-                std::cerr << Functs::DoubleString((double)(100.0 * cn / tn), 1) << "% ";
+                std::cerr << Functs::Double2String((double)(100.0 * cn / tn), 1) << "% ";
                 if (cn + delta >= tn) std::cerr << std::endl;
             }
         }
-
+        //Output an error message in the standard error stream (std:: cerr) and perform some actions as needed
+        //MacOS:using the 'read - p' command,press Enter to continuepress any key to continue
+        //Windows:using the 'pause' command,press any key to continue
         static void MAssert(const std::string& str, const double sleep_seconds = -1)
         {
             std::cerr << "Bug: " << str << std::endl;
@@ -4056,7 +4145,7 @@ namespace PGL {
             if (!b)MAssert(str, sleep_seconds);
             return b;
         }
-
+        //Let the current thread sleep for a period of time, in seconds
         static void MSleep(const double& second)
         {
             this_thread::sleep_for(chrono::milliseconds((int)(second * 1000)));
@@ -4064,11 +4153,13 @@ namespace PGL {
 
 
 #ifndef __APPLE__
+        //Running Python scripts in C++
         static void RunPY(const std::string& py_path, const std::string& paras)
         {
-            std::string cmd = "python " + Functs::EXP(py_path) + " " + paras;
+            std::string cmd = "python " + Functs::GenerateFullPath(py_path) + " " + paras;
             system(cmd.c_str());
         }
+        //Obtain the path of the current working directory and return it as a string
         static std::string WinGetCurDirectory()
         {
             char tmp[256];
@@ -4083,20 +4174,22 @@ namespace PGL {
             return std::string(tmp);
         }
 #endif
-
+        //Running system commands in C++
         static void RunCMD(const std::string& cmd_str)
         {
             std::cerr << "Command String: " << cmd_str << std::endl;;
             system(cmd_str.c_str());
         }
-
+        //Obtain the username of the current user and return it as a string
         static std::string WinGetUserName()
         {
             char* user = getenv("username");
             return std::string(user);
         }
 
-
+        //Copying files on Windows or Mac systems
+        //source_file:Source file path
+        //target_floder:target_folder path
         static bool WinCopy(const std::string& source_file, const std::string& target_folder, const bool& b = true)
         {
             if (!Functs::DetectExisting(source_file))
@@ -4126,7 +4219,7 @@ namespace PGL {
             }
             return true;
         }
-
+        //Delete files on Windows system
         static bool WinDel(const std::string& source_file, const bool& b = true)
         {
             if (!Functs::DetectExisting(source_file))
@@ -4139,7 +4232,7 @@ namespace PGL {
             system(str.c_str());
             return true;
         }
-
+        //Rename files in Windows systems
         static bool WinRename(const std::string& source_file, const std::string& rename_file, const bool& b = true)
         {
             if (!Functs::DetectExisting(source_file))
@@ -4153,7 +4246,7 @@ namespace PGL {
             system(str.c_str());
             return true;
         }
-
+        //Obtain the type information of the parameter and return it as a string
         template <class Type>
         static std::string GetTypeId(const Type& t)
         {
@@ -4161,7 +4254,7 @@ namespace PGL {
         }
 
 #pragma endregion
-
+        //Returns a three-dimensional vector representing color(RGB)
         static Vector3d ColorMapping(const int& cur, const int& all)
         {
             MAssert(cur >= 0 && all >= 0 && cur <= all - 1, "cur>=0 && all>=0 && cur<all");
