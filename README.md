@@ -1,4 +1,4 @@
-his code is header-only Library developed by Haisen Zhao for his research projects.
+This code is header-only Library developed by Haisen Zhao for his research projects.
 
 # Dependency
 
