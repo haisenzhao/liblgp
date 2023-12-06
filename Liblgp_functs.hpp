@@ -1,6 +1,6 @@
 #pragma warning(disable: 4996)
-#ifndef pgl_hpp
-#define pgl_hpp
+#ifndef Liblgp_hpp
+#define Liblgp_hpp
 #include <numeric>
 #include <vector>
 #include <set>
@@ -53,7 +53,7 @@
 
 using namespace std;
 
-namespace PGL {
+namespace Liblgp {
 
     template <typename datum>
     using Vector1 = std::vector<datum>;
@@ -130,7 +130,7 @@ namespace PGL {
     static bool WINEN = true;
 #endif
 
-    struct PGLTriMesh
+    struct LiblgpTriMesh
     {
         Vector3d1 vecs;
         Vector1i1 face_id_0;
@@ -368,7 +368,7 @@ namespace PGL {
             return v;
         }
 
-        //Find a subset in a two-dimensional vector so that the elements in the subset contain all the elements in the target, and return the index of that subset
+        //Find a proper subset in a two-dimensional vector so that the elements in the subset contain all the elements in the target, and return the index of that subset
         static Vector1i1 FindSetCombination(Vector1i2& input_)
         {
             auto FSC = [](vector<set<int>>& input, set<int>& target, vector<int>& output)
@@ -1229,11 +1229,11 @@ namespace PGL {
         //Generate a three-dimensional vector with a random direction
         static Vector3d GetRandomDirection(const double& direction_length = 1.0)
         {
-            double alpha_angle = rand() / double(RAND_MAX) * 2.0 * PGL::Math_PI;
-            double alpha_beta = rand() / double(RAND_MAX) * 2.0 * PGL::Math_PI;
-            auto direction_0 = PGL::Functs::RotationAxis(Vector3d(direction_length, 0.0, 0.0), alpha_angle, Vector3d(0.0, 1.0, 0.0));
-            auto direction_axis = PGL::Functs::GetCrossproduct(direction_0, Vector3d(0.0, 1.0, 0.0));
-            return PGL::Functs::RotationAxis(direction_0, alpha_beta, direction_axis);
+            double alpha_angle = rand() / double(RAND_MAX) * 2.0 * Liblgp::Math_PI;
+            double alpha_beta = rand() / double(RAND_MAX) * 2.0 * Liblgp::Math_PI;
+            auto direction_0 = Liblgp::Functs::RotationAxis(Vector3d(direction_length, 0.0, 0.0), alpha_angle, Vector3d(0.0, 1.0, 0.0));
+            auto direction_axis = Liblgp::Functs::GetCrossproduct(direction_0, Vector3d(0.0, 1.0, 0.0));
+            return Liblgp::Functs::RotationAxis(direction_0, alpha_beta, direction_axis);
         }
 
 
@@ -1806,7 +1806,7 @@ namespace PGL {
                 frames.push_back(std::pair<Vector3d, Vector3d>(cube_vecs[fi.first], cube_vecs[fi.second]));
             return frames;
         }
-        //Divide each face of the scaled unit cube into triangular faces（get PGLTriMesh）
+        //Divide each face of the scaled unit cube into triangular faces（get LiblgpTriMesh）
         //cube_vecs:the Point Set of a Cube
         static void GetUnitCube(Vector3d1& cube_vecs, Vector1i1& cube_face_id_0, Vector1i1& cube_face_id_1, Vector1i1& cube_face_id_2, const double& scale = 1.0)
         {
@@ -1847,9 +1847,9 @@ namespace PGL {
             }
         };
 
-        static PGLTriMesh GetUnitCube(const double& scale = 1.0)
+        static LiblgpTriMesh GetUnitCube(const double& scale = 1.0)
         {
-            PGLTriMesh tm;
+            LiblgpTriMesh tm;
             GetUnitCube(tm.vecs, tm.face_id_0, tm.face_id_1, tm.face_id_2, scale);
             return tm;
         }
@@ -3060,6 +3060,7 @@ namespace PGL {
             }
             file.clear();
             file.close();
+            
         };
         //Output the vertex coordinates and color values of 3D objects to a file in the specified path(multiple faces)
         //three - dimensional vertex coordinates,one-dimensional color value
@@ -3143,8 +3144,8 @@ namespace PGL {
             file.clear();
             file.close();
         };
-        //The parameter is PGLTriMesh
-        static void OutputObj3d(const std::string& path, const PGLTriMesh& tm)
+        //The parameter is LiblgpTriMesh
+        static void OutputObj3d(const std::string& path, const LiblgpTriMesh& tm)
         {
             OutputObj3d(path, tm.vecs, tm.face_id_0, tm.face_id_1, tm.face_id_2);
         }
