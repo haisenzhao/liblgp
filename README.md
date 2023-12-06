@@ -1,4 +1,4 @@
-This code is header-only Library developed by Haisen Zhao for his research projects.
+his code is header-only Library developed by Haisen Zhao for his research projects.
 
 # Dependency
 
@@ -13,7 +13,8 @@ Depend on [glm](https://github.com/g-truc/glm.git) and [eigen](https://github.co
 
 ## Call Liblgp in your project
 - Download Liblgp\_functs.hpp,RI.hpp,tinyxml2.hpp and local\_libs
-- Found Eigen and glm in the local_libs folder and copy Liblgp\_functs.hpp,RI.hpp,tinyxml2.hpp and the Eigen and glm folders under the local folder to the project location![move_file](images/move_file.png)
+- Found Eigen and glm in the local_libs folder and copy Liblgp\_functs.hpp,RI.hpp,tinyxml2.hpp and the Eigen and glm folders under the local folder to the project location  
+![move_file](images/move_file.png)
 - Then you can call Liblgp in your code!
 - You can run the following code to check if Liblgp can be called
 
