@@ -3,13 +3,13 @@
 
 #include <iostream>
 #include <map>
-#include "pgl_functs.hpp"
+#include "Liblgp_functs.hpp"
 #include <random>
 #include <unordered_map>
 #include <unordered_set>
 #include <iomanip>
 
-using namespace PGL;
+using namespace Liblgp;
 
 
 //Resume IO Info

@@ -5,27 +5,27 @@ his code is header-only Library developed by Haisen Zhao for his research projec
 Depend on [glm](https://github.com/g-truc/glm.git) and [eigen](https://github.com/libigl/eigen.git) but you don't need to install them explicitly.
 
 
-# Call PGL
+# Call Liblgp
 
 ## Create Project
 - Open your Visual Studio and create a new project.![image-create_a_new_project](images/image-create_a_new_project.png)
 - Right-click on your project in the "Solution Explorer" and select "Add" "New item..."![add-item](images/add-item.png)
 
-## Call PGL in your project
-- Download pgl\_functs.hpp,RI.hpp,tinyxml2.hpp and local\_libs
-- Found Eigen and glm in the local_libs folder and copy pgl\_functs.hpp,RI.hpp,tinyxml2.hpp and the Eigen and glm folders under the local folder to the project location![move_file](images/move_file.png)
-- Then you can call PGL in your code!
-- You can run the following code to check if PGL can be called
+## Call Liblgp in your project
+- Download Liblgp\_functs.hpp,RI.hpp,tinyxml2.hpp and local\_libs
+- Found Eigen and glm in the local_libs folder and copy Liblgp\_functs.hpp,RI.hpp,tinyxml2.hpp and the Eigen and glm folders under the local folder to the project location![move_file](images/move_file.png)
+- Then you can call Liblgp in your code!
+- You can run the following code to check if Liblgp can be called
 
 ```cpp
 
 #include "iostream"
-#include "pgl_functs.hpp"
+#include "Liblgp_functs.hpp"
 #include "RI.hpp"
 #include "tinyxml2.hpp"
 
 using namespace std;
-using namespace PGL;
+using namespace Liblgp;
 
 int main(int argc, char* argv[])
 
@@ -45,50 +45,78 @@ int main(int argc, char* argv[])
 
 ```
 
-include(ExternalProject)
-ExternalProject_Add(
-    pgl
-    PREFIX ${CMAKE_BINARY_DIR}/third_party/pgl
-    GIT_REPOSITORY https://github.com/haisenzhao/personal-geom-lib.git
-    CONFIGURE_COMMAND ""
-	UPDATE_DISCONNECTED 1
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
-    )
-ExternalProject_Get_Property(pgl source_dir)
-set(PglIncludeDir ${source_dir})
+cmake_minimum_required(VERSION 3.5)
 
-ExternalProject_Add(
-    glm
-    PREFIX ${CMAKE_BINARY_DIR}/third_party/glm
-    GIT_REPOSITORY https://github.com/g-truc/glm.git
-    CONFIGURE_COMMAND ""
-	UPDATE_DISCONNECTED 1
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
-    )
-ExternalProject_Get_Property(glm source_dir)
-set(GlmIncludeDir ${source_dir})
+set(CMAKE_CXX_STANDARD 11)
 
-ExternalProject_Add(
-    eigen
-    PREFIX ${CMAKE_BINARY_DIR}/third_party/eigen
-    GIT_REPOSITORY https://github.com/libigl/eigen.git
-    CONFIGURE_COMMAND ""
-	UPDATE_DISCONNECTED 1
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
-    )
-ExternalProject_Get_Property(eigen source_dir)
-set(EigenIncludeDir ${source_dir})
+# Set the project name
+project (liblgp)
 
-include_directories(${GlmIncludeDir} ${PglIncludeDir} ${EigenIncludeDir})
-add_dependencies(${PROJECT_NAME} pgl)
-add_dependencies(${PROJECT_NAME} glm)
-add_dependencies(${PROJECT_NAME} eigen)
+#add _CRT_SECURE_NO_WARNINGS
+if(MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
+#define option to use local libs
+option(USE_LOCAL_LIBS "Use local library" OFF)
+
+
+# Create a sources variable with a link to all cpp files to compile
+set(SOURCES
+    Liblgp_functs.hpp
+    RI.hpp
+    tinyxml2.hpp
+    main.cpp
+)
+# Add an executable with the above sources
+add_executable(liblgp ${SOURCES})
+
+if(USE_LOCAL_LIBS)
+   set(GlmIncludeDir ${PROJECT_SOURCE_DIR}/local_libs)
+   set(EigenIncludeDir ${PROJECT_SOURCE_DIR}/local_libs)
+else()
+   include(ExternalProject)
+   ExternalProject_Add(
+       glm
+       PREFIX ${CMAKE_BINARY_DIR}/third_party/glm
+       GIT_REPOSITORY https://github.com/g-truc/glm.git
+       CONFIGURE_COMMAND ""
+   	   UPDATE_DISCONNECTED 1
+       BUILD_COMMAND ""
+       INSTALL_COMMAND ""
+       LOG_DOWNLOAD ON
+       )
+   ExternalProject_Get_Property(glm source_dir)
+   set(GlmIncludeDir ${source_dir})
+
+
+   ExternalProject_Add(
+       eigen
+       PREFIX ${CMAKE_BINARY_DIR}/third_party/eigen
+       GIT_REPOSITORY https://github.com/libigl/eigen.git
+       CONFIGURE_COMMAND ""
+	   UPDATE_DISCONNECTED 1
+       BUILD_COMMAND ""
+       INSTALL_COMMAND ""
+       LOG_DOWNLOAD ON
+       )
+   ExternalProject_Get_Property(eigen source_dir)
+   set(EigenIncludeDir ${source_dir})
+endif()
+
+
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR} PRIVATE ${GlmIncludeDir} ${EigenIncludeDir})
+
+include_directories(${PROJECT_SOURCE_DIR})
+
+if(NOT USE_LOCAL_LIBS)
+   add_dependencies(${PROJECT_NAME} glm)
+   add_dependencies(${PROJECT_NAME} eigen)
+endif()
+
+#set_target_properties(liblgp PROPERTIES LINKER_LANGUAGE C)
+
 ```
 ## Cmake option
 - When you use Cmake, you can choose third-party library or self-content library.![cmake_option](images/cmake_option.png)

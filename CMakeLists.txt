@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_CXX_STANDARD 11)
 
 # Set the project name
-project (pgl)
+project (liblgp)
 
 #add _CRT_SECURE_NO_WARNINGS
 if(MSVC)
@@ -16,13 +16,13 @@ option(USE_LOCAL_LIBS "Use local library" OFF)
 
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
-    pgl_functs.hpp
+    Liblgp_functs.hpp
     RI.hpp
     tinyxml2.hpp
     main.cpp
 )
 # Add an executable with the above sources
-add_executable(pgl ${SOURCES})
+add_executable(liblgp ${SOURCES})
 
 if(USE_LOCAL_LIBS)
    set(GlmIncludeDir ${PROJECT_SOURCE_DIR}/local_libs)
@@ -68,4 +68,4 @@ if(NOT USE_LOCAL_LIBS)
    add_dependencies(${PROJECT_NAME} eigen)
 endif()
 
-#set_target_properties(pgl PROPERTIES LINKER_LANGUAGE C)
+#set_target_properties(liblgp PROPERTIES LINKER_LANGUAGE C)
