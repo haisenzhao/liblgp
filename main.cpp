@@ -1,17 +1,18 @@
 // main.cpp : Defines the entry point for the console application.
 //
-
+#define GLM_ENABLE_EXPERIMENTAL
 #include "iostream"
-#include "pgl_functs.hpp"
+#include "liblgp_functs.hpp"
 #include "RI.hpp"
 #include "tinyxml2.hpp"
+
 
 //#include <sys/stat.h>
 //#include <string>
 //#include <fstream>
 
 using namespace std;
-using namespace PGL;
+using namespace Liblgp;
 
 int main(int argc, char* argv[])
 {
@@ -24,7 +25,7 @@ int main(int argc, char* argv[])
 	Vector3d bb = FF::RotationAxis(Vector3d(-1,0,1), FF::Angle2Radian(135.0), Vector3d(0,1,0));
 
 	auto m = FF::RotationMatrix(Vector3d(0, 1, 0), FF::Angle2Radian(135.0));
-	Vector3d bb1 = FF::PosApplyM(Vector3d(-1, 0, 1), m);
+	Vector3d bb1 = FF::PosApplyMatrix(Vector3d(-1, 0, 1), m);
 
 	auto mm = glm::rotate(FF::Angle2Radian(135.0), Vector3d(0, 1, 0));
 	auto rtv = mm* glm::dvec4(Vector3d(-1, 0, 1), 1.0);
