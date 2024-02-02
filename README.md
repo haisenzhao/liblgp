@@ -12,8 +12,8 @@ Depend on [glm](https://github.com/g-truc/glm.git) and [eigen](https://github.co
 - Right-click on your project in the "Solution Explorer" and select "Add" "New item..."![add-item](images/add-item.png)
 
 ## Call liblgp in your project
-- Download liblgp\_functs.hpp,RI.hpp,tinyxml2.hpp and local\_libs
-- Found Eigen and glm in the local_libs folder and copy liblgp\_functs.hpp,RI.hpp,tinyxml2.hpp and the Eigen and glm folders under the local folder to the project location  
+- Download liblgp.hpp,RI.hpp,tinyxml2.hpp and local\_libs
+- Found Eigen and glm in the local_libs folder and copy liblgp.hpp,RI.hpp,tinyxml2.hpp and the Eigen and glm folders under the local folder to the project location  
 ![move_file](images/move_file.png)
 - Then you can call liblgp in your code!
 - You can run the following code to check if liblgp can be called
