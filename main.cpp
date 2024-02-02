@@ -2,7 +2,7 @@
 //
 #define GLM_ENABLE_EXPERIMENTAL
 #include "iostream"
-#include "liblgp_functs.hpp"
+#include "liblgp.hpp"
 #include "RI.hpp"
 #include "tinyxml2.hpp"
 

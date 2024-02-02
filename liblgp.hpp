@@ -1,6 +1,6 @@
 #pragma warning(disable: 4996)
-#ifndef Liblgp_hpp
-#define Liblgp_hpp
+#ifndef liblgp_hpp
+#define liblgp_hpp
 #include <numeric>
 #include <vector>
 #include <set>

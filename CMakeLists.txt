@@ -16,7 +16,7 @@ option(USE_LOCAL_LIBS "Use local library" OFF)
 
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
-    liblgp_functs.hpp
+    liblgp.hpp
     RI.hpp
     tinyxml2.hpp
     main.cpp

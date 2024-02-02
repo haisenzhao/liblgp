@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <map>
-#include "liblgp_functs.hpp"
+#include "liblgp.hpp"
 #include <random>
 #include <unordered_map>
 #include <unordered_set>
