@@ -16,17 +16,17 @@ option(USE_LOCAL_LIBS "Use local library" OFF)
 
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
-    liblgp.hpp
-    RI.hpp
-    tinyxml2.hpp
+    ${PROJECT_SOURCE_DIR}/port/liblgp.hpp
+    ${PROJECT_SOURCE_DIR}/port/RI.hpp
+    ${PROJECT_SOURCE_DIR}/port/tinyxml2.hpp
     main.cpp
 )
 # Add an executable with the above sources
 add_executable(liblgp ${SOURCES})
 
 if(USE_LOCAL_LIBS)
-   set(GlmIncludeDir ${PROJECT_SOURCE_DIR}/local_libs)
-   set(EigenIncludeDir ${PROJECT_SOURCE_DIR}/local_libs)
+   set(GlmIncludeDir ${PROJECT_SOURCE_DIR}/port)
+   set(EigenIncludeDir ${PROJECT_SOURCE_DIR}/port)
 else()
    include(ExternalProject)
    ExternalProject_Add(
