@@ -9,7 +9,7 @@
 #include <unordered_set>
 #include <iomanip>
 
-using namespace Liblgp;
+using namespace liblgp;
 
 
 //Resume IO Info

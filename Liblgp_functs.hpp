@@ -53,7 +53,7 @@
 
 using namespace std;
 
-namespace Liblgp {
+namespace liblgp {
 
     template <typename datum>
     using Vector1 = std::vector<datum>;
@@ -1229,11 +1229,11 @@ namespace Liblgp {
         //Generate a three-dimensional vector with a random direction
         static Vector3d GetRandomDirection(const double& direction_length = 1.0)
         {
-            double alpha_angle = rand() / double(RAND_MAX) * 2.0 * Liblgp::Math_PI;
-            double alpha_beta = rand() / double(RAND_MAX) * 2.0 * Liblgp::Math_PI;
-            auto direction_0 = Liblgp::Functs::RotationAxis(Vector3d(direction_length, 0.0, 0.0), alpha_angle, Vector3d(0.0, 1.0, 0.0));
-            auto direction_axis = Liblgp::Functs::GetCrossproduct(direction_0, Vector3d(0.0, 1.0, 0.0));
-            return Liblgp::Functs::RotationAxis(direction_0, alpha_beta, direction_axis);
+            double alpha_angle = rand() / double(RAND_MAX) * 2.0 * liblgp::Math_PI;
+            double alpha_beta = rand() / double(RAND_MAX) * 2.0 * liblgp::Math_PI;
+            auto direction_0 = liblgp::Functs::RotationAxis(Vector3d(direction_length, 0.0, 0.0), alpha_angle, Vector3d(0.0, 1.0, 0.0));
+            auto direction_axis = liblgp::Functs::GetCrossproduct(direction_0, Vector3d(0.0, 1.0, 0.0));
+            return liblgp::Functs::RotationAxis(direction_0, alpha_beta, direction_axis);
         }
 
 

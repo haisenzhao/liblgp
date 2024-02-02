@@ -12,7 +12,7 @@
 //#include <fstream>
 
 using namespace std;
-using namespace Liblgp;
+using namespace liblgp;
 
 int main(int argc, char* argv[])
 {
