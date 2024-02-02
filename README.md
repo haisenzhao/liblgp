@@ -1,32 +1,32 @@
-his code is header-only Library developed by Haisen Zhao for his research projects.
+This code is header-only Library developed by Haisen Zhao.
 
 # Dependency
 
 Depend on [glm](https://github.com/g-truc/glm.git) and [eigen](https://github.com/libigl/eigen.git) but you don't need to install them explicitly.
 
 
-# Call Liblgp
+# Call liblgp
 
 ## Create Project
 - Open your Visual Studio and create a new project.![image-create_a_new_project](images/image-create_a_new_project.png)
 - Right-click on your project in the "Solution Explorer" and select "Add" "New item..."![add-item](images/add-item.png)
 
-## Call Liblgp in your project
-- Download Liblgp\_functs.hpp,RI.hpp,tinyxml2.hpp and local\_libs
-- Found Eigen and glm in the local_libs folder and copy Liblgp\_functs.hpp,RI.hpp,tinyxml2.hpp and the Eigen and glm folders under the local folder to the project location  
+## Call liblgp in your project
+- Download liblgp.hpp, RI.hpp, tinyxml2.hpp and local\_libs
+- Found Eigen and glm in the local_libs folder and copy liblgp.hpp, RI.hpp, tinyxml2.hpp and the Eigen and glm folders under the local folder to the project location  
 ![move_file](images/move_file.png)
-- Then you can call Liblgp in your code!
-- You can run the following code to check if Liblgp can be called
+- Then you can call liblgp in your code!
+- You can run the following code to check if liblgp can be called
 
 ```cpp
 
 #include "iostream"
-#include "Liblgp_functs.hpp"
+#include "liblgp.hpp"
 #include "RI.hpp"
 #include "tinyxml2.hpp"
 
 using namespace std;
-using namespace Liblgp;
+using namespace liblgp;
 
 int main(int argc, char* argv[])
 
@@ -64,7 +64,7 @@ option(USE_LOCAL_LIBS "Use local library" OFF)
 
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
-    Liblgp_functs.hpp
+    liblgp.hpp
     RI.hpp
     tinyxml2.hpp
     main.cpp
