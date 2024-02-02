@@ -8,8 +8,10 @@ Depend on [glm](https://github.com/g-truc/glm.git) and [eigen](https://github.co
 # Call liblgp
 
 ## Create Project
-- Open your Visual Studio and create a new project.![image-create_a_new_project](images/image-create_a_new_project.png)
-- Right-click on your project in the "Solution Explorer" and select "Add" "New item..."![add-item](images/add-item.png)
+- Open your Visual Studio and create a new project.
+- ![image-create_a_new_project](images/image-create_a_new_project.png)
+- Right-click on your project in the "Solution Explorer" and select "Add" "New item..."
+- ![add-item](images/add-item.png)
 
 ## Call liblgp in your project
 - Download liblgp.hpp, RI.hpp, tinyxml2.hpp and local\_libs
