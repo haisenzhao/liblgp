@@ -8,10 +8,10 @@ Depend on [glm](https://github.com/g-truc/glm.git) and [eigen](https://github.co
 # Call liblgp
 
 ## Create Project
-- Open your Visual Studio and create a new project.
-- ![image-create_a_new_project](images/image-create_a_new_project.png)
-- Right-click on your project in the "Solution Explorer" and select "Add" "New item..."
-- ![add-item](images/add-item.png)
+- Open your Visual Studio and create a new project.<br>
+ ![image-create_a_new_project](images/image-create_a_new_project.png)
+- Right-click on your project in the "Solution Explorer" and select "Add" "New item..."<br>
+ ![add-item](images/add-item.png)
 
 ## Call liblgp in your project
 - Download liblgp.hpp, RI.hpp, tinyxml2.hpp and local\_libs
@@ -21,7 +21,6 @@ Depend on [glm](https://github.com/g-truc/glm.git) and [eigen](https://github.co
 - You can run the following code to check if liblgp can be called
 
 ```cpp
-
 #include "iostream"
 #include "liblgp.hpp"
 #include "RI.hpp"
@@ -31,23 +30,18 @@ using namespace std;
 using namespace liblgp;
 
 int main(int argc, char* argv[])
-
 {
-
 	std::cerr << "WinGetCurDirectory: " << Functs::WinGetCurDirectory() << std::endl;
 	std::cerr << "WinGetUserName: " << Functs::WinGetUserName() << std::endl;
-	
 	system("pause");
 	return 0;
 }
- 
 ```
 
 
 # Usage in Cmake
 
 ```
-
 cmake_minimum_required(VERSION 3.5)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -62,7 +56,6 @@ endif()
 
 #define option to use local libs
 option(USE_LOCAL_LIBS "Use local library" OFF)
-
 
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
@@ -92,7 +85,6 @@ else()
    ExternalProject_Get_Property(glm source_dir)
    set(GlmIncludeDir ${source_dir})
 
-
    ExternalProject_Add(
        eigen
        PREFIX ${CMAKE_BINARY_DIR}/third_party/eigen
@@ -107,8 +99,6 @@ else()
    set(EigenIncludeDir ${source_dir})
 endif()
 
-
-
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR} PRIVATE ${GlmIncludeDir} ${EigenIncludeDir})
 
 include_directories(${PROJECT_SOURCE_DIR})
@@ -119,10 +109,10 @@ if(NOT USE_LOCAL_LIBS)
 endif()
 
 #set_target_properties(liblgp PROPERTIES LINKER_LANGUAGE C)
-
 ```
 ## Cmake option
-- When you use Cmake, you can choose third-party library or self-content library.![cmake_option](images/cmake_option.png)
+- When you use Cmake, you can choose third-party library or self-content library.<br>
+ <img src="images/cmake_option.png" width = "80%" />
 
 # License
 All rights about the program are reserved by the authors of this project. The programs can only be used for research purposes. In no event shall the author be liable to any party for direct, indirect, special, incidental, or consequential damage arising out of the use of this program.
