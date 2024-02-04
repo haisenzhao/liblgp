@@ -11,22 +11,22 @@ if(MSVC)
 endif()
 
 #define option to use local libs
-option(USE_LOCAL_LIBS "Use local library" OFF)
+option(USE_LOCAL_LIBS "Use local library" ON)
 
 
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
-    ${PROJECT_SOURCE_DIR}/port/liblgp.hpp
-    ${PROJECT_SOURCE_DIR}/port/RI.hpp
-    ${PROJECT_SOURCE_DIR}/port/tinyxml2.hpp
+    ${PROJECT_SOURCE_DIR}/liblgp/liblgp.hpp
+    ${PROJECT_SOURCE_DIR}/liblgp/RI.hpp
+    ${PROJECT_SOURCE_DIR}/liblgp/tinyxml2.hpp
     main.cpp
 )
 # Add an executable with the above sources
 add_executable(liblgp ${SOURCES})
 
 if(USE_LOCAL_LIBS)
-   set(GlmIncludeDir ${PROJECT_SOURCE_DIR}/port)
-   set(EigenIncludeDir ${PROJECT_SOURCE_DIR}/port)
+   set(GlmIncludeDir ${PROJECT_SOURCE_DIR}/liblgp)
+   set(EigenIncludeDir ${PROJECT_SOURCE_DIR}/liblgp)
 else()
    include(ExternalProject)
    ExternalProject_Add(
