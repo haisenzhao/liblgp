@@ -19,7 +19,7 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/liblgp/liblgp.hpp
     ${PROJECT_SOURCE_DIR}/liblgp/RI.hpp
     ${PROJECT_SOURCE_DIR}/liblgp/tinyxml2.hpp
-    main.cpp
+    dev/main.cpp
 )
 # Add an executable with the above sources
 add_executable(liblgp ${SOURCES})

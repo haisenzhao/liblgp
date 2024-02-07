@@ -9,8 +9,8 @@ Depend on [glm](https://github.com/g-truc/glm.git) and [eigen](https://github.co
 
 ## Call liblgp in your project
 - Download liblgp.hpp, RI.hpp, tinyxml2.hpp and local\_libs
-- Found Eigen and glm in the "liblgp" folder and copy liblgp.hpp, RI.hpp, tinyxml2.hpp and the Eigen and glm folders under the "liblgp" folder to the project location  
-![move_file](images/move_file.png)
+- Found Eigen and glm in the "liblgp" folder and copy liblgp.hpp, RI.hpp, tinyxml2.hpp and the Eigen and glm folders under the "liblgp" folder to the project location.  
+ <br><img src="dev/images/move_file.png" width = "80%" />
 - Then you can call liblgp in your code!
 - You can run the following code to check if liblgp can be called
 
@@ -106,7 +106,7 @@ endif()
 ```
 ## Cmake option
 - When you use Cmake, you can choose third-party library or self-content library.<br>
- <img src="images/cmake_option.png" width = "80%" />
+ <img src="dev/images/cmake_option.png" width = "80%" />
 
 # License
 All rights about the program are reserved by the authors of this project. The programs can only be used for research purposes. In no event shall the author be liable to any party for direct, indirect, special, incidental, or consequential damage arising out of the use of this program.
