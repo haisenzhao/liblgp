@@ -8,11 +8,12 @@ Depend on [glm](https://github.com/g-truc/glm.git) and [eigen](https://github.co
 # Call liblgp
 
 ## Call liblgp in your project
-- Download liblgp.hpp, RI.hpp, tinyxml2.hpp and local\_libs
-- Found Eigen and glm in the "liblgp" folder and copy liblgp.hpp, RI.hpp, tinyxml2.hpp and the Eigen and glm folders under the "liblgp" folder to the project location.  
- <br><img src="dev/images/move_file.png" width = "80%" />
-- Then you can call liblgp in your code!
-- You can run the following code to check if liblgp can be called
+
+- First, download this  repository "[liblgp](https://github.com/haisenzhao/liblgp)" to your computer.
+- Open the "liblgp" folder and copy all files and sub-folders.<br> <img src="dev/images/1.png" width = "30%" />
+- Open the folder where your own project is located, then paste the files.<br> <img src="dev/images/2.png" width = "40%" />
+- To call liblgp in your code, you can run the following code to check if it can be called.
+
 
 ```cpp
 #include "iostream"
